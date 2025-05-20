@@ -2,4 +2,4 @@
 cmds = ["npm install --legacy-peer-deps"] # Ensure all dependencies, including dotenv, are installed
 
 [phases.start]
-cmd = "npm start"
+cmd = "node server.js"

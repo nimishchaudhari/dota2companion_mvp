@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const axios = require('axios'); 
+const axios = require('axios');
+const path = require('path'); // Added path module
 
 const app = express();
 const PORT = process.env.PORT || 3001; // Standard Railway port
@@ -24,6 +25,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Session Configuration
 // Trust first proxy for Railway / other proxies
@@ -223,6 +227,12 @@ app.get('/api/matches/:matchId', async (req, res) => {
             res.status(500).json({ message: 'Failed to fetch match details' });
         }
     }
+});
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 app.listen(PORT, () => {
