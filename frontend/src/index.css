@@ -1,0 +1,43 @@
+/* frontend/src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* A light gray background */
+  color: #333; /* Default text color */
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Basic link styling if not using Tailwind's 'a' component directly everywhere */
+a {
+  color: #3182ce; /* Tailwind blue-600 */
+  text-decoration: none;
+}
+a:hover {
+  color: #2c5282; /* Tailwind blue-800 */
+  text-decoration: underline;
+}
+
+/* Basic button styling (can be overridden by Tailwind classes) */
+button {
+  /* Removing default browser styles for buttons if Tailwind is used per component */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600; /* Default to semi-bold for headings */
+  margin-bottom: 0.5em;
+}
