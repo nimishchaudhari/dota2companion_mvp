@@ -5,7 +5,7 @@ This guide provides step-by-step instructions to deploy the backend and frontend
 **Prerequisites:**
 
 1.  **Railway Account:** You'll need a Railway.app account.
-2.  **GitHub Repository:** Push the entire project (including `backend` and `frontend` directories) to a GitHub repository. Railway will deploy from this repository.
+2.  **GitHub Repository:** Push the entire project (including `backend` and `frontend` directories) to a GitHub repository (`https://github.com/nimishchaudhari/dota2companion_mvp`). Railway will deploy from this repository.
 3.  **Steam API Key (Optional but Recommended):** For Steam authentication features (though the POC uses mock auth, the backend is set up for it). If you have one, keep it handy.
 4.  **OpenDota API Key (Optional):** OpenDota is often usable without an API key for low request volumes, but having one can provide higher rate limits.
 

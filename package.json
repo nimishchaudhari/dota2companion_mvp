@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "axios": "^1.9.0",
-    "react-router-dom": "^6.30.0"
+    "react-router-dom": "^6.30.0",
+    "concurrently": "^8.2.2"
   },
   "scripts": {
     "start": "cd backend && npm start",

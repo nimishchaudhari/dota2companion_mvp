@@ -1,5 +1,6 @@
 [phases.install]
 cmd = "cd backend && npm ci"
 
+
 [phases.start]
-cmd = "cd backend && npm start"
+cmd = "npm start" # Starts the backend server, which now also serves the frontend
