@@ -1,8 +1,6 @@
 [phases.install]
-cmds = ["npm run install:all"] # Installs dependencies for both backend and frontend
+cmd = "cd backend && npm ci"
 
-[phases.build]
-cmds = ["npm run build:frontend"] # Builds the frontend
 
 [phases.start]
 cmd = "npm start" # Starts the backend server, which now also serves the frontend

@@ -5,11 +5,10 @@
     "concurrently": "^8.2.2"
   },
   "scripts": {
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
-    "install:all": "npm run install:backend && npm run install:frontend",
-    "build:frontend": "cd frontend && npm run build",
-    "start": "npm run build:frontend && cd backend && node server.js",
-    "dev": "npm run install:all && concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
+    "start": "cd backend && npm start",
+    "heroku-postbuild": "cd backend && npm ci"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.7"
   }
 }
