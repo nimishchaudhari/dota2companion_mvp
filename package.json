@@ -4,6 +4,7 @@
     "react-router-dom": "^6.30.0"
   },
   "scripts": {
-    "start": "cd backend && npm start"
+    "start": "cd backend && npm start",
+    "heroku-postbuild": "cd backend && npm ci"
   }
 }
