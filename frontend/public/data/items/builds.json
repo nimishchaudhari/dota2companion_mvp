@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-01T00:00:00Z",
+    "description": "Item builds and recommendations for different heroes and situations"
+  },
+  "builds": {
+    "hero_builds": {
+      "1": {
+        "hero_name": "Anti-Mage",
+        "role": "carry",
+        "builds": {
+          "standard": {
+            "name": "Standard Carry Build",
+            "description": "Classic farming build for safe lane",
+            "starting_items": [
+              {"item_id": 29, "name": "Tango", "cost": 90, "quantity": 1},
+              {"item_id": 11, "name": "Quelling Blade", "cost": 130, "quantity": 1},
+              {"item_id": 182, "name": "Stout Shield", "cost": 100, "quantity": 1},
+              {"item_id": 40, "name": "Iron Branch", "cost": 50, "quantity": 3}
+            ],
+            "early_game": [
+              {"item_id": 63, "name": "Power Treads", "cost": 1400, "timing": "5-8 min"},
+              {"item_id": 112, "name": "Battle Fury", "cost": 4100, "timing": "12-15 min"}
+            ],
+            "mid_game": [
+              {"item_id": 152, "name": "Manta Style", "cost": 4950, "timing": "18-22 min"},
+              {"item_id": 36, "name": "Black King Bar", "cost": 4050, "timing": "25-28 min"}
+            ],
+            "late_game": [
+              {"item_id": 133, "name": "Butterfly", "cost": 5525, "timing": "30+ min"},
+              {"item_id": 116, "name": "Abyssal Blade", "cost": 6400, "timing": "35+ min"}
+            ]
+          },
+          "early_fighting": {
+            "name": "Early Fighting Build",
+            "description": "For games requiring early participation",
+            "starting_items": [
+              {"item_id": 29, "name": "Tango", "cost": 90, "quantity": 1},
+              {"item_id": 11, "name": "Quelling Blade", "cost": 130, "quantity": 1},
+              {"item_id": 182, "name": "Stout Shield", "cost": 100, "quantity": 1}
+            ],
+            "early_game": [
+              {"item_id": 63, "name": "Power Treads", "cost": 1400, "timing": "5-8 min"},
+              {"item_id": 116, "name": "Vanguard", "cost": 1825, "timing": "10-12 min"}
+            ],
+            "mid_game": [
+              {"item_id": 152, "name": "Manta Style", "cost": 4950, "timing": "16-20 min"},
+              {"item_id": 36, "name": "Black King Bar", "cost": 4050, "timing": "22-25 min"}
+            ]
+          }
+        }
+      },
+      "74": {
+        "hero_name": "Invoker",
+        "role": "mid",
+        "builds": {
+          "quas_exort": {
+            "name": "Quas-Exort Build",
+            "description": "High damage farming and teamfight build",
+            "skill_build": ["Q", "E", "Q", "E", "Q", "E", "R", "Q", "E"],
+            "starting_items": [
+              {"item_id": 29, "name": "Tango", "cost": 90, "quantity": 1},
+              {"item_id": 40, "name": "Iron Branch", "cost": 50, "quantity": 2},
+              {"item_id": 46, "name": "Null Talisman", "cost": 155, "quantity": 1}
+            ],
+            "early_game": [
+              {"item_id": 50, "name": "Boots of Speed", "cost": 500, "timing": "3-5 min"},
+              {"item_id": 46, "name": "Null Talisman", "cost": 155, "timing": "6-8 min", "quantity": 2}
+            ],
+            "mid_game": [
+              {"item_id": 63, "name": "Phase Boots", "cost": 1500, "timing": "8-10 min"},
+              {"item_id": 108, "name": "Aghanim's Scepter", "cost": 4200, "timing": "18-22 min"}
+            ]
+          }
+        }
+      }
+    },
+    "situation_builds": {
+      "vs_heavy_magic": {
+        "name": "Anti-Magic Build",
+        "description": "Items for high magic damage lineups",
+        "core_items": [
+          {"item_id": 36, "name": "Black King Bar", "priority": 1},
+          {"item_id": 116, "name": "Pipe of Insight", "priority": 2},
+          {"item_id": 152, "name": "Hood of Defiance", "priority": 3}
+        ]
+      },
+      "vs_heavy_physical": {
+        "name": "Armor Build",
+        "description": "Items for high physical damage",
+        "core_items": [
+          {"item_id": 63, "name": "Assault Cuirass", "priority": 1},
+          {"item_id": 116, "name": "Crimson Guard", "priority": 2},
+          {"item_id": 182, "name": "Shiva's Guard", "priority": 3}
+        ]
+      }
+    },
+    "item_categories": {
+      "damage": [
+        {"item_id": 133, "name": "Butterfly", "damage_type": "physical", "cost": 5525},
+        {"item_id": 116, "name": "Daedalus", "damage_type": "physical", "cost": 5520},
+        {"item_id": 108, "name": "Aghanim's Scepter", "damage_type": "magical", "cost": 4200}
+      ],
+      "survivability": [
+        {"item_id": 36, "name": "Black King Bar", "type": "magic_immunity", "cost": 4050},
+        {"item_id": 63, "name": "Heart of Tarrasque", "type": "health", "cost": 5500},
+        {"item_id": 116, "name": "Satanic", "type": "lifesteal", "cost": 5800}
+      ],
+      "utility": [
+        {"item_id": 108, "name": "Blink Dagger", "type": "mobility", "cost": 2250},
+        {"item_id": 116, "name": "Force Staff", "type": "positioning", "cost": 2250},
+        {"item_id": 152, "name": "Scythe of Vyse", "type": "disable", "cost": 5675}
+      ]
+    }
+  }
+}

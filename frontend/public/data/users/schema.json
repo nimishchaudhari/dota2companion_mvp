@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-01T00:00:00Z",
+    "description": "User data schema and structure for client-side storage"
+  },
+  "schema": {
+    "user_profile": {
+      "required_fields": [
+        "user_id",
+        "steam_id",
+        "persona_name",
+        "created_at",
+        "preferences"
+      ],
+      "optional_fields": [
+        "avatar_url",
+        "rank",
+        "mmr_estimate",
+        "favorite_heroes",
+        "favorite_items",
+        "match_history_cache",
+        "custom_builds",
+        "notes"
+      ],
+      "field_types": {
+        "user_id": "string",
+        "steam_id": "string",
+        "persona_name": "string",
+        "avatar_url": "string",
+        "rank": "number",
+        "mmr_estimate": "number",
+        "created_at": "string",
+        "last_updated": "string",
+        "preferences": "object",
+        "favorite_heroes": "array",
+        "favorite_items": "array",
+        "match_history_cache": "array",
+        "custom_builds": "object",
+        "notes": "object"
+      }
+    },
+    "preferences": {
+      "role_preference": {
+        "type": "string",
+        "options": ["carry", "mid", "offlaner", "support", "jungle", "any"],
+        "default": "any"
+      },
+      "hero_complexity": {
+        "type": "string",
+        "options": ["beginner", "intermediate", "advanced", "any"],
+        "default": "any"
+      },
+      "playstyle": {
+        "type": "string",
+        "options": ["aggressive", "farming", "support", "teamfight", "splitpush", "any"],
+        "default": "any"
+      },
+      "notifications": {
+        "type": "object",
+        "properties": {
+          "meta_updates": {"type": "boolean", "default": true},
+          "hero_recommendations": {"type": "boolean", "default": true},
+          "build_updates": {"type": "boolean", "default": false}
+        }
+      },
+      "theme": {
+        "type": "string",
+        "options": ["light", "dark", "auto"],
+        "default": "dark"
+      },
+      "language": {
+        "type": "string",
+        "default": "en"
+      }
+    },
+    "favorite_heroes": {
+      "structure": {
+        "hero_id": "number",
+        "hero_name": "string",
+        "role": "string",
+        "added_at": "string",
+        "notes": "string",
+        "custom_build": "object"
+      },
+      "max_count": 10
+    },
+    "favorite_items": {
+      "structure": {
+        "item_id": "number",
+        "item_name": "string",
+        "category": "string",
+        "added_at": "string",
+        "notes": "string"
+      },
+      "max_count": 20
+    },
+    "custom_builds": {
+      "structure": {
+        "build_id": "string",
+        "hero_id": "number",
+        "hero_name": "string",
+        "build_name": "string",
+        "description": "string",
+        "role": "string",
+        "created_at": "string",
+        "last_updated": "string",
+        "starting_items": "array",
+        "early_game": "array",
+        "mid_game": "array",
+        "late_game": "array",
+        "skill_build": "array",
+        "situational_items": "object",
+        "notes": "string",
+        "public": "boolean"
+      }
+    },
+    "match_history_cache": {
+      "structure": {
+        "match_id": "string",
+        "hero_id": "number",
+        "result": "string",
+        "duration": "number",
+        "kda": "object",
+        "items": "array",
+        "cached_at": "string"
+      },
+      "max_count": 50
+    },
+    "notes": {
+      "structure": {
+        "note_id": "string",
+        "type": "string",
+        "target_id": "string",
+        "content": "string",
+        "created_at": "string",
+        "last_updated": "string",
+        "tags": "array"
+      },
+      "types": ["hero", "item", "match", "general"]
+    }
+  },
+  "example_data": {
+    "user_profile": {
+      "user_id": "user_123456",
+      "steam_id": "76561197960287930",
+      "persona_name": "TestPlayer",
+      "avatar_url": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/df/df778904318914107338066888cf9389f6972978_full.jpg",
+      "rank": 3,
+      "mmr_estimate": 3200,
+      "created_at": "2025-01-01T00:00:00Z",
+      "last_updated": "2025-01-01T12:00:00Z",
+      "preferences": {
+        "role_preference": "carry",
+        "hero_complexity": "intermediate",
+        "playstyle": "farming",
+        "notifications": {
+          "meta_updates": true,
+          "hero_recommendations": true,
+          "build_updates": false
+        },
+        "theme": "dark",
+        "language": "en"
+      },
+      "favorite_heroes": [
+        {
+          "hero_id": 1,
+          "hero_name": "Anti-Mage",
+          "role": "carry",
+          "added_at": "2025-01-01T00:00:00Z",
+          "notes": "Great for farming games"
+        },
+        {
+          "hero_id": 8,
+          "hero_name": "Juggernaut",
+          "role": "carry",
+          "added_at": "2025-01-01T01:00:00Z",
+          "notes": "Versatile carry option"
+        }
+      ],
+      "favorite_items": [
+        {
+          "item_id": 112,
+          "item_name": "Battle Fury",
+          "category": "damage",
+          "added_at": "2025-01-01T00:00:00Z",
+          "notes": "Core farming item"
+        }
+      ]
+    }
+  },
+  "validation_rules": {
+    "user_id": "Must be unique string",
+    "steam_id": "Must be valid Steam ID format",
+    "persona_name": "1-32 characters, no special characters",
+    "mmr_estimate": "0-12000",
+    "favorite_heroes": "Maximum 10 entries",
+    "favorite_items": "Maximum 20 entries",
+    "match_history_cache": "Maximum 50 entries, auto-cleanup oldest"
+  }
+}

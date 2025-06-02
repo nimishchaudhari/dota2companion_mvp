@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-01T00:00:00Z",
+    "description": "Hero recommendations based on roles, synergies, and meta analysis"
+  },
+  "recommendations": {
+    "beginner_friendly": [
+      {
+        "hero_id": 23,
+        "name": "Crystal Maiden",
+        "localized_name": "Crystal Maiden",
+        "difficulty": "easy",
+        "role": "support",
+        "reasons": ["Simple abilities", "High impact", "Good for learning positioning"],
+        "win_rate": 0.48,
+        "pick_rate": 0.12
+      },
+      {
+        "hero_id": 1,
+        "name": "Anti-Mage",
+        "localized_name": "Anti-Mage",
+        "difficulty": "medium",
+        "role": "carry",
+        "reasons": ["Clear farming pattern", "Strong late game", "Good for learning last hitting"],
+        "win_rate": 0.52,
+        "pick_rate": 0.15
+      },
+      {
+        "hero_id": 38,
+        "name": "Bristleback",
+        "localized_name": "Bristleback",
+        "difficulty": "easy",
+        "role": "offlaner",
+        "reasons": ["Tanky", "Forgiving", "Good sustain"],
+        "win_rate": 0.55,
+        "pick_rate": 0.08
+      }
+    ],
+    "meta_picks": [
+      {
+        "hero_id": 74,
+        "name": "Invoker",
+        "localized_name": "Invoker",
+        "tier": "S",
+        "role": "mid",
+        "win_rate": 0.54,
+        "pick_rate": 0.18,
+        "ban_rate": 0.25,
+        "trend": "rising"
+      },
+      {
+        "hero_id": 105,
+        "name": "Techies",
+        "localized_name": "Techies",
+        "tier": "A",
+        "role": "support",
+        "win_rate": 0.58,
+        "pick_rate": 0.06,
+        "ban_rate": 0.45,
+        "trend": "stable"
+      }
+    ],
+    "role_based": {
+      "carry": [
+        {"hero_id": 1, "name": "Anti-Mage", "synergy_score": 0.85, "meta_score": 0.78},
+        {"hero_id": 8, "name": "Juggernaut", "synergy_score": 0.82, "meta_score": 0.81},
+        {"hero_id": 16, "name": "Phantom Assassin", "synergy_score": 0.79, "meta_score": 0.76}
+      ],
+      "support": [
+        {"hero_id": 23, "name": "Crystal Maiden", "synergy_score": 0.88, "meta_score": 0.72},
+        {"hero_id": 5, "name": "Vengeful Spirit", "synergy_score": 0.85, "meta_score": 0.75},
+        {"hero_id": 31, "name": "Lich", "synergy_score": 0.83, "meta_score": 0.74}
+      ],
+      "mid": [
+        {"hero_id": 74, "name": "Invoker", "synergy_score": 0.87, "meta_score": 0.89},
+        {"hero_id": 11, "name": "Shadow Fiend", "synergy_score": 0.84, "meta_score": 0.77},
+        {"hero_id": 43, "name": "Death Prophet", "synergy_score": 0.81, "meta_score": 0.79}
+      ],
+      "offlaner": [
+        {"hero_id": 38, "name": "Bristleback", "synergy_score": 0.86, "meta_score": 0.83},
+        {"hero_id": 2, "name": "Axe", "synergy_score": 0.84, "meta_score": 0.76},
+        {"hero_id": 15, "name": "Centaur Warrunner", "synergy_score": 0.82, "meta_score": 0.78}
+      ],
+      "jungle": [
+        {"hero_id": 18, "name": "Enigma", "synergy_score": 0.89, "meta_score": 0.71},
+        {"hero_id": 32, "name": "Chen", "synergy_score": 0.85, "meta_score": 0.68}
+      ]
+    },
+    "counter_picks": {
+      "1": {
+        "hero_name": "Anti-Mage",
+        "counters": [
+          {"hero_id": 21, "name": "Bloodseeker", "effectiveness": 0.85},
+          {"hero_id": 11, "name": "Shadow Fiend", "effectiveness": 0.78},
+          {"hero_id": 23, "name": "Crystal Maiden", "effectiveness": 0.72}
+        ],
+        "countered_by": [
+          {"hero_id": 74, "name": "Invoker", "effectiveness": 0.82},
+          {"hero_id": 8, "name": "Juggernaut", "effectiveness": 0.76}
+        ]
+      }
+    },
+    "synergies": {
+      "strong_combos": [
+        {
+          "combo_id": "cm_invoker",
+          "heroes": [{"hero_id": 23, "name": "Crystal Maiden"}, {"hero_id": 74, "name": "Invoker"}],
+          "synergy_score": 0.92,
+          "description": "Mana support enables Invoker's spell spam"
+        },
+        {
+          "combo_id": "magnus_pa",
+          "heroes": [{"hero_id": 97, "name": "Magnus"}, {"hero_id": 16, "name": "Phantom Assassin"}],
+          "synergy_score": 0.89,
+          "description": "Reverse Polarity sets up perfect Coup de Grace"
+        }
+      ]
+    }
+  }
+}

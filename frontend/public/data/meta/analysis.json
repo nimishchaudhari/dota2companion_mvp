@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-01T00:00:00Z",
+    "description": "Current meta analysis including hero tiers, trends, and patch insights",
+    "patch": "7.35d"
+  },
+  "analysis": {
+    "hero_tiers": {
+      "S_tier": [
+        {
+          "hero_id": 74,
+          "name": "Invoker",
+          "tier_score": 0.95,
+          "win_rate": 0.54,
+          "pick_rate": 0.18,
+          "ban_rate": 0.25,
+          "role": "mid",
+          "reasons": ["High skill ceiling", "Versatile", "Strong in all phases"]
+        },
+        {
+          "hero_id": 105,
+          "name": "Techies",
+          "tier_score": 0.92,
+          "win_rate": 0.58,
+          "pick_rate": 0.06,
+          "ban_rate": 0.45,
+          "role": "support",
+          "reasons": ["Map control", "High impact", "Unique playstyle"]
+        }
+      ],
+      "A_tier": [
+        {
+          "hero_id": 8,
+          "name": "Juggernaut",
+          "tier_score": 0.88,
+          "win_rate": 0.53,
+          "pick_rate": 0.15,
+          "ban_rate": 0.12,
+          "role": "carry",
+          "reasons": ["Versatile build paths", "Strong laning", "Good scaling"]
+        },
+        {
+          "hero_id": 38,
+          "name": "Bristleback",
+          "tier_score": 0.85,
+          "win_rate": 0.55,
+          "pick_rate": 0.08,
+          "ban_rate": 0.06,
+          "role": "offlaner",
+          "reasons": ["Tanky", "Good sustain", "Team fight presence"]
+        }
+      ],
+      "B_tier": [
+        {
+          "hero_id": 1,
+          "name": "Anti-Mage",
+          "tier_score": 0.78,
+          "win_rate": 0.52,
+          "pick_rate": 0.15,
+          "ban_rate": 0.08,
+          "role": "carry",
+          "reasons": ["Strong late game", "Split push", "Good farming"]
+        }
+      ],
+      "C_tier": [
+        {
+          "hero_id": 23,
+          "name": "Crystal Maiden",
+          "tier_score": 0.65,
+          "win_rate": 0.48,
+          "pick_rate": 0.12,
+          "ban_rate": 0.02,
+          "role": "support",
+          "reasons": ["High impact ultimate", "Mana support", "Fragile"]
+        }
+      ]
+    },
+    "patch_changes": {
+      "7.35d": {
+        "buffed_heroes": [
+          {
+            "hero_id": 74,
+            "name": "Invoker",
+            "changes": ["Reduced Invoke cooldown", "Increased base damage"],
+            "impact": "high"
+          },
+          {
+            "hero_id": 38,
+            "name": "Bristleback",
+            "changes": ["Increased Bristleback damage reduction", "Warpath stack duration increased"],
+            "impact": "medium"
+          }
+        ],
+        "nerfed_heroes": [
+          {
+            "hero_id": 23,
+            "name": "Crystal Maiden",
+            "changes": ["Reduced Freezing Field damage", "Increased mana costs"],
+            "impact": "medium"
+          }
+        ],
+        "item_changes": [
+          {
+            "item": "Black King Bar",
+            "changes": ["Reduced duration scaling", "Increased cooldown"],
+            "impact": "high"
+          },
+          {
+            "item": "Battle Fury",
+            "changes": ["Increased damage", "Reduced cleave radius"],
+            "impact": "low"
+          }
+        ]
+      }
+    },
+    "trends": {
+      "rising": [
+        {"hero_id": 74, "name": "Invoker", "trend_score": 0.85, "weeks_trending": 3},
+        {"hero_id": 105, "name": "Techies", "trend_score": 0.78, "weeks_trending": 2}
+      ],
+      "falling": [
+        {"hero_id": 23, "name": "Crystal Maiden", "trend_score": -0.65, "weeks_trending": 4},
+        {"hero_id": 1, "name": "Anti-Mage", "trend_score": -0.45, "weeks_trending": 2}
+      ],
+      "stable": [
+        {"hero_id": 8, "name": "Juggernaut", "trend_score": 0.05, "weeks_trending": 8},
+        {"hero_id": 38, "name": "Bristleback", "trend_score": 0.12, "weeks_trending": 5}
+      ]
+    },
+    "meta_insights": {
+      "current_meta": {
+        "description": "Fast-paced fighting meta with emphasis on early to mid-game heroes",
+        "characteristics": [
+          "Early team fighting",
+          "Objective-focused gameplay",
+          "High mobility heroes favored",
+          "Reduced farming time"
+        ],
+        "recommended_strategy": "Focus on heroes with strong early game impact and team fight presence"
+      },
+      "role_priorities": {
+        "carry": {
+          "priority": "medium",
+          "recommended_style": "Early fighting carries or fast farmers",
+          "key_items": ["Black King Bar", "Manta Style", "Assault Cuirass"]
+        },
+        "mid": {
+          "priority": "high",
+          "recommended_style": "High impact, tempo controlling heroes",
+          "key_items": ["Blink Dagger", "Aghanim's Scepter", "Black King Bar"]
+        },
+        "offlaner": {
+          "priority": "high",
+          "recommended_style": "Tanky initiators with team fight presence",
+          "key_items": ["Blink Dagger", "Pipe of Insight", "Crimson Guard"]
+        },
+        "support": {
+          "priority": "medium",
+          "recommended_style": "High impact ultimates and utility",
+          "key_items": ["Glimmer Cape", "Force Staff", "Aghanim's Scepter"]
+        }
+      }
+    },
+    "matchup_matrix": {
+      "lane_matchups": {
+        "mid": {
+          "favorable": [
+            {"hero1": 74, "hero1_name": "Invoker", "hero2": 11, "hero2_name": "Shadow Fiend", "advantage": 0.75},
+            {"hero1": 43, "hero1_name": "Death Prophet", "hero2": 74, "hero2_name": "Invoker", "advantage": 0.65}
+          ],
+          "unfavorable": [
+            {"hero1": 11, "hero1_name": "Shadow Fiend", "hero2": 74, "hero2_name": "Invoker", "advantage": -0.75},
+            {"hero1": 74, "hero1_name": "Invoker", "hero2": 43, "hero2_name": "Death Prophet", "advantage": -0.65}
+          ]
+        }
+      }
+    }
+  }
+}
