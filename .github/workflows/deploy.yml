@@ -3,7 +3,8 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches:
-      - master # Your default branch
+      - main # Deploy from main branch
+      - master # Also support master branch
 
 jobs:
   build-and-deploy-frontend:
