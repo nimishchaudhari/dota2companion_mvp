@@ -7,8 +7,10 @@ import MainLayout from './components/layout/MainLayout'; // Assuming MainLayout 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import HeroesListPage from './pages/HeroesListPage';
-import PlayerProfilePage from './pages/PlayerProfilePage'; // Placeholder
-import MatchDetailPage from './pages/MatchDetailPage';   // Placeholder
+import PlayerProfilePage from './pages/PlayerProfilePage';
+import MatchDetailPage from './pages/MatchDetailPage';
+import UserProfilePage from './pages/UserProfilePage';
+import RecommendationsPage from './pages/RecommendationsPage';
 
 // Simple ProtectedRoute component for POC
 const ProtectedRoute = ({ children }) => {
@@ -42,12 +44,22 @@ function App() {
                             <HeroesListPage />
                         </ProtectedRoute>
                     } />
-                    <Route path="/player/:playerId" element={ // Example, not fully implemented yet
+                    <Route path="/recommendations" element={
+                        <ProtectedRoute>
+                            <RecommendationsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/profile" element={
+                        <ProtectedRoute>
+                            <UserProfilePage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/player/:playerId" element={
                         <ProtectedRoute>
                             <PlayerProfilePage />
                         </ProtectedRoute>
                     } />
-                     <Route path="/matches/:matchId" element={ // Example, not fully implemented yet
+                     <Route path="/matches/:matchId" element={
                         <ProtectedRoute>
                             <MatchDetailPage />
                         </ProtectedRoute>
