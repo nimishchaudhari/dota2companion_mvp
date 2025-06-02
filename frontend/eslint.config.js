@@ -30,4 +30,20 @@ export default [
       ],
     },
   },
+  // Configuration for Node.js files
+  {
+    files: ['vite.config.js', 'scripts/**/*.js', 'postcss.config.js', 'tailwind.config.js'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.node,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
 ]

@@ -1,6 +1,28 @@
 // frontend/src/pages/RecommendationsPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Grid,
+  GridItem,
+  Card,
+  Badge,
+  Button,
+  Select,
+  Checkbox,
+  Flex,
+  Tabs,
+  Spinner,
+  Alert,
+  Icon
+} from '@chakra-ui/react';
+import { FaUser, FaStar, FaTrophy, FaUsers, FaFilter } from 'react-icons/fa';
+import { FaShield } from 'react-icons/fa6';
 import { fileBackend } from '../services/fileBackend.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import RecommendationCard from '../components/RecommendationCard.jsx';
@@ -12,7 +34,6 @@ const RecommendationsPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('role_based');
   const [selectedRole, setSelectedRole] = useState('Carry');
   const [filters, setFilters] = useState({
     skill_level: '',
@@ -22,7 +43,7 @@ const RecommendationsPage = () => {
 
   useEffect(() => {
     loadRecommendations();
-  }, []);
+  }, [loadRecommendations]);
 
   useEffect(() => {
     if (recommendations.role_based && selectedRole) {
@@ -34,7 +55,7 @@ const RecommendationsPage = () => {
     }
   }, [recommendations, selectedRole]);
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -68,7 +89,7 @@ const RecommendationsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
@@ -76,19 +97,6 @@ const RecommendationsPage = () => {
     // Reload recommendations with new filters
     loadRecommendations();
   };
-
-  const renderCategoryTab = (categoryId, label, count = null) => (
-    <button
-      onClick={() => setActiveCategory(categoryId)}
-      className={`px-4 py-2 rounded-t-lg transition-colors duration-200 ${
-        activeCategory === categoryId
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-      }`}
-    >
-      {label} {count !== null && `(${count})`}
-    </button>
-  );
 
   const renderHeroCard = (hero, reason = null) => {
     const heroInfo = heroData[hero.id] || heroData[hero.hero_id] || hero;
@@ -122,241 +130,405 @@ const RecommendationsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <Container maxW="7xl" py={8} centerContent>
+        <VStack spacing={4}>
+          <Spinner size="xl" color="dota.teal.500" thickness="4px" />
+          <Text color="dota.text.secondary">Loading recommendations...</Text>
+        </VStack>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-20">
-        <div className="text-red-600 text-center">
-          <h2 className="text-xl font-bold mb-4">Error Loading Recommendations</h2>
-          <p className="mb-4">{error}</p>
-          <button
-            onClick={loadRecommendations}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <Container maxW="md" py={20}>
+        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={8} textAlign="center">
+          <VStack spacing={6}>
+            <Alert.Root status="error" bg="dota.bg.secondary" borderColor="dota.status.error">
+              <Alert.Indicator />
+              <Alert.Content>
+                <VStack align="start" spacing={2}>
+                  <Alert.Title>
+                    <Heading size="md" color="dota.text.primary">
+                      Error Loading Recommendations
+                    </Heading>
+                  </Alert.Title>
+                  <Alert.Description>
+                    <Text color="dota.text.secondary">{error}</Text>
+                  </Alert.Description>
+                </VStack>
+              </Alert.Content>
+            </Alert.Root>
+            <Button
+              onClick={loadRecommendations}
+              variant="primary"
+              size="lg"
+            >
+              Retry
+            </Button>
+          </VStack>
+        </Card>
+      </Container>
     );
   }
 
   if (!user) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-20">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Login Required</h1>
-        <p className="text-gray-600 mb-6">
-          Please log in to get personalized hero recommendations based on your preferences.
-        </p>
-        <Link
-          to="/login"
-          className="block w-full bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Go to Login
-        </Link>
-      </div>
+      <Container maxW="md" py={20}>
+        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={8} textAlign="center">
+          <VStack spacing={6}>
+            <Icon as={FaUser} boxSize={16} color="dota.text.muted" />
+            <VStack spacing={2}>
+              <Heading size="lg" color="dota.text.primary">
+                Login Required
+              </Heading>
+              <Text color="dota.text.secondary" lineHeight="1.6">
+                Please log in to get personalized hero recommendations based on your preferences.
+              </Text>
+            </VStack>
+            <Button
+              as={Link}
+              to="/login"
+              variant="primary"
+              size="lg"
+              w="full"
+            >
+              Go to Login
+            </Button>
+          </VStack>
+        </Card>
+      </Container>
     );
   }
 
   const availableRoles = recommendations.role_based ? Object.keys(recommendations.role_based) : [];
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Hero Recommendations</h1>
-        <p className="text-gray-600">
-          Personalized recommendations based on your skill level and preferences
-          {userProfile && ` (${userProfile.preferences?.skill_level || 'beginner'} level)`}
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">Skill Level:</label>
-            <select
-              value={filters.skill_level}
-              onChange={(e) => handleFilterChange('skill_level', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">All Levels</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700">Complexity:</label>
-            <select
-              value={filters.complexity}
-              onChange={(e) => handleFilterChange('complexity', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Any</option>
-              <option value="simple">Simple</option>
-              <option value="moderate">Moderate</option>
-              <option value="complex">Complex</option>
-            </select>
-          </div>
-
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={filters.meta_only}
-              onChange={(e) => handleFilterChange('meta_only', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Meta heroes only</span>
-          </label>
-
-          <button
-            onClick={loadRecommendations}
-            className="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+    <Container maxW="7xl" py={6}>
+      <VStack spacing={8} align="stretch">
+        {/* Header */}
+        <Box textAlign="center">
+          <Heading 
+            size="xl" 
+            color="dota.text.primary" 
+            mb={4}
+            textShadow="0 0 10px rgba(39, 174, 158, 0.3)"
           >
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* Category Tabs */}
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2">
-          {renderCategoryTab('role_based', 'By Role', availableRoles.length)}
-          {recommendations.beginner_friendly && renderCategoryTab('beginner', 'Beginner Friendly', recommendations.beginner_friendly.length)}
-          {recommendations.meta_picks && renderCategoryTab('meta', 'Meta Picks', recommendations.meta_picks.length)}
-          {recommendations.counter_picks && renderCategoryTab('counters', 'Counters')}
-          {recommendations.synergies?.strong_combos && renderCategoryTab('synergies', 'Synergies', recommendations.synergies.strong_combos.length)}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {activeCategory === 'role_based' && (
-          <div>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {availableRoles.map(role => (
-                <button
-                  key={role}
-                  onClick={() => setSelectedRole(role)}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedRole === role
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {role} ({recommendations.role_based[role]?.length || 0})
-                </button>
-              ))}
-            </div>
-
-            {selectedRole && recommendations.role_based[selectedRole] && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Recommended {selectedRole} Heroes
-                </h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {recommendations.role_based[selectedRole].map(hero =>
-                    renderHeroCard(hero, `Great ${selectedRole.toLowerCase()} for your skill level`)
-                  )}
-                </div>
-              </div>
+            Hero Recommendations
+          </Heading>
+          <Text color="dota.text.secondary" fontSize="lg">
+            Personalized recommendations based on your skill level and preferences
+            {userProfile && (
+              <Badge ml={2} variant="solid" colorScheme="teal">
+                {userProfile.preferences?.skill_level || 'beginner'} level
+              </Badge>
             )}
-          </div>
-        )}
+          </Text>
+        </Box>
 
-        {activeCategory === 'beginner' && recommendations.beginner_friendly && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Beginner Friendly Heroes</h2>
-            <p className="text-gray-600 mb-6">
-              These heroes are great for learning the game with straightforward mechanics and forgiving gameplay.
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {recommendations.beginner_friendly.map(hero =>
-                renderHeroCard(hero, 'Perfect for learning the game')
-              )}
-            </div>
-          </div>
-        )}
+        {/* Filters */}
+        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={4}>
+          <VStack spacing={4}>
+            <HStack spacing={3}>
+              <Icon as={FaFilter} color="dota.teal.500" />
+              <Heading size="sm" color="dota.text.primary">
+                Filter Recommendations
+              </Heading>
+            </HStack>
+            
+            <Flex wrap="wrap" gap={4} align="center" justify="center">
+              <HStack spacing={2}>
+                <Text fontSize="sm" fontWeight="medium" color="dota.text.secondary">
+                  Skill Level:
+                </Text>
+                <Select
+                  value={filters.skill_level}
+                  onChange={(e) => handleFilterChange('skill_level', e.target.value)}
+                  size="sm"
+                  w="auto"
+                  minW="120px"
+                  bg="dota.bg.secondary"
+                  borderColor="dota.bg.tertiary"
+                  color="dota.text.primary"
+                  _focus={{
+                    borderColor: "dota.teal.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-dota-teal-500)"
+                  }}
+                >
+                  <option value="">All Levels</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </Select>
+              </HStack>
 
-        {activeCategory === 'meta' && recommendations.meta_picks && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Current Meta Picks</h2>
-            <p className="text-gray-600 mb-6">
-              Heroes that are particularly strong in the current meta and ranked matches.
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {recommendations.meta_picks.map(hero =>
-                renderHeroCard(hero, 'Strong in current meta')
-              )}
-            </div>
-          </div>
-        )}
+              <HStack spacing={2}>
+                <Text fontSize="sm" fontWeight="medium" color="dota.text.secondary">
+                  Complexity:
+                </Text>
+                <Select
+                  value={filters.complexity}
+                  onChange={(e) => handleFilterChange('complexity', e.target.value)}
+                  size="sm"
+                  w="auto"
+                  minW="100px"
+                  bg="dota.bg.secondary"
+                  borderColor="dota.bg.tertiary"
+                  color="dota.text.primary"
+                  _focus={{
+                    borderColor: "dota.teal.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-dota-teal-500)"
+                  }}
+                >
+                  <option value="">Any</option>
+                  <option value="simple">Simple</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="complex">Complex</option>
+                </Select>
+              </HStack>
 
-        {activeCategory === 'counters' && recommendations.counter_picks && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Counter Picks</h2>
-            <p className="text-gray-600 mb-6">
-              Select a hero to see its counters and who it's effective against.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {Object.keys(recommendations.counter_picks).slice(0, 12).map(heroId => {
-                const heroName = heroData[heroId]?.localized_name || `Hero ${heroId}`;
-                const counterData = recommendations.counter_picks[heroId];
-                return (
-                  <div key={heroId} className="p-3 bg-gray-50 rounded-lg">
-                    <h3 className="font-medium text-sm text-gray-800 mb-2">{heroName}</h3>
-                    <p className="text-xs text-gray-600">
-                      Counters: {counterData.counters?.length || 0}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      Countered by: {counterData.countered_by?.length || 0}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+              <Checkbox
+                isChecked={filters.meta_only}
+                onChange={(e) => handleFilterChange('meta_only', e.target.checked)}
+                colorScheme="teal"
+                size="sm"
+                color="dota.text.secondary"
+              >
+                Meta heroes only
+              </Checkbox>
 
-        {activeCategory === 'synergies' && recommendations.synergies?.strong_combos && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Hero Synergies</h2>
-            <p className="text-gray-600 mb-6">
-              Powerful hero combinations that work well together.
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {recommendations.synergies.strong_combos.map((combo, index) =>
-                renderComboCard({ ...combo, id: index })
-              )}
-            </div>
-          </div>
-        )}
+              <Button
+                onClick={loadRecommendations}
+                variant="primary"
+                size="sm"
+                leftIcon={<Icon as={FaFilter} />}
+              >
+                Refresh
+              </Button>
+            </Flex>
+          </VStack>
+        </Card>
+
+        {/* Category Tabs */}
+        <Tabs variant="enclosed" colorScheme="teal" defaultValue="role_based">
+          <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary" flexWrap="wrap">
+            <Tabs.Trigger value="role_based" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+              <HStack spacing={2}>
+                <Icon as={FaShield} />
+                <Text>By Role ({availableRoles.length})</Text>
+              </HStack>
+            </Tabs.Trigger>
+            {recommendations.beginner_friendly && (
+              <Tabs.Trigger value="beginner_friendly" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+                <HStack spacing={2}>
+                  <Icon as={FaStar} />
+                  <Text>Beginner Friendly ({recommendations.beginner_friendly.length})</Text>
+                </HStack>
+              </Tabs.Trigger>
+            )}
+            {recommendations.meta_picks && (
+              <Tabs.Trigger value="meta_picks" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+                <HStack spacing={2}>
+                  <Icon as={FaTrophy} />
+                  <Text>Meta Picks ({recommendations.meta_picks.length})</Text>
+                </HStack>
+              </Tabs.Trigger>
+            )}
+            {recommendations.counter_picks && (
+              <Tabs.Trigger value="counter_picks" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+                <HStack spacing={2}>
+                  <Icon as={FaShield} />
+                  <Text>Counters</Text>
+                </HStack>
+              </Tabs.Trigger>
+            )}
+            {recommendations.synergies?.strong_combos && (
+              <Tabs.Trigger value="synergies" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+                <HStack spacing={2}>
+                  <Icon as={FaUsers} />
+                  <Text>Synergies ({recommendations.synergies.strong_combos.length})</Text>
+                </HStack>
+              </Tabs.Trigger>
+            )}
+          </Tabs.List>
+          
+            <Tabs.Content value="role_based" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <HStack wrap="wrap" spacing={2}>
+                    {availableRoles.map(role => (
+                      <Button
+                        key={role}
+                        onClick={() => setSelectedRole(role)}
+                        variant={selectedRole === role ? 'solid' : 'outline'}
+                        size="sm"
+                        colorScheme={selectedRole === role ? 'teal' : 'gray'}
+                        borderRadius="full"
+                      >
+                        {role} ({recommendations.role_based[role]?.length || 0})
+                      </Button>
+                    ))}
+                  </HStack>
+
+                  {selectedRole && recommendations.role_based[selectedRole] && (
+                    <VStack spacing={4} align="stretch">
+                      <Heading size="md" color="dota.text.primary">
+                        Recommended {selectedRole} Heroes
+                      </Heading>
+                      <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
+                        {recommendations.role_based[selectedRole].map(hero =>
+                          renderHeroCard(hero, `Great ${selectedRole.toLowerCase()} for your skill level`)
+                        )}
+                      </Grid>
+                    </VStack>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="beginner_friendly" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <VStack spacing={3} align="start">
+                    <Heading size="md" color="dota.text.primary">
+                      Beginner Friendly Heroes
+                    </Heading>
+                    <Text color="dota.text.secondary">
+                      These heroes are great for learning the game with straightforward mechanics and forgiving gameplay.
+                    </Text>
+                  </VStack>
+                  
+                  {recommendations.beginner_friendly && (
+                    <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
+                      {recommendations.beginner_friendly.map(hero =>
+                        renderHeroCard(hero, 'Perfect for learning the game')
+                      )}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="meta_picks" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <VStack spacing={3} align="start">
+                    <Heading size="md" color="dota.text.primary">
+                      Current Meta Picks
+                    </Heading>
+                    <Text color="dota.text.secondary">
+                      Heroes that are particularly strong in the current meta and ranked matches.
+                    </Text>
+                  </VStack>
+                  
+                  {recommendations.meta_picks && (
+                    <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
+                      {recommendations.meta_picks.map(hero =>
+                        renderHeroCard(hero, 'Strong in current meta')
+                      )}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="counter_picks" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <VStack spacing={3} align="start">
+                    <Heading size="md" color="dota.text.primary">
+                      Counter Picks
+                    </Heading>
+                    <Text color="dota.text.secondary">
+                      Select a hero to see its counters and who it's effective against.
+                    </Text>
+                  </VStack>
+                  
+                  {recommendations.counter_picks && (
+                    <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" }} gap={4}>
+                      {Object.keys(recommendations.counter_picks).slice(0, 12).map(heroId => {
+                        const heroName = heroData[heroId]?.localized_name || `Hero ${heroId}`;
+                        const counterData = recommendations.counter_picks[heroId];
+                        return (
+                          <Card key={heroId} bg="dota.bg.secondary" borderWidth={1} borderColor="dota.bg.tertiary" p={3}>
+                            <VStack spacing={2} align="start">
+                              <Heading size="xs" color="dota.text.primary" noOfLines={1}>
+                                {heroName}
+                              </Heading>
+                              <VStack spacing={1} align="start" fontSize="xs">
+                                <Text color="dota.text.secondary">
+                                  Counters: {counterData.counters?.length || 0}
+                                </Text>
+                                <Text color="dota.text.secondary">
+                                  Countered by: {counterData.countered_by?.length || 0}
+                                </Text>
+                              </VStack>
+                            </VStack>
+                          </Card>
+                        );
+                      })}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="synergies" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <VStack spacing={3} align="start">
+                    <Heading size="md" color="dota.text.primary">
+                      Hero Synergies
+                    </Heading>
+                    <Text color="dota.text.secondary">
+                      Powerful hero combinations that work well together.
+                    </Text>
+                  </VStack>
+                  
+                  {recommendations.synergies?.strong_combos && (
+                    <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
+                      {recommendations.synergies.strong_combos.map((combo, index) =>
+                        renderComboCard({ ...combo, id: index })
+                      )}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+        </Tabs>
 
         {/* No Profile Prompt */}
         {!userProfile && (
-          <div className="text-center py-8 bg-blue-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Get Personalized Recommendations
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Create a user profile to get recommendations tailored to your skill level and preferences.
-            </p>
-            <Link
-              to="/profile"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Create Profile
-            </Link>
-          </div>
+          <Card 
+            bg="dota.bg.card" 
+            borderWidth={1} 
+            borderColor="dota.teal.500" 
+            p={8} 
+            textAlign="center"
+            bgGradient="linear(to-r, dota.bg.card, dota.bg.secondary)"
+          >
+            <VStack spacing={6}>
+              <VStack spacing={2}>
+                <Heading size="md" color="dota.text.primary">
+                  Get Personalized Recommendations
+                </Heading>
+                <Text color="dota.text.secondary">
+                  Create a user profile to get recommendations tailored to your skill level and preferences.
+                </Text>
+              </VStack>
+              <Button
+                as={Link}
+                to="/profile"
+                variant="primary"
+                size="lg"
+              >
+                Create Profile
+              </Button>
+            </VStack>
+          </Card>
         )}
-      </div>
-    </div>
+      </VStack>
+    </Container>
   );
 };
 

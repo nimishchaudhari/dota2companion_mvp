@@ -217,7 +217,6 @@ class EnhancedApiService {
       const matchDetails = await openDotaApi.getMatchDetails(matchId);
       
       // Get hero recommendations for the heroes in this match
-      const heroIds = matchDetails.players?.map(p => p.hero_id) || [];
       const heroRecommendations = await fileBackend.getHeroRecommendations();
       
       // Enhance player data with hero info
@@ -436,7 +435,7 @@ class EnhancedApiService {
       try {
         await openDotaApi.getHeroes();
         results.opendota_api = 'healthy';
-      } catch (error) {
+      } catch {
         results.opendota_api = 'error';
       }
 

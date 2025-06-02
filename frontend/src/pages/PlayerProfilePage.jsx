@@ -1,6 +1,26 @@
 // frontend/src/pages/PlayerProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Grid,
+  GridItem,
+  Card,
+  Badge,
+  Button,
+  Avatar,
+  Flex,
+  Image,
+  Tabs,
+  Spinner,
+  Alert
+} from '@chakra-ui/react';
+import { FaUser, FaTrophy, FaGamepad, FaStar } from 'react-icons/fa';
 import { api } from '../services/api.js';
 import { fileBackend } from '../services/fileBackend.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -16,7 +36,7 @@ const PlayerProfilePage = () => {
     // Simple hero data store for this page, ideally this comes from a context or is fetched more globally
     const [heroesData, setHeroesData] = useState({});
     const [heroRecommendations, setHeroRecommendations] = useState([]);
-    const [userProfile, setUserProfile] = useState(null);
+    const [_userProfile, setUserProfile] = useState(null);
     const [showAnalysisTab, setShowAnalysisTab] = useState(false); 
 
     useEffect(() => {
@@ -88,195 +108,416 @@ const PlayerProfilePage = () => {
             }
         };
         fetchProfileData();
-    }, [playerId, user]); // heroesData dependency removed to avoid re-fetching profile if only heroesData changes internally
+    }, [playerId, user, heroesData]);
 
     const getHeroInfo = (heroId) => {
         return heroesData[heroId] || { localized_name: `Hero ID: ${heroId}`, icon: '' };
     };
 
-    if (loading && !playerData) return <div className="text-center p-10">Loading player profile...</div>; // Show loading only if no data yet
-    if (error) return <div className="text-center p-10 text-red-500 font-semibold">Error: {error}</div>;
-    if (!playerData && !loading) return <div className="text-center p-10 text-gray-600">No player data found for Account ID: {playerId}. It might be a private profile or an invalid ID.</div>;
+    if (loading && !playerData) {
+        return (
+            <Container maxW="7xl" py={8} centerContent>
+                <VStack spacing={4}>
+                    <Spinner size="xl" color="dota.teal.500" thickness="4px" />
+                    <Text color="dota.text.secondary">Loading player profile...</Text>
+                </VStack>
+            </Container>
+        );
+    }
+    
+    if (error) {
+        return (
+            <Container maxW="7xl" py={8}>
+                <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                        <Alert.Description>
+                            <Text color="dota.text.primary">Error: {error}</Text>
+                        </Alert.Description>
+                    </Alert.Content>
+                </Alert.Root>
+            </Container>
+        );
+    }
+    
+    if (!playerData && !loading) {
+        return (
+            <Container maxW="7xl" py={8}>
+                <Alert.Root status="warning" bg="dota.bg.card" borderColor="dota.status.warning">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                        <Alert.Description>
+                            <Text color="dota.text.primary">
+                                No player data found for Account ID: {playerId}. It might be a private profile or an invalid ID.
+                            </Text>
+                        </Alert.Description>
+                    </Alert.Content>
+                </Alert.Root>
+            </Container>
+        );
+    }
 
     const { profile, mmr_estimate, winLoss, recentMatches } = playerData || {}; // Destructure safely
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg mb-6">
-                {profile ? (
-                    <div className="flex flex-col sm:flex-row items-center mb-6 pb-6 border-b border-gray-200">
-                        <img 
-                            src={profile.avatarfull} 
-                            alt={profile.personaname} 
-                            className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mr-0 sm:mr-6 mb-4 sm:mb-0 border-4 border-gray-200 shadow-md" 
-                        />
-                        <div className="text-center sm:text-left flex-1">
-                            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">{profile.personaname}</h1>
-                            <p className="text-gray-600">Account ID: {profile.account_id}</p>
-                            {profile.steamid && <p className="text-sm text-gray-500">Steam ID: {profile.steamid}</p>}
-                            {mmr_estimate?.estimate && <p className="text-xl text-blue-600 font-semibold mt-1">MMR Estimate: {mmr_estimate.estimate}</p>}
-                        </div>
-                        {user && (
-                            <div className="flex flex-col space-y-2">
-                                <Link
-                                    to="/profile"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm text-center"
-                                >
-                                    My Profile
-                                </Link>
-                                <Link
-                                    to="/recommendations"
-                                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm text-center"
-                                >
-                                    Get Recommendations
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                ) : <p className="text-gray-500 text-center sm:text-left">Core profile data not available.</p>}
-                
-                {winLoss && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        <div className="text-center sm:text-left">
-                            <p className="text-xl font-semibold text-gray-700">
-                                Wins: <span className="text-green-500">{winLoss.win}</span>
-                            </p>
-                        </div>
-                        <div className="text-center sm:text-left">
-                            <p className="text-xl font-semibold text-gray-700">
-                                Losses: <span className="text-red-500">{winLoss.lose}</span>
-                            </p>
-                        </div>
-                        <div className="text-center sm:text-left">
-                            <p className="text-xl font-semibold text-gray-700">
-                                Win Rate: <span className={winLoss.win / (winLoss.win + winLoss.lose) >= 0.5 ? 'text-green-500' : 'text-red-500'}>
-                                    {((winLoss.win / (winLoss.win + winLoss.lose)) * 100).toFixed(1)}%
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Tab Navigation */}
-                <div className="flex space-x-4 mb-6">
-                    <button
-                        onClick={() => setShowAnalysisTab(false)}
-                        className={`px-4 py-2 rounded-t-lg transition-colors ${
-                            !showAnalysisTab ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                    >
-                        Recent Matches
-                    </button>
-                    {user && heroRecommendations.length > 0 && (
-                        <button
-                            onClick={() => setShowAnalysisTab(true)}
-                            className={`px-4 py-2 rounded-t-lg transition-colors ${
-                                showAnalysisTab ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
-                        >
-                            Recommendations ({heroRecommendations.length})
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Tab Content */}
-            {!showAnalysisTab ? (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Recent Matches (Last 5)</h2>
-                    {recentMatches && recentMatches.length > 0 ? (
-                        <ul className="space-y-4">
-                            {recentMatches.map(match => {
-                                const heroInfo = getHeroInfo(match.hero_id);
-                                const playerWon = (match.radiant_win && match.player_slot < 128) || (!match.radiant_win && match.player_slot >= 128);
-                                return (
-                                    <li key={match.match_id} className={`p-4 rounded-lg shadow-md border ${playerWon ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                                            <div className="flex items-center mb-2 sm:mb-0 flex-1">
-                                                {heroInfo.icon && <img src={heroInfo.icon} alt={heroInfo.localized_name} className="w-10 h-6 mr-3 rounded-sm"/>}
-                                                <div className="flex-1">
-                                                    <Link to={`/matches/${match.match_id}`} className="text-blue-600 hover:underline font-semibold">Match ID: {match.match_id}</Link>
-                                                    <p className={`text-sm font-bold ${playerWon ? 'text-green-700' : 'text-red-700'}`}>
-                                                        {playerWon ? 'Win' : 'Loss'} - {heroInfo.localized_name}
-                                                    </p>
-                                                </div>
-                                                {user && (
-                                                    <FavoritesButton
-                                                        type="hero"
-                                                        id={match.hero_id}
-                                                        name={heroInfo.localized_name}
-                                                        role={heroInfo.roles?.[0]}
-                                                        className="mr-3"
-                                                    />
-                                                )}
-                                            </div>
-                                            <div className="text-sm text-gray-600 text-left sm:text-right">
-                                                <p>KDA: {match.kills}/{match.deaths}/{match.assists}</p>
-                                                <p>Duration: {Math.floor(match.duration / 60)}m {match.duration % 60}s</p>
-                                                <p>Date: {new Date(match.start_time * 1000).toLocaleDateString()}</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    ) : <p className="text-gray-600">No recent matches found or data is not public.</p>}
-                </div>
-            ) : (
-                // Recommendations Tab
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Recommended Heroes for You</h2>
-                    <p className="text-gray-600 mb-6">
-                        Based on your profile preferences and excluding recently played heroes.
-                    </p>
-                    
-                    {heroRecommendations.length > 0 ? (
-                        <div>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                                {heroRecommendations.map(hero => {
-                                    const heroInfo = getHeroInfo(hero.id || hero.hero_id);
-                                    const cardData = {
-                                        ...heroInfo,
-                                        ...hero,
-                                        reason: hero.reason || `Recommended based on your preferences`
-                                    };
-                                    return (
-                                        <RecommendationCard
-                                            key={hero.id || hero.hero_id}
-                                            type="hero"
-                                            data={cardData}
-                                            onClick={() => {
-                                                // Optional: Navigate to hero detail or show more info
-                                                console.log('Hero selected:', cardData);
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </div>
-                            
-                            <div className="text-center">
-                                <Link
-                                    to="/recommendations"
-                                    className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                                >
-                                    View All Recommendations
-                                </Link>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-center py-8">
-                            <p className="text-gray-600 mb-4">No recommendations available.</p>
-                            <Link
-                                to="/profile"
-                                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        <Container maxW="6xl" py={6}>
+            <VStack spacing={8} align="stretch">
+                {/* Profile Header */}
+                <Card
+                    bg="dota.bg.card"
+                    borderWidth={1}
+                    borderColor="dota.bg.tertiary"
+                    p={{ base: 4, sm: 6 }}
+                    position="relative"
+                    overflow="hidden"
+                    _before={{
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '4px',
+                        bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
+                    }}
+                >
+                    {profile ? (
+                        <VStack spacing={6}>
+                            <Flex 
+                                direction={{ base: "column", sm: "row" }} 
+                                align="center" 
+                                w="full"
+                                gap={6}
                             >
-                                Set Up Your Profile
-                            </Link>
-                        </div>
+                                <Avatar
+                                    src={profile.avatarfull}
+                                    name={profile.personaname}
+                                    size={{ base: "xl", sm: "2xl" }}
+                                    border="4px solid"
+                                    borderColor="dota.teal.500"
+                                    boxShadow="dota-glow"
+                                />
+                                
+                                <VStack 
+                                    align={{ base: "center", sm: "start" }} 
+                                    flex={1} 
+                                    spacing={3}
+                                >
+                                    <VStack align={{ base: "center", sm: "start" }} spacing={2}>
+                                        <Heading 
+                                            size={{ base: "lg", sm: "xl" }} 
+                                            color="dota.text.primary"
+                                            textAlign={{ base: "center", sm: "left" }}
+                                        >
+                                            {profile.personaname}
+                                        </Heading>
+                                        <VStack align={{ base: "center", sm: "start" }} spacing={1}>
+                                            <Text color="dota.text.secondary" fontSize="sm">
+                                                Account ID: {profile.account_id}
+                                            </Text>
+                                            {profile.steamid && (
+                                                <Text color="dota.text.muted" fontSize="xs">
+                                                    Steam ID: {profile.steamid}
+                                                </Text>
+                                            )}
+                                        </VStack>
+                                    </VStack>
+                                    
+                                    {mmr_estimate?.estimate && (
+                                        <Badge 
+                                            variant="solid" 
+                                            colorScheme="teal" 
+                                            fontSize="md" 
+                                            px={3} 
+                                            py={1}
+                                            borderRadius="full"
+                                        >
+                                            MMR: {mmr_estimate.estimate}
+                                        </Badge>
+                                    )}
+                                </VStack>
+                                
+                                {user && (
+                                    <VStack spacing={2}>
+                                        <Button
+                                            as={Link}
+                                            to="/profile"
+                                            variant="primary"
+                                            size="sm"
+                                            leftIcon={<FaUser />}
+                                        >
+                                            My Profile
+                                        </Button>
+                                        <Button
+                                            as={Link}
+                                            to="/recommendations"
+                                            variant="secondary"
+                                            size="sm"
+                                            leftIcon={<FaStar />}
+                                        >
+                                            Get Recommendations
+                                        </Button>
+                                    </VStack>
+                                )}
+                            </Flex>
+                        </VStack>
+                    ) : (
+                        <Text color="dota.text.muted" textAlign="center">
+                            Core profile data not available.
+                        </Text>
                     )}
-                </div>
-            )}
-        </div>
+                    
+                    {/* Win/Loss Statistics */}
+                    {winLoss && (
+                        <Grid templateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }} gap={6}>
+                            <GridItem textAlign={{ base: "center", sm: "left" }}>
+                                <VStack spacing={1}>
+                                    <Text color="dota.text.secondary" fontSize="sm">Wins</Text>
+                                    <Text color="dota.status.success" fontSize="2xl" fontWeight="bold">
+                                        {winLoss.win}
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem textAlign={{ base: "center", sm: "left" }}>
+                                <VStack spacing={1}>
+                                    <Text color="dota.text.secondary" fontSize="sm">Losses</Text>
+                                    <Text color="dota.status.error" fontSize="2xl" fontWeight="bold">
+                                        {winLoss.lose}
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem textAlign={{ base: "center", sm: "left" }}>
+                                <VStack spacing={1}>
+                                    <Text color="dota.text.secondary" fontSize="sm">Win Rate</Text>
+                                    <Text 
+                                        color={winLoss.win / (winLoss.win + winLoss.lose) >= 0.5 ? 'dota.status.success' : 'dota.status.error'}
+                                        fontSize="2xl"
+                                        fontWeight="bold"
+                                    >
+                                        {((winLoss.win / (winLoss.win + winLoss.lose)) * 100).toFixed(1)}%
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                        </Grid>
+                    )}
+                </Card>
+
+                {/* Tab Content */}
+                <Tabs.Root 
+                    defaultValue={showAnalysisTab ? "recommendations" : "matches"}
+                    variant="enclosed"
+                    colorScheme="teal"
+                    onValueChange={(value) => setShowAnalysisTab(value === "recommendations")}
+                >
+                    <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary">
+                        <Tabs.Trigger 
+                            value="matches"
+                            color="dota.text.secondary" 
+                            _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}
+                        >
+                            <HStack spacing={2}>
+                                <FaGamepad />
+                                <Text>Recent Matches</Text>
+                            </HStack>
+                        </Tabs.Trigger>
+                        {user && heroRecommendations.length > 0 && (
+                            <Tabs.Trigger 
+                                value="recommendations"
+                                color="dota.text.secondary" 
+                                _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}
+                            >
+                                <HStack spacing={2}>
+                                    <FaStar />
+                                    <Text>Recommendations ({heroRecommendations.length})</Text>
+                                </HStack>
+                            </Tabs.Trigger>
+                        )}
+                    </Tabs.List>
+                    
+                    <Tabs.Content value="matches" p={0}>
+
+                            <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                                <VStack spacing={6} align="stretch">
+                                    <Heading size="md" color="dota.text.primary">
+                                        Recent Matches (Last 5)
+                                    </Heading>
+                                    
+                                    {recentMatches && recentMatches.length > 0 ? (
+                                        <VStack spacing={4} align="stretch">
+                                            {recentMatches.map(match => {
+                                                const heroInfo = getHeroInfo(match.hero_id);
+                                                const playerWon = (match.radiant_win && match.player_slot < 128) || (!match.radiant_win && match.player_slot >= 128);
+                                                return (
+                                                    <Card
+                                                        key={match.match_id}
+                                                        bg={playerWon ? 'green.50' : 'red.50'}
+                                                        borderWidth={2}
+                                                        borderColor={playerWon ? 'dota.status.success' : 'dota.status.error'}
+                                                        p={4}
+                                                        transition="all 0.2s ease"
+                                                        _hover={{
+                                                            transform: "translateY(-2px)",
+                                                            boxShadow: "md"
+                                                        }}
+                                                    >
+                                                        <Flex 
+                                                            direction={{ base: "column", sm: "row" }} 
+                                                            justify="space-between" 
+                                                            align={{ base: "start", sm: "center" }}
+                                                            gap={4}
+                                                        >
+                                                            <HStack spacing={4} flex={1}>
+                                                                {heroInfo.icon && (
+                                                                    <Image 
+                                                                        src={heroInfo.icon} 
+                                                                        alt={heroInfo.localized_name} 
+                                                                        w={10} 
+                                                                        h={6} 
+                                                                        borderRadius="sm"
+                                                                    />
+                                                                )}
+                                                                
+                                                                <VStack align="start" spacing={1} flex={1}>
+                                                                    <Button
+                                                                        as={Link}
+                                                                        to={`/matches/${match.match_id}`}
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        color="dota.teal.500"
+                                                                        fontWeight="semibold"
+                                                                        p={0}
+                                                                        h="auto"
+                                                                        _hover={{ textDecoration: "underline" }}
+                                                                    >
+                                                                        Match ID: {match.match_id}
+                                                                    </Button>
+                                                                    
+                                                                    <HStack spacing={2}>
+                                                                        <Badge
+                                                                            variant="solid"
+                                                                            colorScheme={playerWon ? 'green' : 'red'}
+                                                                            fontSize="xs"
+                                                                        >
+                                                                            {playerWon ? 'WIN' : 'LOSS'}
+                                                                        </Badge>
+                                                                        <Text 
+                                                                            fontSize="sm" 
+                                                                            color="dota.text.primary"
+                                                                            fontWeight="medium"
+                                                                        >
+                                                                            {heroInfo.localized_name}
+                                                                        </Text>
+                                                                    </HStack>
+                                                                </VStack>
+                                                                
+                                                                {user && (
+                                                                    <FavoritesButton
+                                                                        type="hero"
+                                                                        id={match.hero_id}
+                                                                        name={heroInfo.localized_name}
+                                                                        role={heroInfo.roles?.[0]}
+                                                                    />
+                                                                )}
+                                                            </HStack>
+                                                            
+                                                            <VStack 
+                                                                align={{ base: "start", sm: "end" }} 
+                                                                spacing={1}
+                                                                fontSize="sm"
+                                                                color="dota.text.secondary"
+                                                            >
+                                                                <Text fontWeight="medium">
+                                                                    KDA: {match.kills}/{match.deaths}/{match.assists}
+                                                                </Text>
+                                                                <Text>
+                                                                    Duration: {Math.floor(match.duration / 60)}m {match.duration % 60}s
+                                                                </Text>
+                                                                <Text fontSize="xs">
+                                                                    {new Date(match.start_time * 1000).toLocaleDateString()}
+                                                                </Text>
+                                                            </VStack>
+                                                        </Flex>
+                                                    </Card>
+                                                );
+                                            })}
+                                        </VStack>
+                                    ) : (
+                                        <Text color="dota.text.secondary" textAlign="center" py={8}>
+                                            No recent matches found or data is not public.
+                                        </Text>
+                                    )}
+                                </VStack>
+                            </Card>
+                    </Tabs.Content>
+                        
+                    <Tabs.Content value="recommendations" p={0}>
+                            <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                                <VStack spacing={6} align="stretch">
+                                    <VStack spacing={3} align="start">
+                                        <Heading size="md" color="dota.text.primary">
+                                            Recommended Heroes for You
+                                        </Heading>
+                                        <Text color="dota.text.secondary" fontSize="sm">
+                                            Based on your profile preferences and excluding recently played heroes.
+                                        </Text>
+                                    </VStack>
+                                    
+                                    {heroRecommendations.length > 0 ? (
+                                        <VStack spacing={6}>
+                                            <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full">
+                                                {heroRecommendations.map(hero => {
+                                                    const heroInfo = getHeroInfo(hero.id || hero.hero_id);
+                                                    const cardData = {
+                                                        ...heroInfo,
+                                                        ...hero,
+                                                        reason: hero.reason || `Recommended based on your preferences`
+                                                    };
+                                                    return (
+                                                        <RecommendationCard
+                                                            key={hero.id || hero.hero_id}
+                                                            type="hero"
+                                                            data={cardData}
+                                                            onClick={() => {
+                                                                console.log('Hero selected:', cardData);
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
+                                            </Grid>
+                                            
+                                            <Box textAlign="center">
+                                                <Button
+                                                    as={Link}
+                                                    to="/recommendations"
+                                                    variant="primary"
+                                                    size="lg"
+                                                >
+                                                    View All Recommendations
+                                                </Button>
+                                            </Box>
+                                        </VStack>
+                                    ) : (
+                                        <VStack spacing={4} py={8} textAlign="center">
+                                            <Text color="dota.text.secondary">
+                                                No recommendations available.
+                                            </Text>
+                                            <Button
+                                                as={Link}
+                                                to="/profile"
+                                                variant="primary"
+                                            >
+                                                Set Up Your Profile
+                                            </Button>
+                                        </VStack>
+                                    )}
+                                </VStack>
+                            </Card>
+                    </Tabs.Content>
+                </Tabs.Root>
+            </VStack>
+        </Container>
     );
 };
+
 export default PlayerProfilePage;

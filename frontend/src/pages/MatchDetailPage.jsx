@@ -1,6 +1,25 @@
 // frontend/src/pages/MatchDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Grid,
+  GridItem,
+  Card,
+  Badge,
+  Button,
+  Flex,
+  Image,
+  Table,
+  Spinner,
+  Alert
+} from '@chakra-ui/react';
+import { FaTrophy, FaClock, FaGamepad } from 'react-icons/fa';
 import { api } from '../services/api.js';
 
 // Simple game mode mapping (can be expanded)
@@ -39,15 +58,54 @@ const MatchDetailPage = () => {
             }
         };
         fetchMatchAndHeroes();
-    }, [matchId]); // heroesData removed from deps to avoid loop if it's set inside
+    }, [matchId, heroesData]);
 
     const getHeroInfo = (heroId) => {
         return heroesData[heroId] || { localized_name: `Hero ID: ${heroId}`, icon: '', img: '' };
     };
 
-    if (loading) return <div className="text-center p-10">Loading match details...</div>;
-    if (error) return <div className="text-center p-10 text-red-500 font-semibold">Error: {error}</div>;
-    if (!matchData) return <div className="text-center p-10 text-gray-600">No match data found for Match ID: {matchId}.</div>;
+    if (loading) {
+        return (
+            <Container maxW="7xl" py={8} centerContent>
+                <VStack spacing={4}>
+                    <Spinner size="xl" color="dota.teal.500" thickness="4px" />
+                    <Text color="dota.text.secondary">Loading match details...</Text>
+                </VStack>
+            </Container>
+        );
+    }
+    
+    if (error) {
+        return (
+            <Container maxW="7xl" py={8}>
+                <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                        <Alert.Description>
+                            <Text color="dota.text.primary">Error: {error}</Text>
+                        </Alert.Description>
+                    </Alert.Content>
+                </Alert.Root>
+            </Container>
+        );
+    }
+    
+    if (!matchData) {
+        return (
+            <Container maxW="7xl" py={8}>
+                <Alert.Root status="warning" bg="dota.bg.card" borderColor="dota.status.warning">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                        <Alert.Description>
+                            <Text color="dota.text.primary">
+                                No match data found for Match ID: {matchId}.
+                            </Text>
+                        </Alert.Description>
+                    </Alert.Content>
+                </Alert.Root>
+            </Container>
+        );
+    }
 
     const { radiant_win, duration, radiant_score, dire_score, players, start_time, game_mode } = matchData;
 
@@ -57,77 +115,239 @@ const MatchDetailPage = () => {
     const renderPlayerRow = (player, teamColor) => {
         const heroInfo = getHeroInfo(player.hero_id);
         return (
-            <tr key={player.player_slot} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="py-3 px-4 text-sm text-gray-700">
-                    {player.account_id && player.account_id !== 0 ? 
-                        <Link to={`/player/${player.account_id}`} className={`font-medium text-blue-600 hover:text-blue-800 hover:underline`}>
+            <Table.Row key={player.player_slot} _hover={{ bg: "dota.bg.hover" }}>
+                <Table.Cell py={3} px={4} color="dota.text.primary">
+                    {player.account_id && player.account_id !== 0 ? (
+                        <Button
+                            as={Link}
+                            to={`/player/${player.account_id}`}
+                            variant="ghost"
+                            size="sm"
+                            color="dota.teal.500"
+                            fontWeight="medium"
+                            p={0}
+                            h="auto"
+                            _hover={{ textDecoration: "underline" }}
+                        >
                             {player.personaname || `Player ${player.player_slot}`}
-                        </Link> : 
-                        <span className="text-gray-500">{player.personaname || `Anonymous`}</span>
-                    }
-                </td>
-                <td className="py-3 px-4 text-sm text-gray-700 flex items-center">
-                    {heroInfo.icon && <img src={heroInfo.icon} alt={heroInfo.localized_name} className="w-8 h-auto mr-2 rounded-sm"/>}
-                    {heroInfo.localized_name}
-                </td>
-                <td className={`py-3 px-4 text-sm text-center font-medium ${teamColor === 'green' ? 'text-green-600' : 'text-red-600'}`}>
-                    {player.kills}/{player.deaths}/{player.assists}
-                </td>
-            </tr>
+                        </Button>
+                    ) : (
+                        <Text color="dota.text.muted">
+                            {player.personaname || `Anonymous`}
+                        </Text>
+                    )}
+                </Table.Cell>
+                <Table.Cell py={3} px={4}>
+                    <HStack spacing={2}>
+                        {heroInfo.icon && (
+                            <Image 
+                                src={heroInfo.icon} 
+                                alt={heroInfo.localized_name} 
+                                w={8} 
+                                h="auto" 
+                                borderRadius="sm"
+                            />
+                        )}
+                        <Text color="dota.text.primary" fontSize="sm">
+                            {heroInfo.localized_name}
+                        </Text>
+                    </HStack>
+                </Table.Cell>
+                <Table.Cell py={3} px={4} textAlign="center">
+                    <Text 
+                        fontWeight="medium" 
+                        color={teamColor === 'green' ? 'dota.status.success' : 'dota.status.error'}
+                        fontSize="sm"
+                    >
+                        {player.kills}/{player.deaths}/{player.assists}
+                    </Text>
+                </Table.Cell>
+            </Table.Row>
         );
     };
 
     return (
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Match Details: <span className="text-blue-600">{matchId}</span></h1>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 p-4 bg-gray-50 rounded-md shadow-inner">
-                <div><strong className="block text-sm text-gray-500">Date:</strong> <span className="text-gray-700">{new Date(start_time * 1000).toLocaleDateString()}</span></div>
-                <div><strong className="block text-sm text-gray-500">Winner:</strong> <span className={`font-bold ${radiant_win ? 'text-green-500' : 'text-red-500'}`}>{radiant_win ? 'Radiant' : 'Dire'}</span></div>
-                <div><strong className="block text-sm text-gray-500">Score:</strong> <span className="text-green-500">{radiant_score}</span> - <span className="text-red-500">{dire_score}</span></div>
-                <div><strong className="block text-sm text-gray-500">Duration:</strong> <span className="text-gray-700">{Math.floor(duration / 60)}m {duration % 60}s</span></div>
-                <div><strong className="block text-sm text-gray-500">Game Mode:</strong> <span className="text-gray-700">{gameModeMap[game_mode] || `Mode ID: ${game_mode}`}</span></div>
-            </div>
+        <Container maxW="7xl" py={6}>
+            <VStack spacing={8} align="stretch">
+                {/* Header */}
+                <Card
+                    bg="dota.bg.card"
+                    borderWidth={1}
+                    borderColor="dota.bg.tertiary"
+                    p={{ base: 4, sm: 6 }}
+                    position="relative"
+                    overflow="hidden"
+                    _before={{
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '4px',
+                        bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
+                    }}
+                >
+                    <VStack spacing={6} align="stretch">
+                        <Heading 
+                            size="lg" 
+                            color="dota.text.primary"
+                            textAlign="center"
+                        >
+                            Match Details:{' '}
+                            <Text as="span" color="dota.teal.500">
+                                {matchId}
+                            </Text>
+                        </Heading>
+                        
+                        {/* Match Stats */}
+                        <Grid 
+                            templateColumns={{ 
+                                base: "repeat(2, 1fr)", 
+                                md: "repeat(3, 1fr)", 
+                                lg: "repeat(5, 1fr)" 
+                            }} 
+                            gap={4}
+                            p={4}
+                            bg="dota.bg.secondary"
+                            borderRadius="md"
+                            border="1px solid"
+                            borderColor="dota.bg.tertiary"
+                        >
+                            <GridItem>
+                                <VStack spacing={1} align="start">
+                                    <Text color="dota.text.muted" fontSize="xs">
+                                        Date
+                                    </Text>
+                                    <Text color="dota.text.primary" fontSize="sm" fontWeight="medium">
+                                        {new Date(start_time * 1000).toLocaleDateString()}
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem>
+                                <VStack spacing={1} align="start">
+                                    <Text color="dota.text.muted" fontSize="xs">
+                                        Winner
+                                    </Text>
+                                    <Text 
+                                        color={radiant_win ? 'dota.status.success' : 'dota.status.error'}
+                                        fontSize="sm"
+                                        fontWeight="bold"
+                                    >
+                                        {radiant_win ? 'Radiant' : 'Dire'}
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem>
+                                <VStack spacing={1} align="start">
+                                    <Text color="dota.text.muted" fontSize="xs">
+                                        Score
+                                    </Text>
+                                    <Text fontSize="sm" fontWeight="medium">
+                                        <Text as="span" color="dota.status.success">{radiant_score}</Text>
+                                        <Text as="span" color="dota.text.secondary"> - </Text>
+                                        <Text as="span" color="dota.status.error">{dire_score}</Text>
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem>
+                                <VStack spacing={1} align="start">
+                                    <Text color="dota.text.muted" fontSize="xs">
+                                        Duration
+                                    </Text>
+                                    <Text color="dota.text.primary" fontSize="sm" fontWeight="medium">
+                                        {Math.floor(duration / 60)}m {duration % 60}s
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                            
+                            <GridItem>
+                                <VStack spacing={1} align="start">
+                                    <Text color="dota.text.muted" fontSize="xs">
+                                        Game Mode
+                                    </Text>
+                                    <Text color="dota.text.primary" fontSize="sm" fontWeight="medium">
+                                        {gameModeMap[game_mode] || `Mode ID: ${game_mode}`}
+                                    </Text>
+                                </VStack>
+                            </GridItem>
+                        </Grid>
+                    </VStack>
+                </Card>
 
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* Radiant Team */}
-                <div className="flex-1">
-                    <h2 className="text-2xl font-semibold text-green-600 mb-3">Radiant Victory: {radiant_score}</h2>
-                    <div className="overflow-x-auto bg-white rounded-lg shadow">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-green-50">
-                                <tr>
-                                    <th className="py-3 px-4 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Player</th>
-                                    <th className="py-3 px-4 text-left text-xs font-medium text-green-700 uppercase tracking-wider">Hero</th>
-                                    <th className="py-3 px-4 text-center text-xs font-medium text-green-700 uppercase tracking-wider">K/D/A</th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {radiantPlayers.map(p => renderPlayerRow(p, 'green'))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                {/* Teams */}
+                <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={6}>
+                    {/* Radiant Team */}
+                    <GridItem>
+                        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.status.success" p={0} overflow="hidden">
+                            <Box bg="green.50" p={4} borderTopRadius="md">
+                                <HStack spacing={3}>
+                                    <FaTrophy color="green" />
+                                    <Heading size="md" color={radiant_win ? "dota.status.success" : "dota.text.secondary"}>
+                                        Radiant {radiant_win ? "Victory" : "Defeat"}: {radiant_score}
+                                    </Heading>
+                                </HStack>
+                            </Box>
+                            
+                            <Table.Root variant="simple" size="sm">
+                                <Table.Header bg="green.50">
+                                    <Table.Row>
+                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase">
+                                            Player
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase">
+                                            Hero
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase" textAlign="center">
+                                            K/D/A
+                                        </Table.ColumnHeader>
+                                    </Table.Row>
+                                </Table.Header>
+                                <Table.Body bg="dota.bg.card">
+                                    {radiantPlayers.map(p => renderPlayerRow(p, 'green'))}
+                                </Table.Body>
+                            </Table.Root>
+                        </Card>
+                    </GridItem>
 
-                {/* Dire Team */}
-                <div className="flex-1">
-                    <h2 className="text-2xl font-semibold text-red-600 mb-3">Dire Defeat: {dire_score}</h2>
-                     <div className="overflow-x-auto bg-white rounded-lg shadow">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-red-50">
-                                <tr>
-                                    <th className="py-3 px-4 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Player</th>
-                                    <th className="py-3 px-4 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Hero</th>
-                                    <th className="py-3 px-4 text-center text-xs font-medium text-red-700 uppercase tracking-wider">K/D/A</th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {direPlayers.map(p => renderPlayerRow(p, 'red'))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    {/* Dire Team */}
+                    <GridItem>
+                        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.status.error" p={0} overflow="hidden">
+                            <Box bg="red.50" p={4} borderTopRadius="md">
+                                <HStack spacing={3}>
+                                    <FaTrophy color="red" />
+                                    <Heading size="md" color={!radiant_win ? "dota.status.error" : "dota.text.secondary"}>
+                                        Dire {!radiant_win ? "Victory" : "Defeat"}: {dire_score}
+                                    </Heading>
+                                </HStack>
+                            </Box>
+                            
+                            <Table.Root variant="simple" size="sm">
+                                <Table.Header bg="red.50">
+                                    <Table.Row>
+                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase">
+                                            Player
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase">
+                                            Hero
+                                        </Table.ColumnHeader>
+                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase" textAlign="center">
+                                            K/D/A
+                                        </Table.ColumnHeader>
+                                    </Table.Row>
+                                </Table.Header>
+                                <Table.Body bg="dota.bg.card">
+                                    {direPlayers.map(p => renderPlayerRow(p, 'red'))}
+                                </Table.Body>
+                            </Table.Root>
+                        </Card>
+                    </GridItem>
+                </Grid>
+            </VStack>
+        </Container>
     );
 };
+
 export default MatchDetailPage;

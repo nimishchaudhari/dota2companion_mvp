@@ -1,6 +1,32 @@
 // frontend/src/components/UserPreferences.jsx
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+  VStack,
+  HStack,
+  Field,
+  Select,
+  Checkbox,
+  Button,
+  Text,
+  Alert,
+  Spinner,
+  Grid,
+  GridItem,
+  Switch,
+  Badge,
+  Separator,
+  useToken,
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { fileBackend } from '../services/fileBackend.js';
+
+const MotionCard = motion.create(Card);
+const MotionBox = motion.create(Box);
 
 const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
   const [preferences, setPreferences] = useState({
@@ -81,231 +107,453 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
     }));
   };
 
+  const [cardHover] = useToken('shadows', ['card-hover']);
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <Box 
+        display="flex" 
+        alignItems="center" 
+        justifyContent="center" 
+        p={8}
+        bg="dota.bg.card"
+        borderRadius="lg"
+        border="2px solid"
+        borderColor="dota.bg.tertiary"
+      >
+        <VStack spacing={4}>
+          <Spinner 
+            size="xl" 
+            color="dota.teal.500" 
+            thickness="4px"
+            speed="0.8s"
+          />
+          <Text color="dota.text.muted" fontSize="sm">
+            Loading preferences...
+          </Text>
+        </VStack>
+      </Box>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      {showTitle && <h2 className="text-2xl font-bold text-gray-800 mb-6">User Preferences</h2>}
-      
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
+    <MotionCard
+      bg="dota.bg.card"
+      borderWidth="2px"
+      borderColor="dota.bg.tertiary"
+      borderRadius="lg"
+      boxShadow={cardHover}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      background={`linear-gradient(135deg, 
+        rgba(30, 30, 30, 0.9) 0%, 
+        rgba(26, 26, 26, 0.95) 50%, 
+        rgba(45, 45, 45, 0.9) 100%)`}
+      backdropFilter="blur(10px)"
+    >
+      {showTitle && (
+        <CardHeader pb={0}>
+          <Heading 
+            size="xl" 
+            color="dota.text.primary"
+            textAlign="center"
+            background="linear-gradient(45deg, #27ae9e, #64ffda)"
+            backgroundClip="text"
+            textShadow="0 0 20px rgba(39, 174, 158, 0.3)"
+          >
+            User Preferences
+          </Heading>
+        </CardHeader>
       )}
 
-      <div className="space-y-6">
-        {/* Skill Level */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Skill Level
-          </label>
-          <select
-            value={preferences.skill_level}
-            onChange={(e) => setPreferences(prev => ({ ...prev, skill_level: e.target.value }))}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+      <CardBody p={6}>
+        {error && (
+          <Alert.Root 
+            status="error" 
+            borderRadius="lg" 
+            mb={6}
+            bg="dota.status.error"
+            color="white"
+            border="1px solid"
+            borderColor="red.400"
           >
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="expert">Expert</option>
-          </select>
-        </div>
-
-        {/* Preferred Roles */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Preferred Roles (select multiple)
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {['Carry', 'Support', 'Nuker', 'Disabler', 'Initiator', 'Durable', 'Escape', 'Pusher'].map(role => (
-              <label key={role} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={preferences.preferred_roles.includes(role)}
-                  onChange={() => handleRoleToggle(role)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">{role}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Playstyle */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Playstyle
-          </label>
-          <select
-            value={preferences.playstyle}
-            onChange={(e) => setPreferences(prev => ({ ...prev, playstyle: e.target.value }))}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="aggressive">Aggressive</option>
-            <option value="defensive">Defensive</option>
-            <option value="balanced">Balanced</option>
-            <option value="farming">Farming-focused</option>
-            <option value="fighting">Fighting-focused</option>
-          </select>
-        </div>
-
-        {/* Game Mode Preference */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Game Mode Preference
-          </label>
-          <select
-            value={preferences.game_mode_preference}
-            onChange={(e) => setPreferences(prev => ({ ...prev, game_mode_preference: e.target.value }))}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all_pick">All Pick</option>
-            <option value="ranked_matchmaking">Ranked Matchmaking</option>
-            <option value="single_draft">Single Draft</option>
-            <option value="random_draft">Random Draft</option>
-            <option value="captain_mode">Captain's Mode</option>
-          </select>
-        </div>
-
-        {/* Hero Complexity Preference */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Hero Complexity Preference
-          </label>
-          <select
-            value={preferences.hero_complexity_preference}
-            onChange={(e) => setPreferences(prev => ({ ...prev, hero_complexity_preference: e.target.value }))}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="simple">Simple heroes</option>
-            <option value="moderate">Moderate complexity</option>
-            <option value="complex">Complex heroes</option>
-            <option value="any">Any complexity</option>
-          </select>
-        </div>
-
-        {/* Boolean Preferences */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-700">Preferences</h3>
-          
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.meta_focus}
-              onChange={(e) => setPreferences(prev => ({ ...prev, meta_focus: e.target.checked }))}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              <span className="text-sm font-medium text-gray-700">Focus on meta heroes</span>
-              <p className="text-xs text-gray-500">Prioritize currently strong heroes in recommendations</p>
-            </div>
-          </label>
-
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.experimental_builds}
-              onChange={(e) => setPreferences(prev => ({ ...prev, experimental_builds: e.target.checked }))}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              <span className="text-sm font-medium text-gray-700">Show experimental builds</span>
-              <p className="text-xs text-gray-500">Include unconventional item builds and strategies</p>
-            </div>
-          </label>
-
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.show_beginner_tips}
-              onChange={(e) => setPreferences(prev => ({ ...prev, show_beginner_tips: e.target.checked }))}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              <span className="text-sm font-medium text-gray-700">Show beginner tips</span>
-              <p className="text-xs text-gray-500">Display helpful tips and explanations</p>
-            </div>
-          </label>
-
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.auto_save_builds}
-              onChange={(e) => setPreferences(prev => ({ ...prev, auto_save_builds: e.target.checked }))}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              <span className="text-sm font-medium text-gray-700">Auto-save custom builds</span>
-              <p className="text-xs text-gray-500">Automatically save your item builds</p>
-            </div>
-          </label>
-        </div>
-
-        {/* Notification Preferences */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-700">Notifications</h3>
-          
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.notification_preferences.patch_updates}
-              onChange={(e) => handleNotificationChange('patch_updates', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Patch updates</span>
-          </label>
-
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.notification_preferences.meta_changes}
-              onChange={(e) => handleNotificationChange('meta_changes', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Meta changes</span>
-          </label>
-
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preferences.notification_preferences.favorite_hero_updates}
-              onChange={(e) => handleNotificationChange('favorite_hero_updates', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Favorite hero updates</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="mt-8 flex justify-end space-x-3">
-        {onCancel && (
-          <button
-            onClick={onCancel}
-            disabled={saving}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            Cancel
-          </button>
+            <Alert.Indicator color="white" />
+            <Alert.Content>
+              <Alert.Description>
+                {error}
+              </Alert.Description>
+            </Alert.Content>
+          </Alert.Root>
         )}
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center space-x-2"
+
+        <VStack spacing={8} align="stretch">
+          {/* Skill Level */}
+          <MotionBox
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Field.Root>
+              <Field.Label color="dota.text.primary" fontWeight="semibold" mb={3}>
+                <HStack spacing={2}>
+                  <Text>Skill Level</Text>
+                  <Badge 
+                    bg="dota.teal.500" 
+                    color="white" 
+                    fontSize="xs"
+                    borderRadius="full"
+                  >
+                    {preferences.skill_level}
+                  </Badge>
+                </HStack>
+              </Field.Label>
+              <Select
+                value={preferences.skill_level}
+                onChange={(e) => setPreferences(prev => ({ ...prev, skill_level: e.target.value }))}
+                bg="dota.bg.hover"
+                borderColor="dota.bg.tertiary"
+                color="dota.text.primary"
+                _hover={{ borderColor: "dota.teal.500" }}
+                _focus={{
+                  borderColor: "dota.teal.500",
+                  boxShadow: "0 0 0 1px rgba(39, 174, 158, 0.6)",
+                }}
+                size="lg"
+                borderRadius="md"
+              >
+                <option value="beginner">🌱 Beginner</option>
+                <option value="intermediate">📈 Intermediate</option>
+                <option value="advanced">⚡ Advanced</option>
+                <option value="expert">🏆 Expert</option>
+              </Select>
+            </Field.Root>
+          </MotionBox>
+
+          {/* Preferred Roles */}
+          <MotionBox
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Field.Root>
+              <Field.Label color="dota.text.primary" fontWeight="semibold" mb={3}>
+                <HStack spacing={2}>
+                  <Text>Preferred Roles</Text>
+                  <Badge 
+                    bg="dota.purple.500" 
+                    color="white" 
+                    fontSize="xs"
+                    borderRadius="full"
+                  >
+                    {preferences.preferred_roles.length} selected
+                  </Badge>
+                </HStack>
+              </Field.Label>
+              <Grid templateColumns="repeat(2, 1fr)" gap={3}>
+                {['Carry', 'Support', 'Nuker', 'Disabler', 'Initiator', 'Durable', 'Escape', 'Pusher'].map(role => (
+                  <GridItem key={role}>
+                    <MotionBox
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <HStack
+                        as="label"
+                        spacing={3}
+                        cursor="pointer"
+                        p={3}
+                        borderRadius="md"
+                        bg={preferences.preferred_roles.includes(role) ? "dota.teal.500" : "dota.bg.hover"}
+                        color={preferences.preferred_roles.includes(role) ? "white" : "dota.text.primary"}
+                        border="2px solid"
+                        borderColor={preferences.preferred_roles.includes(role) ? "dota.teal.500" : "dota.bg.tertiary"}
+                        _hover={{
+                          borderColor: "dota.teal.500",
+                          bg: preferences.preferred_roles.includes(role) ? "dota.teal.600" : "dota.bg.tertiary",
+                        }}
+                        transition="all 0.2s ease"
+                      >
+                        <Checkbox
+                          isChecked={preferences.preferred_roles.includes(role)}
+                          onChange={() => handleRoleToggle(role)}
+                          colorScheme="teal"
+                          size="lg"
+                        />
+                        <Text fontWeight="medium" fontSize="sm">
+                          {role}
+                        </Text>
+                      </HStack>
+                    </MotionBox>
+                  </GridItem>
+                ))}
+              </Grid>
+            </Field.Root>
+          </MotionBox>
+
+          {/* Playstyle */}
+          <MotionBox
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Field.Root>
+              <Field.Label color="dota.text.primary" fontWeight="semibold" mb={3}>
+                Playstyle
+              </Field.Label>
+              <Select
+                value={preferences.playstyle}
+                onChange={(e) => setPreferences(prev => ({ ...prev, playstyle: e.target.value }))}
+                bg="dota.bg.hover"
+                borderColor="dota.bg.tertiary"
+                color="dota.text.primary"
+                _hover={{ borderColor: "dota.teal.500" }}
+                _focus={{ borderColor: "dota.teal.500", boxShadow: "0 0 0 1px rgba(39, 174, 158, 0.6)" }}
+                size="lg"
+              >
+                <option value="aggressive">⚔️ Aggressive</option>
+                <option value="defensive">🛡️ Defensive</option>
+                <option value="balanced">⚖️ Balanced</option>
+                <option value="farming">🌾 Farming-focused</option>
+                <option value="fighting">👊 Fighting-focused</option>
+              </Select>
+            </Field.Root>
+          </MotionBox>
+
+          {/* Game Mode & Hero Complexity */}
+          <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+            <GridItem>
+              <MotionBox
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Field.Root>
+                  <Field.Label color="dota.text.primary" fontWeight="semibold" mb={3}>
+                    Game Mode Preference
+                  </Field.Label>
+                  <Select
+                    value={preferences.game_mode_preference}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, game_mode_preference: e.target.value }))}
+                    bg="dota.bg.hover"
+                    borderColor="dota.bg.tertiary"
+                    color="dota.text.primary"
+                    _hover={{ borderColor: "dota.teal.500" }}
+                    _focus={{ borderColor: "dota.teal.500", boxShadow: "0 0 0 1px rgba(39, 174, 158, 0.6)" }}
+                    size="lg"
+                  >
+                    <option value="all_pick">All Pick</option>
+                    <option value="ranked_matchmaking">Ranked Matchmaking</option>
+                    <option value="single_draft">Single Draft</option>
+                    <option value="random_draft">Random Draft</option>
+                    <option value="captain_mode">Captain's Mode</option>
+                  </Select>
+                </Field.Root>
+              </MotionBox>
+            </GridItem>
+
+            <GridItem>
+              <MotionBox
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Field.Root>
+                  <Field.Label color="dota.text.primary" fontWeight="semibold" mb={3}>
+                    Hero Complexity
+                  </Field.Label>
+                  <Select
+                    value={preferences.hero_complexity_preference}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, hero_complexity_preference: e.target.value }))}
+                    bg="dota.bg.hover"
+                    borderColor="dota.bg.tertiary"
+                    color="dota.text.primary"
+                    _hover={{ borderColor: "dota.teal.500" }}
+                    _focus={{ borderColor: "dota.teal.500", boxShadow: "0 0 0 1px rgba(39, 174, 158, 0.6)" }}
+                    size="lg"
+                  >
+                    <option value="simple">🟢 Simple heroes</option>
+                    <option value="moderate">🟡 Moderate complexity</option>
+                    <option value="complex">🔴 Complex heroes</option>
+                    <option value="any">🌈 Any complexity</option>
+                  </Select>
+                </Field.Root>
+              </MotionBox>
+            </GridItem>
+          </Grid>
+
+          {/* Game Preferences */}
+          <MotionBox
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Box bg="dota.bg.hover" p={4} borderRadius="lg" border="2px solid" borderColor="dota.bg.tertiary">
+              <Heading size="md" color="dota.text.primary" mb={4}>
+                🎮 Game Preferences
+              </Heading>
+              <VStack spacing={4} align="stretch">
+                <HStack justify="space-between" align="center">
+                  <VStack align="flex-start" spacing={1}>
+                    <Text color="dota.text.primary" fontWeight="medium">Focus on meta heroes</Text>
+                    <Text color="dota.text.muted" fontSize="sm">Prioritize currently strong heroes</Text>
+                  </VStack>
+                  <Switch
+                    isChecked={preferences.meta_focus}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, meta_focus: e.target.checked }))}
+                    colorScheme="teal"
+                    size="lg"
+                  />
+                </HStack>
+
+                <Separator borderColor="dota.bg.tertiary" />
+
+                <HStack justify="space-between" align="center">
+                  <VStack align="flex-start" spacing={1}>
+                    <Text color="dota.text.primary" fontWeight="medium">Experimental builds</Text>
+                    <Text color="dota.text.muted" fontSize="sm">Include unconventional strategies</Text>
+                  </VStack>
+                  <Switch
+                    isChecked={preferences.experimental_builds}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, experimental_builds: e.target.checked }))}
+                    colorScheme="purple"
+                    size="lg"
+                  />
+                </HStack>
+
+                <Separator borderColor="dota.bg.tertiary" />
+
+                <HStack justify="space-between" align="center">
+                  <VStack align="flex-start" spacing={1}>
+                    <Text color="dota.text.primary" fontWeight="medium">Show beginner tips</Text>
+                    <Text color="dota.text.muted" fontSize="sm">Display helpful explanations</Text>
+                  </VStack>
+                  <Switch
+                    isChecked={preferences.show_beginner_tips}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, show_beginner_tips: e.target.checked }))}
+                    colorScheme="blue"
+                    size="lg"
+                  />
+                </HStack>
+
+                <Separator borderColor="dota.bg.tertiary" />
+
+                <HStack justify="space-between" align="center">
+                  <VStack align="flex-start" spacing={1}>
+                    <Text color="dota.text.primary" fontWeight="medium">Auto-save builds</Text>
+                    <Text color="dota.text.muted" fontSize="sm">Automatically save custom builds</Text>
+                  </VStack>
+                  <Switch
+                    isChecked={preferences.auto_save_builds}
+                    onChange={(e) => setPreferences(prev => ({ ...prev, auto_save_builds: e.target.checked }))}
+                    colorScheme="green"
+                    size="lg"
+                  />
+                </HStack>
+              </VStack>
+            </Box>
+          </MotionBox>
+
+          {/* Notifications */}
+          <MotionBox
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <Box bg="dota.bg.hover" p={4} borderRadius="lg" border="2px solid" borderColor="dota.bg.tertiary">
+              <Heading size="md" color="dota.text.primary" mb={4}>
+                🔔 Notifications
+              </Heading>
+              <VStack spacing={4} align="stretch">
+                <HStack justify="space-between" align="center">
+                  <Text color="dota.text.primary" fontWeight="medium">Patch updates</Text>
+                  <Switch
+                    isChecked={preferences.notification_preferences.patch_updates}
+                    onChange={(e) => handleNotificationChange('patch_updates', e.target.checked)}
+                    colorScheme="orange"
+                    size="lg"
+                  />
+                </HStack>
+
+                <Separator borderColor="dota.bg.tertiary" />
+
+                <HStack justify="space-between" align="center">
+                  <Text color="dota.text.primary" fontWeight="medium">Meta changes</Text>
+                  <Switch
+                    isChecked={preferences.notification_preferences.meta_changes}
+                    onChange={(e) => handleNotificationChange('meta_changes', e.target.checked)}
+                    colorScheme="red"
+                    size="lg"
+                  />
+                </HStack>
+
+                <Separator borderColor="dota.bg.tertiary" />
+
+                <HStack justify="space-between" align="center">
+                  <Text color="dota.text.primary" fontWeight="medium">Favorite hero updates</Text>
+                  <Switch
+                    isChecked={preferences.notification_preferences.favorite_hero_updates}
+                    onChange={(e) => handleNotificationChange('favorite_hero_updates', e.target.checked)}
+                    colorScheme="pink"
+                    size="lg"
+                  />
+                </HStack>
+              </VStack>
+            </Box>
+          </MotionBox>
+        </VStack>
+
+        {/* Action Buttons */}
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          mt={8}
         >
-          {saving && (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          )}
-          <span>{saving ? 'Saving...' : 'Save Preferences'}</span>
-        </button>
-      </div>
-    </div>
+          <HStack justify="flex-end" spacing={4}>
+            {onCancel && (
+              <Button
+                onClick={onCancel}
+                disabled={saving}
+                variant="outline"
+                size="lg"
+                borderColor="dota.bg.tertiary"
+                color="dota.text.primary"
+                _hover={{
+                  borderColor: "dota.teal.500",
+                  bg: "dota.bg.hover",
+                }}
+                _disabled={{ opacity: 0.5 }}
+              >
+                Cancel
+              </Button>
+            )}
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              variant="solid"
+              size="lg"
+              bg="linear-gradient(45deg, #27ae9e, #64ffda)"
+              color="white"
+              _hover={{
+                bg: "linear-gradient(45deg, #1f9186, #4fd1c7)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 25px rgba(39, 174, 158, 0.4)",
+              }}
+              _active={{
+                transform: "translateY(0)",
+              }}
+              _disabled={{ opacity: 0.5, _hover: { transform: "none" } }}
+              isLoading={saving}
+              loadingText="Saving..."
+              spinner={<Spinner size="sm" color="white" />}
+              leftIcon={saving ? undefined : <Text>💾</Text>}
+            >
+              {saving ? 'Saving...' : 'Save Preferences'}
+            </Button>
+          </HStack>
+        </MotionBox>
+      </CardBody>
+    </MotionCard>
   );
 };
 

@@ -1,10 +1,12 @@
 // frontend/src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ChakraProvider } from '@chakra-ui/react';
 import App from './App.jsx';
 import './index.css'; // Assuming default styling
 import { AuthProvider } from './contexts/AuthContext.jsx'; // Import AuthProvider
 import { fileBackend } from './services/fileBackend.js'; // Import file backend service
+import system from './theme/index.js'; // Import custom Dota 2 theme system
 
 // Initialize file backend service
 const initializeApp = async () => {
@@ -30,9 +32,11 @@ const initializeApp = async () => {
 initializeApp().then(() => {
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <AuthProvider> {/* Wrap App with AuthProvider */}
-        <App />
-      </AuthProvider>
+      <ChakraProvider value={system}>
+        <AuthProvider> {/* Wrap App with AuthProvider */}
+          <App />
+        </AuthProvider>
+      </ChakraProvider>
     </React.StrictMode>,
   );
 }).catch((error) => {
@@ -40,9 +44,11 @@ initializeApp().then(() => {
   // Still render the app but without backend services
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <AuthProvider> {/* Wrap App with AuthProvider */}
-        <App />
-      </AuthProvider>
+      <ChakraProvider value={system}>
+        <AuthProvider> {/* Wrap App with AuthProvider */}
+          <App />
+        </AuthProvider>
+      </ChakraProvider>
     </React.StrictMode>,
   );
 });

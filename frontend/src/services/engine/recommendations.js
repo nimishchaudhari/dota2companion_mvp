@@ -392,7 +392,7 @@ class RecommendationEngine {
   }
 
   // Compute context-based score
-  computeContextScore(hero, context, allRecommendations) {
+  computeContextScore(hero) {
     let score = 0;
     
     score += hero.synergy_boost || 0;
@@ -444,7 +444,7 @@ class RecommendationEngine {
   }
 
   // Item recommendation methods
-  getItemRecommendations(heroId, gameState, userProfile) {
+  getItemRecommendations() {
     try {
       const recommendations = {
         core_items: [],

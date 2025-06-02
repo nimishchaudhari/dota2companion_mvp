@@ -193,9 +193,9 @@ Each agent operates in its own Git worktree, providing complete isolation and pr
 ### Worktree Setup Pattern
 ```bash
 # Orchestrator creates isolated environments for each agent
-git worktree add -b agent-1-auth /tmp/agent-workspaces/agent-1 HEAD
-git worktree add -b agent-2-api /tmp/agent-workspaces/agent-2 HEAD
-git worktree add -b agent-3-tests /tmp/agent-workspaces/agent-3 HEAD
+git worktree add -b agent-1-auth project_directory/agent-workspaces/agent-1 HEAD
+git worktree add -b agent-2-api project_directory/agent-workspaces/agent-2 HEAD
+git worktree add -b agent-3-tests project_directory/agent-workspaces/agent-3 HEAD
 ```
 
 ### Orchestrator Responsibilities

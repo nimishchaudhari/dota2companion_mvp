@@ -1,6 +1,26 @@
 // frontend/src/pages/UserProfilePage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  Grid,
+  GridItem,
+  Card,
+  Badge,
+  Button,
+  Avatar,
+  Flex,
+  Tabs,
+  Spinner,
+  Alert,
+  Icon
+} from '@chakra-ui/react';
+import { FaUser, FaStar, FaHammer, FaGamepad, FaDownload, FaUpload, FaCog } from 'react-icons/fa';
 import { fileBackend } from '../services/fileBackend.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import UserPreferences from '../components/UserPreferences.jsx';
@@ -10,6 +30,7 @@ import FavoritesButton from '../components/FavoritesButton.jsx';
 const UserProfilePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  // const toast = useToast(); // Temporarily disabled for Chakra UI v3 migration
   const [profile, setProfile] = useState(null);
   const [favoriteHeroes, setFavoriteHeroes] = useState([]);
   const [favoriteItems, setFavoriteItems] = useState([]);
@@ -22,9 +43,9 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     loadUserData();
-  }, []);
+  }, [loadUserData]);
 
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -67,7 +88,7 @@ const UserProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleCreateProfile = async () => {
     if (!user) {
@@ -107,9 +128,14 @@ const UserProfilePage = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      // Toast temporarily disabled for Chakra UI v3 migration
+      console.log("Data exported successfully");
     } catch (err) {
       console.error('Error exporting data:', err);
       setError('Failed to export data');
+      // Toast temporarily disabled for Chakra UI v3 migration
+      console.error("Export failed:", err.message);
     }
   };
 
@@ -122,67 +148,94 @@ const UserProfilePage = () => {
       const userData = JSON.parse(text);
       await fileBackend.importUserData(userData);
       await loadUserData(); // Reload data
+      
+      // Toast temporarily disabled for Chakra UI v3 migration
+      console.log("Data imported successfully");
     } catch (err) {
       console.error('Error importing data:', err);
       setError('Failed to import data');
+      // Toast temporarily disabled for Chakra UI v3 migration
+      console.error("Import failed:", err.message);
     }
   };
 
-  const renderTabButton = (tabId, label) => (
-    <button
-      onClick={() => setActiveTab(tabId)}
-      className={`px-4 py-2 rounded-t-lg transition-colors duration-200 ${
-        activeTab === tabId
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-      }`}
-    >
-      {label}
-    </button>
-  );
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <Container maxW="6xl" py={8} centerContent>
+        <VStack spacing={4}>
+          <Spinner size="xl" color="dota.teal.500" thickness="4px" />
+          <Text color="dota.text.secondary">Loading your profile...</Text>
+        </VStack>
+      </Container>
     );
   }
 
   if (!user) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-20">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Login Required</h1>
-        <p className="text-gray-600 mb-6">You need to log in to access your profile.</p>
-        <Link
-          to="/login"
-          className="block w-full bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Go to Login
-        </Link>
-      </div>
+      <Container maxW="md" py={20}>
+        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={8} textAlign="center">
+          <VStack spacing={6}>
+            <Icon as={FaUser} boxSize={16} color="dota.text.muted" />
+            <VStack spacing={2}>
+              <Heading size="lg" color="dota.text.primary">
+                Login Required
+              </Heading>
+              <Text color="dota.text.secondary">
+                You need to log in to access your profile.
+              </Text>
+            </VStack>
+            <Button
+              as={Link}
+              to="/login"
+              variant="primary"
+              size="lg"
+              w="full"
+            >
+              Go to Login
+            </Button>
+          </VStack>
+        </Card>
+      </Container>
     );
   }
 
   if (!profile) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-20">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to Dota 2 Companion!</h1>
-        <p className="text-gray-600 mb-6">
-          Create your profile to start tracking favorites, custom builds, and get personalized recommendations.
-        </p>
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-        <button
-          onClick={handleCreateProfile}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Create Profile
-        </button>
-      </div>
+      <Container maxW="md" py={20}>
+        <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={8} textAlign="center">
+          <VStack spacing={6}>
+            <Icon as={FaGamepad} boxSize={16} color="dota.teal.500" />
+            <VStack spacing={3}>
+              <Heading size="lg" color="dota.text.primary">
+                Welcome to Dota 2 Companion!
+              </Heading>
+              <Text color="dota.text.secondary" lineHeight="1.6">
+                Create your profile to start tracking favorites, custom builds, and get personalized recommendations.
+              </Text>
+            </VStack>
+            
+            {error && (
+              <Alert.Root status="error" bg="dota.bg.secondary" borderColor="dota.status.error">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Description>
+                    <Text color="dota.text.primary">{error}</Text>
+                  </Alert.Description>
+                </Alert.Content>
+              </Alert.Root>
+            )}
+            
+            <Button
+              onClick={handleCreateProfile}
+              variant="primary"
+              size="lg"
+              w="full"
+            >
+              Create Profile
+            </Button>
+          </VStack>
+        </Card>
+      </Container>
     );
   }
 
@@ -196,275 +249,488 @@ const UserProfilePage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      {error && (
-        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-          <button
-            onClick={() => setError(null)}
-            className="float-right text-red-500 hover:text-red-700"
+    <Container maxW="6xl" py={6}>
+      <VStack spacing={8} align="stretch">
+        {error && (
+          <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Description>
+                <Text color="dota.text.primary" flex={1}>{error}</Text>
+              </Alert.Description>
+            </Alert.Content>
+            <Button
+              onClick={() => setError(null)}
+              variant="ghost"
+              size="sm"
+              color="dota.status.error"
+            >
+              ×
+            </Button>
+          </Alert.Root>
+        )}
+
+        {/* Profile Header */}
+        <Card
+          bg="dota.bg.card"
+          borderWidth={1}
+          borderColor="dota.bg.tertiary"
+          p={6}
+          position="relative"
+          overflow="hidden"
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
+          }}
+        >
+          <Flex 
+            direction={{ base: "column", lg: "row" }} 
+            align={{ base: "center", lg: "start" }} 
+            justify="space-between"
+            gap={6}
           >
-            ×
-          </button>
-        </div>
-      )}
-
-      {/* Profile Header */}
-      <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            {user.avatarUrl && (
-              <img
+            <HStack spacing={6} align="center">
+              <Avatar
                 src={user.avatarUrl}
-                alt={profile.persona_name}
-                className="w-16 h-16 rounded-full border-4 border-blue-200"
+                name={profile.persona_name}
+                size="xl"
+                border="4px solid"
+                borderColor="dota.teal.500"
+                boxShadow="dota-glow"
               />
-            )}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">{profile.persona_name}</h1>
-              <p className="text-gray-600">Steam ID: {profile.steam_id}</p>
-              <p className="text-sm text-gray-500">
-                Member since {new Date(profile.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setShowPreferences(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Edit Preferences
-            </button>
-            <button
-              onClick={handleExportData}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              Export Data
-            </button>
-            <label className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors cursor-pointer">
-              Import Data
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImportData}
-                className="hidden"
-              />
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="mb-6">
-        <div className="flex space-x-2">
-          {renderTabButton('profile', 'Profile Overview')}
-          {renderTabButton('favorites', `Favorites (${favoriteHeroes.length + favoriteItems.length})`)}
-          {renderTabButton('builds', `Custom Builds (${customBuilds.length})`)}
-          {renderTabButton('matches', 'Recent Matches')}
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {activeTab === 'profile' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Profile Overview</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Preferences</h3>
-                <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Skill Level:</span> {profile.preferences?.skill_level || 'Not set'}</p>
-                  <p><span className="font-medium">Playstyle:</span> {profile.preferences?.playstyle || 'Not set'}</p>
-                  <p><span className="font-medium">Preferred Roles:</span> {
-                    profile.preferences?.preferred_roles?.length > 0 
-                      ? profile.preferences.preferred_roles.join(', ')
-                      : 'None selected'
-                  }</p>
-                  <p><span className="font-medium">Game Mode:</span> {profile.preferences?.game_mode_preference || 'Not set'}</p>
-                </div>
-              </div>
               
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Statistics</h3>
-                <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Favorite Heroes:</span> {favoriteHeroes.length}</p>
-                  <p><span className="font-medium">Favorite Items:</span> {favoriteItems.length}</p>
-                  <p><span className="font-medium">Custom Builds:</span> {customBuilds.length}</p>
-                  <p><span className="font-medium">Cached Matches:</span> {recentMatches.length}</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">Quick Actions</h3>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  to="/heroes"
-                  className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-                >
-                  Browse Heroes
-                </Link>
-                <Link
-                  to="/recommendations"
-                  className="px-4 py-2 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
-                >
-                  Get Recommendations
-                </Link>
-                <button
-                  onClick={() => setActiveTab('favorites')}
-                  className="px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors"
-                >
-                  View Favorites
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'favorites' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Your Favorites</h2>
+              <VStack align={{ base: "center", lg: "start" }} spacing={2}>
+                <Heading size="xl" color="dota.text.primary">
+                  {profile.persona_name}
+                </Heading>
+                <VStack align={{ base: "center", lg: "start" }} spacing={1}>
+                  <Text color="dota.text.secondary" fontSize="sm">
+                    Steam ID: {profile.steam_id}
+                  </Text>
+                  <Text color="dota.text.muted" fontSize="xs">
+                    Member since {new Date(profile.created_at).toLocaleDateString()}
+                  </Text>
+                </VStack>
+              </VStack>
+            </HStack>
             
-            {favoriteHeroes.length === 0 && favoriteItems.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">You haven't added any favorites yet.</p>
-                <Link
-                  to="/heroes"
-                  className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Browse Heroes to Add Favorites
-                </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {favoriteHeroes.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                      Favorite Heroes ({favoriteHeroes.length})
-                    </h3>
-                    <div className="space-y-3">
-                      {favoriteHeroes.map(hero => (
-                        <div key={hero.hero_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center text-xs font-bold">
-                              {hero.hero_name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-800">{hero.hero_name}</p>
-                              <p className="text-sm text-gray-600">{hero.role}</p>
-                              {hero.notes && (
-                                <p className="text-xs text-gray-500 italic">{hero.notes}</p>
-                              )}
-                            </div>
-                          </div>
-                          <FavoritesButton
-                            type="hero"
-                            id={hero.hero_id}
-                            name={hero.hero_name}
-                            role={hero.role}
-                          />
-                        </div>
+            <HStack spacing={2} wrap="wrap" justify="center">
+              <Button
+                onClick={() => setShowPreferences(true)}
+                variant="primary"
+                size="sm"
+                leftIcon={<Icon as={FaCog} />}
+              >
+                Edit Preferences
+              </Button>
+              
+              <Button
+                onClick={handleExportData}
+                variant="secondary"
+                size="sm"
+                leftIcon={<Icon as={FaDownload} />}
+              >
+                Export Data
+              </Button>
+              
+              <Button
+                as="label"
+                variant="outline"
+                size="sm"
+                leftIcon={<Icon as={FaUpload} />}
+                cursor="pointer"
+                _hover={{ bg: "dota.bg.hover" }}
+              >
+                Import Data
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportData}
+                  style={{ display: 'none' }}
+                />
+              </Button>
+            </HStack>
+          </Flex>
+        </Card>
+
+        {/* Tab Content */}
+        <Tabs 
+          value={activeTab}
+          onValueChange={setActiveTab}
+          variant="enclosed"
+          colorScheme="teal"
+        >
+          <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary">
+            <Tabs.Trigger value="profile" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+              <HStack spacing={2}>
+                <Icon as={FaUser} />
+                <Text>Profile Overview</Text>
+              </HStack>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="favorites" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+              <HStack spacing={2}>
+                <Icon as={FaStar} />
+                <Text>Favorites ({favoriteHeroes.length + favoriteItems.length})</Text>
+              </HStack>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="builds" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+              <HStack spacing={2}>
+                <Icon as={FaHammer} />
+                <Text>Custom Builds ({customBuilds.length})</Text>
+              </HStack>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="matches" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+              <HStack spacing={2}>
+                <Icon as={FaGamepad} />
+                <Text>Recent Matches</Text>
+              </HStack>
+            </Tabs.Trigger>
+          </Tabs.List>
+          
+          <Tabs.Content value="profile" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <Heading size="md" color="dota.text.primary">
+                    Profile Overview
+                  </Heading>
+                  
+                  <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={8}>
+                    <GridItem>
+                      <VStack spacing={4} align="stretch">
+                        <Heading size="sm" color="dota.text.secondary">
+                          Preferences
+                        </Heading>
+                        <VStack spacing={3} align="stretch">
+                          <HStack justify="space-between">
+                            <Text fontSize="sm" color="dota.text.secondary">Skill Level:</Text>
+                            <Badge variant="outline" colorScheme="teal">
+                              {profile.preferences?.skill_level || 'Not set'}
+                            </Badge>
+                          </HStack>
+                          <HStack justify="space-between">
+                            <Text fontSize="sm" color="dota.text.secondary">Playstyle:</Text>
+                            <Badge variant="outline" colorScheme="purple">
+                              {profile.preferences?.playstyle || 'Not set'}
+                            </Badge>
+                          </HStack>
+                          <VStack align="stretch" spacing={2}>
+                            <Text fontSize="sm" color="dota.text.secondary">Preferred Roles:</Text>
+                            <HStack wrap="wrap" spacing={1}>
+                              {profile.preferences?.preferred_roles?.length > 0 
+                                ? profile.preferences.preferred_roles.map(role => (
+                                    <Badge key={role} size="sm" variant="solid" colorScheme="blue">
+                                      {role}
+                                    </Badge>
+                                  ))
+                                : <Text fontSize="xs" color="dota.text.muted">None selected</Text>
+                              }
+                            </HStack>
+                          </VStack>
+                          <HStack justify="space-between">
+                            <Text fontSize="sm" color="dota.text.secondary">Game Mode:</Text>
+                            <Badge variant="outline">
+                              {profile.preferences?.game_mode_preference || 'Not set'}
+                            </Badge>
+                          </HStack>
+                        </VStack>
+                      </VStack>
+                    </GridItem>
+                    
+                    <GridItem>
+                      <VStack spacing={4} align="stretch">
+                        <Heading size="sm" color="dota.text.secondary">
+                          Statistics
+                        </Heading>
+                        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                          <VStack spacing={1} align="start">
+                            <Text color="dota.text.muted" fontSize="xs">Favorite Heroes</Text>
+                            <Text color="dota.teal.500" fontSize="lg" fontWeight="bold">{favoriteHeroes.length}</Text>
+                          </VStack>
+                          <VStack spacing={1} align="start">
+                            <Text color="dota.text.muted" fontSize="xs">Favorite Items</Text>
+                            <Text color="dota.purple.500" fontSize="lg" fontWeight="bold">{favoriteItems.length}</Text>
+                          </VStack>
+                          <VStack spacing={1} align="start">
+                            <Text color="dota.text.muted" fontSize="xs">Custom Builds</Text>
+                            <Text color="dota.darkBlue.500" fontSize="lg" fontWeight="bold">{customBuilds.length}</Text>
+                          </VStack>
+                          <VStack spacing={1} align="start">
+                            <Text color="dota.text.muted" fontSize="xs">Cached Matches</Text>
+                            <Text color="dota.text.accent" fontSize="lg" fontWeight="bold">{recentMatches.length}</Text>
+                          </VStack>
+                        </Grid>
+                      </VStack>
+                    </GridItem>
+                  </Grid>
+
+                  <VStack spacing={4} align="stretch">
+                    <Heading size="sm" color="dota.text.secondary">
+                      Quick Actions
+                    </Heading>
+                    <HStack wrap="wrap" spacing={3}>
+                      <Button
+                        as={Link}
+                        to="/heroes"
+                        variant="outline"
+                        size="sm"
+                        colorScheme="teal"
+                      >
+                        Browse Heroes
+                      </Button>
+                      <Button
+                        as={Link}
+                        to="/recommendations"
+                        variant="outline"
+                        size="sm"
+                        colorScheme="green"
+                      >
+                        Get Recommendations
+                      </Button>
+                      <Button
+                        onClick={() => setActiveTab('favorites')}
+                        variant="outline"
+                        size="sm"
+                        colorScheme="purple"
+                      >
+                        View Favorites
+                      </Button>
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="favorites" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <Heading size="md" color="dota.text.primary">
+                    Your Favorites
+                  </Heading>
+                  
+                  {favoriteHeroes.length === 0 && favoriteItems.length === 0 ? (
+                    <VStack spacing={4} py={12} textAlign="center">
+                      <Icon as={FaStar} boxSize={16} color="dota.text.muted" />
+                      <Text color="dota.text.secondary">
+                        You haven't added any favorites yet.
+                      </Text>
+                      <Button
+                        as={Link}
+                        to="/heroes"
+                        variant="primary"
+                        size="lg"
+                      >
+                        Browse Heroes to Add Favorites
+                      </Button>
+                    </VStack>
+                  ) : (
+                    <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={6}>
+                      {favoriteHeroes.length > 0 && (
+                        <GridItem>
+                          <VStack spacing={4} align="stretch">
+                            <Heading size="sm" color="dota.text.secondary">
+                              Favorite Heroes ({favoriteHeroes.length})
+                            </Heading>
+                            <VStack spacing={3} align="stretch">
+                              {favoriteHeroes.map(hero => (
+                                <Card key={hero.hero_id} bg="dota.bg.secondary" borderWidth={1} borderColor="dota.bg.tertiary" p={3}>
+                                  <Flex justify="space-between" align="center">
+                                    <HStack spacing={3}>
+                                      <Box 
+                                        w={12} 
+                                        h={12} 
+                                        bg="dota.bg.tertiary" 
+                                        borderRadius="md" 
+                                        display="flex" 
+                                        alignItems="center" 
+                                        justifyContent="center"
+                                      >
+                                        <Text fontSize="xs" fontWeight="bold" color="dota.text.primary">
+                                          {hero.hero_name.substring(0, 2).toUpperCase()}
+                                        </Text>
+                                      </Box>
+                                      <VStack align="start" spacing={1}>
+                                        <Text fontWeight="medium" color="dota.text.primary" fontSize="sm">
+                                          {hero.hero_name}
+                                        </Text>
+                                        <Badge size="sm" variant="outline" colorScheme="teal">
+                                          {hero.role}
+                                        </Badge>
+                                        {hero.notes && (
+                                          <Text fontSize="xs" color="dota.text.muted" fontStyle="italic">
+                                            {hero.notes}
+                                          </Text>
+                                        )}
+                                      </VStack>
+                                    </HStack>
+                                    <FavoritesButton
+                                      type="hero"
+                                      id={hero.hero_id}
+                                      name={hero.hero_name}
+                                      role={hero.role}
+                                    />
+                                  </Flex>
+                                </Card>
+                              ))}
+                            </VStack>
+                          </VStack>
+                        </GridItem>
+                      )}
+
+                      {favoriteItems.length > 0 && (
+                        <GridItem>
+                          <VStack spacing={4} align="stretch">
+                            <Heading size="sm" color="dota.text.secondary">
+                              Favorite Items ({favoriteItems.length})
+                            </Heading>
+                            <VStack spacing={3} align="stretch">
+                              {favoriteItems.map(item => (
+                                <Card key={item.item_id} bg="dota.bg.secondary" borderWidth={1} borderColor="dota.bg.tertiary" p={3}>
+                                  <Flex justify="space-between" align="center">
+                                    <HStack spacing={3}>
+                                      <Box 
+                                        w={12} 
+                                        h={12} 
+                                        bg="dota.bg.tertiary" 
+                                        borderRadius="md" 
+                                        display="flex" 
+                                        alignItems="center" 
+                                        justifyContent="center"
+                                      >
+                                        <Text fontSize="xs" fontWeight="bold" color="dota.text.primary">
+                                          {item.item_name.substring(0, 2).toUpperCase()}
+                                        </Text>
+                                      </Box>
+                                      <VStack align="start" spacing={1}>
+                                        <Text fontWeight="medium" color="dota.text.primary" fontSize="sm">
+                                          {item.item_name}
+                                        </Text>
+                                        <Badge size="sm" variant="outline" colorScheme="purple">
+                                          {item.category}
+                                        </Badge>
+                                        {item.notes && (
+                                          <Text fontSize="xs" color="dota.text.muted" fontStyle="italic">
+                                            {item.notes}
+                                          </Text>
+                                        )}
+                                      </VStack>
+                                    </HStack>
+                                    <FavoritesButton
+                                      type="item"
+                                      id={item.item_id}
+                                      name={item.item_name}
+                                      category={item.category}
+                                    />
+                                  </Flex>
+                                </Card>
+                              ))}
+                            </VStack>
+                          </VStack>
+                        </GridItem>
+                      )}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="builds" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <Heading size="md" color="dota.text.primary">
+                    Custom Builds
+                  </Heading>
+                  
+                  {customBuilds.length === 0 ? (
+                    <VStack spacing={4} py={12} textAlign="center">
+                      <Icon as={FaHammer} boxSize={16} color="dota.text.muted" />
+                      <VStack spacing={2}>
+                        <Text color="dota.text.secondary">
+                          You haven't created any custom builds yet.
+                        </Text>
+                        <Text fontSize="sm" color="dota.text.muted">
+                          Create builds while browsing heroes or items to see them here.
+                        </Text>
+                      </VStack>
+                    </VStack>
+                  ) : (
+                    <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4}>
+                      {customBuilds.map(build => (
+                        <RecommendationCard
+                          key={build.build_id}
+                          type="build"
+                          data={build}
+                          showFavorites={false}
+                        />
                       ))}
-                    </div>
-                  </div>
-                )}
+                    </Grid>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
 
-                {favoriteItems.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                      Favorite Items ({favoriteItems.length})
-                    </h3>
-                    <div className="space-y-3">
-                      {favoriteItems.map(item => (
-                        <div key={item.item_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center text-xs font-bold">
-                              {item.item_name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-800">{item.item_name}</p>
-                              <p className="text-sm text-gray-600">{item.category}</p>
-                              {item.notes && (
-                                <p className="text-xs text-gray-500 italic">{item.notes}</p>
-                              )}
-                            </div>
-                          </div>
-                          <FavoritesButton
-                            type="item"
-                            id={item.item_id}
-                            name={item.item_name}
-                            category={item.category}
-                          />
-                        </div>
+            <Tabs.Content value="matches" p={0}>
+              <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
+                <VStack spacing={6} align="stretch">
+                  <Heading size="md" color="dota.text.primary">
+                    Recent Matches
+                  </Heading>
+                  
+                  {recentMatches.length === 0 ? (
+                    <VStack spacing={4} py={12} textAlign="center">
+                      <Icon as={FaGamepad} boxSize={16} color="dota.text.muted" />
+                      <VStack spacing={2}>
+                        <Text color="dota.text.secondary">
+                          No recent matches cached.
+                        </Text>
+                        <Text fontSize="sm" color="dota.text.muted">
+                          Matches will be cached automatically when you view player profiles.
+                        </Text>
+                      </VStack>
+                    </VStack>
+                  ) : (
+                    <VStack spacing={3} align="stretch">
+                      {recentMatches.map(match => (
+                        <Card key={match.match_id} bg="dota.bg.secondary" borderWidth={1} borderColor="dota.bg.tertiary" p={4}>
+                          <Flex justify="space-between" align="center">
+                            <VStack align="start" spacing={2}>
+                              <Text fontWeight="medium" color="dota.text.primary">
+                                Match ID: {match.match_id}
+                              </Text>
+                              <HStack spacing={4}>
+                                <Badge
+                                  variant="solid"
+                                  colorScheme={match.result === 'win' ? 'green' : 'red'}
+                                  fontSize="xs"
+                                >
+                                  {match.result === 'win' ? '✅ WIN' : '❌ LOSS'}
+                                </Badge>
+                                <Text fontSize="sm" color="dota.text.secondary">
+                                  Duration: {match.duration}s
+                                </Text>
+                              </HStack>
+                              <Text fontSize="sm" color="dota.text.secondary">
+                                KDA: {match.kda?.kills || 0}/{match.kda?.deaths || 0}/{match.kda?.assists || 0}
+                              </Text>
+                            </VStack>
+                            <Text fontSize="xs" color="dota.text.muted">
+                              {new Date(match.cached_at).toLocaleDateString()}
+                            </Text>
+                          </Flex>
+                        </Card>
                       ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'builds' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Custom Builds</h2>
-            
-            {customBuilds.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">You haven't created any custom builds yet.</p>
-                <p className="text-sm text-gray-500">Create builds while browsing heroes or items to see them here.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {customBuilds.map(build => (
-                  <RecommendationCard
-                    key={build.build_id}
-                    type="build"
-                    data={build}
-                    showFavorites={false}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'matches' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Recent Matches</h2>
-            
-            {recentMatches.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">No recent matches cached.</p>
-                <p className="text-sm text-gray-500">Matches will be cached automatically when you view player profiles.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentMatches.map(match => (
-                  <div key={match.match_id} className="p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-gray-800">Match ID: {match.match_id}</p>
-                        <p className="text-sm text-gray-600">
-                          {match.result === 'win' ? '✅' : '❌'} {match.result.toUpperCase()} - {match.duration}s
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          KDA: {match.kda?.kills || 0}/{match.kda?.deaths || 0}/{match.kda?.assists || 0}
-                        </p>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(match.cached_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+                    </VStack>
+                  )}
+                </VStack>
+              </Card>
+            </Tabs.Content>
+        </Tabs>
+      </VStack>
+    </Container>
   );
 };
 

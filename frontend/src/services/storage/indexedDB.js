@@ -99,7 +99,7 @@ class IndexedDBService {
 
         // Settings store
         if (!db.objectStoreNames.contains(this.stores.SETTINGS)) {
-          const settingsStore = db.createObjectStore(this.stores.SETTINGS, {
+          db.createObjectStore(this.stores.SETTINGS, {
             keyPath: 'key'
           });
         }

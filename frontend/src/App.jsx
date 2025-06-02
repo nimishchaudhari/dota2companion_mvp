@@ -1,23 +1,44 @@
 // frontend/src/App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { useAuth } from './contexts/AuthContext';
+import { pageTransitions, getReducedMotionVariant } from './utils/animations-lite';
 
 import MainLayout from './components/layout/MainLayout'; // Assuming MainLayout is used
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import HeroesListPage from './pages/HeroesListPage';
-import PlayerProfilePage from './pages/PlayerProfilePage';
-import MatchDetailPage from './pages/MatchDetailPage';
-import UserProfilePage from './pages/UserProfilePage';
-import RecommendationsPage from './pages/RecommendationsPage';
+import LoadingSkeleton from './components/LoadingSkeleton';
 
-// Simple ProtectedRoute component for POC
+// Lazy load pages for better code splitting
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const HeroesListPage = React.lazy(() => import('./pages/HeroesListPage'));
+const PlayerProfilePage = React.lazy(() => import('./pages/PlayerProfilePage'));
+const MatchDetailPage = React.lazy(() => import('./pages/MatchDetailPage'));
+const UserProfilePage = React.lazy(() => import('./pages/UserProfilePage'));
+const RecommendationsPage = React.lazy(() => import('./pages/RecommendationsPage'));
+
+// Enhanced loading component with animation
+const LoadingSpinner = () => (
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center min-h-screen"
+    >
+        <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full"
+        />
+        <span className="ml-3 text-gray-600">Loading...</span>
+    </motion.div>
+);
+
+// Simple ProtectedRoute component with animation support
 const ProtectedRoute = ({ children }) => {
-    const { user, loading } = useAuth(); // Also check loading state
+    const { user, loading } = useAuth();
 
     if (loading) {
-        return <div>Checking authentication...</div>; // Or a spinner
+        return <LoadingSpinner />;
     }
 
     if (!user) {
@@ -26,48 +47,94 @@ const ProtectedRoute = ({ children }) => {
     return children;
 };
 
-function App() {
-    const { loading: authLoading } = useAuth(); // Renamed to avoid conflict if App had its own loading
-
-    if (authLoading) {
-        return <div>Loading application...</div>;
-    }
-
+// Animated page wrapper component
+const AnimatedPage = ({ children }) => {
+    const location = useLocation();
+    
     return (
-        <Router>
-            <Routes>
+        <motion.div
+            key={location.pathname}
+            {...getReducedMotionVariant(pageTransitions.slideIn)}
+            className="w-full"
+        >
+            {children}
+        </motion.div>
+    );
+};
+
+// Routes component with animation support
+const AnimatedRoutes = () => {
+    const location = useLocation();
+    
+    return (
+        <AnimatePresence mode="wait" initial={false}>
+            <Suspense fallback={<LoadingSkeleton />}>
+                <Routes location={location} key={location.pathname}>
                 <Route element={<MainLayout />}> {/* Wraps all pages with Header/Footer */}
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/" element={
+                        <AnimatedPage>
+                            <HomePage />
+                        </AnimatedPage>
+                    } />
+                    <Route path="/login" element={
+                        <AnimatedPage>
+                            <LoginPage />
+                        </AnimatedPage>
+                    } />
                     <Route path="/heroes" element={
                         <ProtectedRoute>
-                            <HeroesListPage />
+                            <AnimatedPage>
+                                <HeroesListPage />
+                            </AnimatedPage>
                         </ProtectedRoute>
                     } />
                     <Route path="/recommendations" element={
                         <ProtectedRoute>
-                            <RecommendationsPage />
+                            <AnimatedPage>
+                                <RecommendationsPage />
+                            </AnimatedPage>
                         </ProtectedRoute>
                     } />
                     <Route path="/profile" element={
                         <ProtectedRoute>
-                            <UserProfilePage />
+                            <AnimatedPage>
+                                <UserProfilePage />
+                            </AnimatedPage>
                         </ProtectedRoute>
                     } />
                     <Route path="/player/:playerId" element={
                         <ProtectedRoute>
-                            <PlayerProfilePage />
+                            <AnimatedPage>
+                                <PlayerProfilePage />
+                            </AnimatedPage>
                         </ProtectedRoute>
                     } />
-                     <Route path="/matches/:matchId" element={
+                    <Route path="/matches/:matchId" element={
                         <ProtectedRoute>
-                            <MatchDetailPage />
+                            <AnimatedPage>
+                                <MatchDetailPage />
+                            </AnimatedPage>
                         </ProtectedRoute>
                     } />
                     {/* Add more routes as needed */}
                     <Route path="*" element={<Navigate to="/" replace />} /> {/* Basic catch-all */}
                 </Route>
             </Routes>
+            </Suspense>
+        </AnimatePresence>
+    );
+};
+
+function App() {
+    const { loading: authLoading } = useAuth();
+
+    if (authLoading) {
+        return <LoadingSpinner />;
+    }
+
+    return (
+        <Router basename={import.meta.env.PROD ? '/dota2companion_mvp' : '/'}>
+            <AnimatedRoutes />
         </Router>
     );
 }

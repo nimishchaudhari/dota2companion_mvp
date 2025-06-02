@@ -1,6 +1,27 @@
 // frontend/src/components/RecommendationCard.jsx
 import React from 'react';
+import {
+  Box,
+  Card,
+  CardBody,
+  Image,
+  Text,
+  HStack,
+  VStack,
+  Badge,
+  Avatar,
+  Flex,
+  Progress,
+  Wrap,
+  WrapItem,
+  Tooltip,
+  useToken,
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import FavoritesButton from './FavoritesButton';
+
+const MotionCard = motion.create(Card);
+const MotionBox = motion.create(Box);
 
 const RecommendationCard = ({ 
   type, // 'hero', 'item', 'build', 'combo'
@@ -10,236 +31,520 @@ const RecommendationCard = ({
   showDetails = true,
   size = 'medium' // 'small', 'medium', 'large'
 }) => {
-  const sizeClasses = {
-    small: 'p-3',
-    medium: 'p-4',
-    large: 'p-6'
+  const [cardHover] = useToken('shadows', ['card-hover']);
+  const [heroGlow] = useToken('shadows', ['hero-glow']);
+  
+  const sizeConfig = {
+    small: { padding: 3, imageSize: '48px', spacing: 2 },
+    medium: { padding: 4, imageSize: '64px', spacing: 3 },
+    large: { padding: 6, imageSize: '80px', spacing: 4 }
+  };
+  
+  const config = sizeConfig[size];
+
+  // Attribute color mapping
+  const getAttributeColor = (attr) => {
+    switch (attr) {
+      case 'str': return 'red.400';
+      case 'agi': return 'green.400';
+      case 'int': return 'blue.400';
+      default: return 'purple.400';
+    }
   };
 
-  const imageClasses = {
-    small: 'w-12 h-12',
-    medium: 'w-16 h-16',
-    large: 'w-20 h-20'
+  // Attribute icon mapping
+  const getAttributeIcon = (attr) => {
+    switch (attr) {
+      case 'str': return 'S';
+      case 'agi': return 'A';
+      case 'int': return 'I';
+      default: return 'U';
+    }
   };
 
   const renderHeroCard = () => (
-    <div className="flex items-center space-x-3">
-      <div className="flex-shrink-0 relative">
-        <img 
-          src={data.icon || data.image} 
-          alt={data.localized_name || data.name}
-          className={`${imageClasses[size]} rounded-md object-cover`}
-        />
+    <HStack spacing={config.spacing} align="flex-start">
+      <Box position="relative" flexShrink={0}>
+        <MotionBox
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
+          <Image
+            src={data.icon || data.image}
+            alt={data.localized_name || data.name}
+            boxSize={config.imageSize}
+            borderRadius="md"
+            objectFit="cover"
+            border="2px solid"
+            borderColor="dota.bg.tertiary"
+            _hover={{
+              borderColor: "dota.teal.500",
+              boxShadow: heroGlow,
+            }}
+            transition="all 0.3s ease"
+          />
+        </MotionBox>
         {data.primary_attr && (
-          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full text-xs font-bold text-white flex items-center justify-center
-            ${data.primary_attr === 'str' ? 'bg-red-500' : 
-              data.primary_attr === 'agi' ? 'bg-green-500' : 
-              data.primary_attr === 'int' ? 'bg-blue-500' : 'bg-purple-500'}`}>
-            {data.primary_attr === 'str' ? 'S' : 
-             data.primary_attr === 'agi' ? 'A' : 
-             data.primary_attr === 'int' ? 'I' : 'U'}
-          </div>
+          <Box
+            position="absolute"
+            bottom="-2px"
+            right="-2px"
+            w="18px"
+            h="18px"
+            borderRadius="full"
+            bg={getAttributeColor(data.primary_attr)}
+            color="white"
+            fontSize="xs"
+            fontWeight="bold"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            border="2px solid"
+            borderColor="dota.bg.primary"
+            boxShadow="sm"
+          >
+            {getAttributeIcon(data.primary_attr)}
+          </Box>
         )}
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <h3 className="text-lg font-semibold text-gray-800 truncate">
+      </Box>
+
+      <VStack flex={1} align="flex-start" spacing={1} minW={0}>
+        <Text
+          fontSize="lg"
+          fontWeight="semibold"
+          color="dota.text.primary"
+          isTruncated
+          w="full"
+        >
           {data.localized_name || data.name}
-        </h3>
+        </Text>
+
         {showDetails && (
-          <div className="space-y-1">
+          <VStack spacing={1} align="flex-start" w="full">
             {data.roles && (
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Roles:</span> {data.roles.slice(0, 2).join(', ')}
-                {data.roles.length > 2 && ` +${data.roles.length - 2} more`}
-              </p>
+              <Box>
+                <Text fontSize="sm" color="dota.text.muted" display="inline">
+                  Roles: 
+                </Text>
+                <Wrap spacing={1} ml={1} display="inline-flex">
+                  {data.roles.slice(0, 2).map((role, index) => (
+                    <WrapItem key={index}>
+                      <Badge
+                        size="sm"
+                        colorScheme="teal"
+                        variant="subtle"
+                        bg="dota.teal.500"
+                        color="white"
+                        fontSize="xs"
+                      >
+                        {role}
+                      </Badge>
+                    </WrapItem>
+                  ))}
+                  {data.roles.length > 2 && (
+                    <WrapItem>
+                      <Badge
+                        size="sm"
+                        variant="outline"
+                        borderColor="dota.text.muted"
+                        color="dota.text.muted"
+                        fontSize="xs"
+                      >
+                        +{data.roles.length - 2}
+                      </Badge>
+                    </WrapItem>
+                  )}
+                </Wrap>
+              </Box>
             )}
+
             {data.difficulty && (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Difficulty:</span>
-                <div className="flex space-x-1">
+              <HStack spacing={2}>
+                <Text fontSize="sm" color="dota.text.muted">
+                  Difficulty:
+                </Text>
+                <HStack spacing={1}>
                   {[...Array(3)].map((_, i) => (
-                    <div
+                    <Box
                       key={i}
-                      className={`w-2 h-2 rounded-full ${
-                        i < data.difficulty ? 'bg-yellow-400' : 'bg-gray-200'
-                      }`}
+                      w="8px"
+                      h="8px"
+                      borderRadius="full"
+                      bg={i < data.difficulty ? "yellow.400" : "dota.bg.tertiary"}
+                      border="1px solid"
+                      borderColor={i < data.difficulty ? "yellow.500" : "dota.bg.hover"}
                     />
                   ))}
-                </div>
-              </div>
+                </HStack>
+              </HStack>
             )}
+
             {data.winrate && (
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Win Rate:</span> 
-                <span className={`ml-1 ${data.winrate >= 50 ? 'text-green-600' : 'text-red-600'}`}>
+              <HStack spacing={2}>
+                <Text fontSize="sm" color="dota.text.muted">
+                  Win Rate:
+                </Text>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color={data.winrate >= 50 ? "dota.status.success" : "dota.status.error"}
+                >
                   {data.winrate.toFixed(1)}%
-                </span>
-              </p>
+                </Text>
+                <Progress
+                  value={data.winrate}
+                  size="sm"
+                  colorScheme={data.winrate >= 50 ? "green" : "red"}
+                  bg="dota.bg.tertiary"
+                  w="50px"
+                  borderRadius="full"
+                />
+              </HStack>
             )}
+
             {data.reason && (
-              <p className="text-sm text-blue-600 italic">{data.reason}</p>
+              <Text
+                fontSize="sm"
+                color="dota.teal.300"
+                fontStyle="italic"
+                bg="rgba(39, 174, 158, 0.1)"
+                px={2}
+                py={1}
+                borderRadius="md"
+                border="1px solid"
+                borderColor="dota.teal.500"
+              >
+                {data.reason}
+              </Text>
             )}
-          </div>
+          </VStack>
         )}
-      </div>
-      
+      </VStack>
+
       {showFavorites && (
-        <FavoritesButton
-          type="hero"
-          id={data.id || data.hero_id}
-          name={data.localized_name || data.name}
-          role={data.roles?.[0]}
-        />
+        <Box alignSelf="flex-start">
+          <FavoritesButton
+            type="hero"
+            id={data.id || data.hero_id}
+            name={data.localized_name || data.name}
+            role={data.roles?.[0]}
+          />
+        </Box>
       )}
-    </div>
+    </HStack>
   );
 
   const renderItemCard = () => (
-    <div className="flex items-center space-x-3">
-      <div className="flex-shrink-0">
-        <img 
-          src={data.icon || data.image} 
-          alt={data.dname || data.name}
-          className={`${imageClasses[size]} rounded-md object-cover bg-gray-100`}
-        />
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <h3 className="text-lg font-semibold text-gray-800 truncate">
+    <HStack spacing={config.spacing} align="flex-start">
+      <Box position="relative" flexShrink={0}>
+        <MotionBox
+          whileHover={{ scale: 1.05, rotate: 5 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
+          <Image
+            src={data.icon || data.image}
+            alt={data.dname || data.name}
+            boxSize={config.imageSize}
+            borderRadius="md"
+            objectFit="cover"
+            bg="dota.bg.hover"
+            border="2px solid"
+            borderColor="dota.bg.tertiary"
+            _hover={{
+              borderColor: "yellow.400",
+              boxShadow: "0 0 20px rgba(251, 191, 36, 0.4)",
+            }}
+            transition="all 0.3s ease"
+          />
+        </MotionBox>
+      </Box>
+
+      <VStack flex={1} align="flex-start" spacing={1} minW={0}>
+        <Text
+          fontSize="lg"
+          fontWeight="semibold"
+          color="dota.text.primary"
+          isTruncated
+          w="full"
+        >
           {data.dname || data.name}
-        </h3>
+        </Text>
+
         {showDetails && (
-          <div className="space-y-1">
+          <VStack spacing={1} align="flex-start" w="full">
             {data.cost && (
-              <p className="text-sm text-yellow-600 font-medium">
-                Cost: {data.cost} gold
-              </p>
+              <HStack spacing={1}>
+                <Text fontSize="sm" color="yellow.400" fontWeight="medium">
+                  Cost:
+                </Text>
+                <Text fontSize="sm" color="yellow.300" fontWeight="bold">
+                  {data.cost}
+                </Text>
+                <Text fontSize="xs" color="yellow.500">
+                  gold
+                </Text>
+              </HStack>
             )}
+
             {data.category && (
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Category:</span> {data.category}
-              </p>
+              <HStack spacing={2}>
+                <Text fontSize="sm" color="dota.text.muted">
+                  Category:
+                </Text>
+                <Badge
+                  size="sm"
+                  bg="dota.purple.500"
+                  color="white"
+                  fontSize="xs"
+                  borderRadius="md"
+                >
+                  {data.category}
+                </Badge>
+              </HStack>
             )}
+
             {data.description && (
-              <p className="text-xs text-gray-500 line-clamp-2">
+              <Text
+                fontSize="xs"
+                color="dota.text.muted"
+                noOfLines={2}
+                bg="dota.bg.hover"
+                p={2}
+                borderRadius="md"
+                border="1px solid"
+                borderColor="dota.bg.tertiary"
+              >
                 {data.description}
-              </p>
+              </Text>
             )}
+
             {data.reason && (
-              <p className="text-sm text-blue-600 italic">{data.reason}</p>
+              <Text
+                fontSize="sm"
+                color="dota.teal.300"
+                fontStyle="italic"
+                bg="rgba(39, 174, 158, 0.1)"
+                px={2}
+                py={1}
+                borderRadius="md"
+                border="1px solid"
+                borderColor="dota.teal.500"
+              >
+                {data.reason}
+              </Text>
             )}
-          </div>
+          </VStack>
         )}
-      </div>
-      
+      </VStack>
+
       {showFavorites && (
-        <FavoritesButton
-          type="item"
-          id={data.id || data.item_id}
-          name={data.dname || data.name}
-          category={data.category}
-        />
+        <Box alignSelf="flex-start">
+          <FavoritesButton
+            type="item"
+            id={data.id || data.item_id}
+            name={data.dname || data.name}
+            category={data.category}
+          />
+        </Box>
       )}
-    </div>
+    </HStack>
   );
 
   const renderBuildCard = () => (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">
+    <VStack spacing={config.spacing} align="stretch">
+      <Flex justify="space-between" align="center">
+        <Text
+          fontSize="lg"
+          fontWeight="semibold"
+          color="dota.text.primary"
+          isTruncated
+        >
           {data.name || 'Item Build'}
-        </h3>
+        </Text>
         {data.situation && (
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+          <Badge
+            bg="dota.darkBlue.500"
+            color="white"
+            fontSize="xs"
+            px={2}
+            py={1}
+            borderRadius="full"
+          >
             {data.situation}
-          </span>
+          </Badge>
         )}
-      </div>
-      
+      </Flex>
+
       {showDetails && (
-        <div className="space-y-2">
+        <VStack spacing={2} align="stretch">
           {data.items && (
-            <div className="flex flex-wrap gap-1">
-              {data.items.slice(0, 6).map((item, index) => (
-                <img
-                  key={index}
-                  src={item.icon}
-                  alt={item.name}
-                  className="w-8 h-8 rounded border border-gray-200"
-                  title={item.name}
-                />
-              ))}
-              {data.items.length > 6 && (
-                <div className="w-8 h-8 rounded border border-gray-200 bg-gray-100 flex items-center justify-center text-xs text-gray-600">
-                  +{data.items.length - 6}
-                </div>
-              )}
-            </div>
+            <Box>
+              <Wrap spacing={1}>
+                {data.items.slice(0, 6).map((item, index) => (
+                  <WrapItem key={index}>
+                    <Tooltip label={item.name} placement="top">
+                      <MotionBox
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        <Image
+                          src={item.icon}
+                          alt={item.name}
+                          boxSize="32px"
+                          borderRadius="md"
+                          border="1px solid"
+                          borderColor="dota.bg.tertiary"
+                          _hover={{
+                            borderColor: "yellow.400",
+                            boxShadow: "0 0 10px rgba(251, 191, 36, 0.4)",
+                          }}
+                          transition="all 0.2s ease"
+                        />
+                      </MotionBox>
+                    </Tooltip>
+                  </WrapItem>
+                ))}
+                {data.items.length > 6 && (
+                  <WrapItem>
+                    <Box
+                      boxSize="32px"
+                      borderRadius="md"
+                      border="1px solid"
+                      borderColor="dota.bg.tertiary"
+                      bg="dota.bg.hover"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="xs"
+                      color="dota.text.muted"
+                      fontWeight="medium"
+                    >
+                      +{data.items.length - 6}
+                    </Box>
+                  </WrapItem>
+                )}
+              </Wrap>
+            </Box>
           )}
-          
+
           {data.total_cost && (
-            <p className="text-sm text-yellow-600 font-medium">
-              Total Cost: {data.total_cost} gold
-            </p>
+            <HStack spacing={1}>
+              <Text fontSize="sm" color="yellow.400" fontWeight="medium">
+                Total Cost:
+              </Text>
+              <Text fontSize="sm" color="yellow.300" fontWeight="bold">
+                {data.total_cost}
+              </Text>
+              <Text fontSize="xs" color="yellow.500">
+                gold
+              </Text>
+            </HStack>
           )}
-          
+
           {data.description && (
-            <p className="text-sm text-gray-600">{data.description}</p>
+            <Text
+              fontSize="sm"
+              color="dota.text.muted"
+              bg="dota.bg.hover"
+              p={2}
+              borderRadius="md"
+              border="1px solid"
+              borderColor="dota.bg.tertiary"
+            >
+              {data.description}
+            </Text>
           )}
-        </div>
+        </VStack>
       )}
-    </div>
+    </VStack>
   );
 
   const renderComboCard = () => (
-    <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-800">
+    <VStack spacing={config.spacing} align="stretch">
+      <Text
+        fontSize="lg"
+        fontWeight="semibold"
+        color="dota.text.primary"
+      >
         {data.name || 'Hero Combo'}
-      </h3>
-      
+      </Text>
+
       {showDetails && (
-        <div className="space-y-2">
+        <VStack spacing={2} align="stretch">
           {data.heroes && (
-            <div className="flex space-x-2">
+            <HStack spacing={2} flexWrap="wrap">
               {data.heroes.map((hero, index) => (
-                <div key={index} className="flex items-center space-x-1">
-                  <img
-                    src={hero.icon}
-                    alt={hero.name}
-                    className="w-8 h-8 rounded"
-                    title={hero.name}
-                  />
+                <React.Fragment key={index}>
+                  <Tooltip label={hero.name} placement="top">
+                    <MotionBox
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Avatar
+                        src={hero.icon}
+                        name={hero.name}
+                        size="sm"
+                        border="2px solid"
+                        borderColor="dota.bg.tertiary"
+                        _hover={{
+                          borderColor: "dota.teal.500",
+                          boxShadow: heroGlow,
+                        }}
+                        transition="all 0.2s ease"
+                      />
+                    </MotionBox>
+                  </Tooltip>
                   {index < data.heroes.length - 1 && (
-                    <span className="text-gray-400">+</span>
+                    <Text color="dota.text.muted" fontSize="lg" fontWeight="bold">
+                      +
+                    </Text>
                   )}
-                </div>
+                </React.Fragment>
               ))}
-            </div>
+            </HStack>
           )}
-          
+
           {data.synergy_rating && (
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Synergy:</span>
-              <div className="flex space-x-1">
+            <HStack spacing={2}>
+              <Text fontSize="sm" color="dota.text.muted">
+                Synergy:
+              </Text>
+              <HStack spacing={1}>
                 {[...Array(5)].map((_, i) => (
-                  <div
+                  <Box
                     key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i < data.synergy_rating ? 'bg-green-400' : 'bg-gray-200'
-                    }`}
+                    w="8px"
+                    h="8px"
+                    borderRadius="full"
+                    bg={i < data.synergy_rating ? "dota.status.success" : "dota.bg.tertiary"}
+                    border="1px solid"
+                    borderColor={i < data.synergy_rating ? "green.500" : "dota.bg.hover"}
+                    boxShadow={i < data.synergy_rating ? "0 0 4px rgba(74, 222, 128, 0.4)" : "none"}
                   />
                 ))}
-              </div>
-            </div>
+              </HStack>
+              <Text fontSize="sm" color="dota.status.success" fontWeight="medium">
+                {data.synergy_rating}/5
+              </Text>
+            </HStack>
           )}
-          
+
           {data.description && (
-            <p className="text-sm text-gray-600">{data.description}</p>
+            <Text
+              fontSize="sm"
+              color="dota.text.muted"
+              bg="dota.bg.hover"
+              p={2}
+              borderRadius="md"
+              border="1px solid"
+              borderColor="dota.bg.tertiary"
+            >
+              {data.description}
+            </Text>
           )}
-        </div>
+        </VStack>
       )}
-    </div>
+    </VStack>
   );
 
   const renderContent = () => {
@@ -258,16 +563,66 @@ const RecommendationCard = ({
   };
 
   return (
-    <div 
-      className={`
-        bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 
-        ${onClick ? 'cursor-pointer hover:border-blue-300' : ''} 
-        ${sizeClasses[size]}
-      `}
+    <MotionCard
+      bg="dota.bg.card"
+      borderWidth="2px"
+      borderColor="dota.bg.tertiary"
+      borderRadius="lg"
+      overflow="hidden"
+      cursor={onClick ? "pointer" : "default"}
+      _hover={{
+        borderColor: "dota.teal.500",
+        boxShadow: cardHover,
+        transform: "translateY(-2px)",
+      }}
+      _active={{
+        transform: "translateY(0)",
+      }}
       onClick={onClick}
+      transition="all 0.3s ease"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ 
+        scale: 1.02,
+        boxShadow: cardHover,
+      }}
+      whileTap={{ scale: 0.98 }}
+      position="relative"
+      role={onClick ? "button" : "article"}
+      tabIndex={onClick ? 0 : undefined}
+      _focus={{
+        outline: "none",
+        ring: "2px",
+        ringColor: "dota.teal.500",
+        ringOffset: "2px",
+        ringOffsetColor: "dota.bg.primary",
+      }}
+      background={`linear-gradient(135deg, 
+        rgba(30, 30, 30, 0.9) 0%, 
+        rgba(26, 26, 26, 0.95) 50%, 
+        rgba(45, 45, 45, 0.9) 100%)`}
+      backdropFilter="blur(10px)"
+      sx={{
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '2px',
+          background: 'linear-gradient(90deg, transparent, rgba(39, 174, 158, 0.6), transparent)',
+          opacity: 0,
+          transition: 'opacity 0.3s ease',
+        },
+        '&:hover::before': {
+          opacity: 1,
+        },
+      }}
     >
-      {renderContent()}
-    </div>
+      <CardBody p={config.padding}>
+        {renderContent()}
+      </CardBody>
+    </MotionCard>
   );
 };
 

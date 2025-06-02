@@ -1,6 +1,46 @@
 // frontend/src/components/FavoritesButton.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  IconButton,
+  Tooltip,
+  Alert,
+  Spinner,
+  Box,
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { fileBackend } from '../services/fileBackend.js';
+
+const MotionIconButton = motion.create(IconButton);
+
+// Heart icon component
+const HeartIcon = ({ filled = false, ...props }) => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill={filled ? "currentColor" : "none"}
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+);
+
+// Animation variants for Framer Motion
+const pulseVariants = {
+  animate: {
+    scale: [1, 1.1, 1],
+    transition: {
+      duration: 1,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
 
 const FavoritesButton = ({ 
   type, // 'hero' or 'item'
@@ -16,9 +56,9 @@ const FavoritesButton = ({
 
   useEffect(() => {
     checkFavoriteStatus();
-  }, [type, id]);
+  }, [checkFavoriteStatus]);
 
-  const checkFavoriteStatus = async () => {
+  const checkFavoriteStatus = useCallback(async () => {
     try {
       if (type === 'hero') {
         const favorites = await fileBackend.getFavoriteHeroes();
@@ -31,7 +71,7 @@ const FavoritesButton = ({
       console.error('Error checking favorite status:', err);
       setError('Failed to check favorite status');
     }
-  };
+  }, [type, id]);
 
   const toggleFavorite = async (e) => {
     e.stopPropagation(); // Prevent triggering parent click events
@@ -66,59 +106,110 @@ const FavoritesButton = ({
     }
   };
 
-  const buttonClass = `
-    relative group inline-flex items-center justify-center p-2 rounded-md transition-all duration-200 ease-in-out
-    ${isFavorite 
-      ? 'text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100' 
-      : 'text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50'
-    }
-    ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-    ${className}
-  `;
-
   return (
-    <div className="relative">
-      <button
-        onClick={toggleFavorite}
-        disabled={loading}
-        className={buttonClass}
-        title={`${isFavorite ? 'Remove from' : 'Add to'} favorites`}
-        aria-label={`${isFavorite ? 'Remove from' : 'Add to'} favorites`}
+    <Box position="relative">
+      <Tooltip
+        label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        placement="top"
+        hasArrow
+        bg="dota.bg.tertiary"
+        color="dota.text.primary"
+        fontSize="sm"
+        borderRadius="md"
       >
-        {loading ? (
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
-        ) : (
-          <svg 
-            className={`w-5 h-5 transition-transform duration-200 ${isFavorite ? 'scale-110' : 'scale-100 group-hover:scale-110'}`}
-            fill={isFavorite ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
-            />
-          </svg>
-        )}
-        {isFavorite && (
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-        )}
-      </button>
+        <MotionIconButton
+          onClick={toggleFavorite}
+          disabled={loading}
+          variant="ghost"
+          size="sm"
+          aria-label={`${isFavorite ? 'Remove from' : 'Add to'} favorites`}
+          bg={isFavorite ? "rgba(244, 63, 94, 0.1)" : "dota.bg.hover"}
+          color={isFavorite ? "red.400" : "dota.text.muted"}
+          border="1px solid"
+          borderColor={isFavorite ? "red.400" : "transparent"}
+          _hover={{
+            bg: isFavorite ? "rgba(244, 63, 94, 0.2)" : "rgba(244, 63, 94, 0.1)",
+            color: "red.400",
+            borderColor: "red.400",
+            transform: "translateY(-1px)",
+            filter: isFavorite ? "drop-shadow(0 0 8px rgba(244, 63, 94, 0.6))" : "none",
+          }}
+          _active={{
+            transform: "scale(0.9)",
+          }}
+          _focus={{
+            outline: "none",
+            ring: "2px",
+            ringColor: "red.400",
+            ringOffset: "2px",
+            ringOffsetColor: "dota.bg.primary",
+          }}
+          transition="all 0.2s ease"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className={className}
+          sx={{
+            ...(isFavorite && {
+              transform: "scale(1.1)",
+            }),
+          }}
+        >
+          {loading ? (
+            <Spinner size="sm" color="red.400" />
+          ) : (
+            <Box position="relative">
+              <HeartIcon
+                filled={isFavorite}
+                style={{
+                  transition: "all 0.3s ease",
+                  transform: isFavorite ? "scale(1.1)" : "scale(1)",
+                }}
+              />
+              {isFavorite && (
+                <Box
+                  position="absolute"
+                  top="-2px"
+                  right="-2px"
+                  w="6px"
+                  h="6px"
+                  bg="red.500"
+                  borderRadius="full"
+                  border="1px solid"
+                  borderColor="dota.bg.primary"
+                  variants={pulseVariants}
+                  animate="animate"
+                />
+              )}
+            </Box>
+          )}
+        </MotionIconButton>
+      </Tooltip>
       
       {error && (
-        <div className="absolute top-full left-0 mt-1 px-2 py-1 bg-red-100 text-red-600 text-xs rounded shadow-lg whitespace-nowrap z-10">
-          {error}
-        </div>
+        <Alert.Root
+          status="error"
+          position="absolute"
+          top="100%"
+          left="0"
+          mt={1}
+          fontSize="xs"
+          borderRadius="md"
+          boxShadow="lg"
+          whiteSpace="nowrap"
+          zIndex={10}
+          maxW="200px"
+          bg="dota.status.error"
+          color="white"
+        >
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>
+              ⚠️ {error}
+            </Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
       )}
-      
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-        {isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-      </div>
-    </div>
+    </Box>
   );
 };
 

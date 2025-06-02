@@ -38,13 +38,13 @@ class LocalStorageService {
       throw new Error('LocalStorage not available');
     }
 
+    const serialized = JSON.stringify({
+      data: value,
+      timestamp: Date.now(),
+      version: '1.0.0'
+    });
+
     try {
-      const serialized = JSON.stringify({
-        data: value,
-        timestamp: Date.now(),
-        version: '1.0.0'
-      });
-      
       localStorage.setItem(this.getPrefixedKey(key), serialized);
       return true;
     } catch (error) {
@@ -55,7 +55,7 @@ class LocalStorageService {
         try {
           localStorage.setItem(this.getPrefixedKey(key), serialized);
           return true;
-        } catch (retryError) {
+        } catch {
           throw new Error('LocalStorage quota exceeded');
         }
       }

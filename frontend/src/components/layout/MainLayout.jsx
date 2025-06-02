@@ -1,19 +1,32 @@
 // frontend/src/components/layout/MainLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { Box, Flex } from '@chakra-ui/react';
 import Header from './Header';
 import Footer from './Footer';
 
 const MainLayout = () => {
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <Flex
+            direction="column"
+            minH="100vh"
+            bg="dota.bg.primary"
+            color="dota.text.primary"
+        >
             <Header />
-            <main className="flex-grow container mx-auto p-4 sm:p-6 lg:p-8"> 
-                {/* p-4 for small screens, p-6 for sm, p-8 for lg. Container mx-auto centers content. */}
+            <Box
+                as="main"
+                flex="1"
+                maxW="7xl"
+                mx="auto"
+                px={{ base: 4, sm: 6, lg: 8 }}
+                py={{ base: 4, sm: 6, lg: 8 }}
+                w="full"
+            >
                 <Outlet /> {/* Child routes will render here */}
-            </main>
+            </Box>
             <Footer />
-        </div>
+        </Flex>
     );
 };
 export default MainLayout;
