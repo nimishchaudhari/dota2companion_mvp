@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../services/api.js';
 
 const PlayerSearch = ({ onResult }) => {
   const [query, setQuery] = useState('');
@@ -18,9 +19,7 @@ const PlayerSearch = ({ onResult }) => {
     }
     setLoading(true);
     try {
-      const res = await fetch(`/api/players/search?q=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error('Search failed.');
-      const data = await res.json();
+      const data = await api.searchPlayers(query);
       if (data.error) {
         setError(data.error);
       } else if (data.players && data.players.length === 0) {
