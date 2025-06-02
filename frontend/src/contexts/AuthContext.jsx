@@ -1,8 +1,6 @@
 // frontend/src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios'; // Ensure axios is installed
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'; // From .env file
+import { mockAuth } from '../services/api.js';
 
 const AuthContext = createContext(null);
 
@@ -11,21 +9,26 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${API_URL}/auth/me`, { withCredentials: true }) // Important for cookies
-            .then(response => {
-                if (response.data.success) {
-                    setUser(response.data.user);
+        const checkAuth = async () => {
+            try {
+                const response = await mockAuth.checkAuth();
+                if (response.success) {
+                    setUser(response.user);
                 }
-            })
-            .catch(() => setUser(null))
-            .finally(() => setLoading(false));
+            } catch (error) {
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkAuth();
     }, []);
 
     const login = async (username) => { // No password for POC test login
         try {
-            const response = await axios.post(`${API_URL}/auth/test/login`, { username }, { withCredentials: true });
-            if (response.data.success) {
-                setUser(response.data.user);
+            const response = await mockAuth.login(username);
+            if (response.success) {
+                setUser(response.user);
                 return true;
             }
             return false;
@@ -38,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await axios.post(`${API_URL}/auth/test/logout`, {}, { withCredentials: true });
+            await mockAuth.logout();
             setUser(null);
         } catch (error) {
             console.error('Logout failed', error);
