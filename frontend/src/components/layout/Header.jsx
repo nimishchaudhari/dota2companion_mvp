@@ -1,10 +1,21 @@
 // frontend/src/components/layout/Header.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import PlayerSearch from '../PlayerSearch';
 
 const Header = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    // Handle navigation to player profile from search result
+    const handlePlayerSearchResult = (players) => {
+        if (!players || players.length === 0) return;
+        if (players.length === 1) {
+            navigate(`/player/${players[0].steamId}`);
+        }
+        // If multiple, let PlayerSearch show the list for disambiguation
+    };
 
     return (
         <header className="bg-gray-800 text-white p-4 shadow-md">
@@ -15,7 +26,8 @@ const Header = () => {
                     <Link to="/heroes" className="hover:text-gray-300">Heroes</Link>
                     {/* Future: <Link to="/profile" className="hover:text-gray-300">My Profile</Link> */}
                 </nav>
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
+                    <PlayerSearch onResult={handlePlayerSearchResult} />
                     {user ? (
                         <>
                             {user.avatarUrl && (

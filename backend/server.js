@@ -229,6 +229,45 @@ app.get('/api/matches/:matchId', async (req, res) => {
     }
 });
 
+// --- Player Search Route ---
+app.get('/api/players/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    return res.status(400).json({ error: 'Search query "q" is required.' });
+  }
+  try {
+    // If q is a number (Steam ID or Dota 2 ID), try to fetch the player directly
+    if (/^\d{5,}$/.test(q.trim())) {
+      const playerRes = await axios.get(`${OPENDOTA_API_URL}/players/${q.trim()}`);
+      if (playerRes.data && playerRes.data.profile) {
+        return res.json({ players: [{
+          steamId: playerRes.data.profile.account_id,
+          personaName: playerRes.data.profile.personaname,
+          avatar: playerRes.data.profile.avatarfull,
+          ...playerRes.data.profile
+        }] });
+      } else {
+        return res.json({ players: [] });
+      }
+    }
+    // Otherwise, search by persona name
+    const searchRes = await axios.get(`${OPENDOTA_API_URL}/search?q=${encodeURIComponent(q)}`);
+    const players = (searchRes.data || []).map(p => ({
+      steamId: p.account_id,
+      personaName: p.personaname,
+      avatar: p.avatarfull,
+      similarity: p.similarity
+    }));
+    return res.json({ players });
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res.json({ players: [] });
+    }
+    console.error(`Error in /api/players/search for "${q}":`, error.message);
+    return res.status(500).json({ error: 'Failed to search for players.' });
+  }
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
