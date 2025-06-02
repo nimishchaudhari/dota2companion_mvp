@@ -113,7 +113,7 @@ app.get('/api/player/:accountId/summary', async (req, res) => {
         const [playerRes, wlRes, recentMatchesRes] = await Promise.all([
             axios.get(`${OPENDOTA_API_URL}/players/${accountId}`),
             axios.get(`${OPENDOTA_API_URL}/players/${accountId}/wl`),
-            axios.get(`${OPENDOTA_API_URL}/players/${accountId}/recentMatches?limit=10`)
+            axios.get(`${OPENDOTA_API_URL}/players/${accountId}/recentMatches?limit=5`)
         ]);
 
         const summaryData = {
