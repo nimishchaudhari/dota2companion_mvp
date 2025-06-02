@@ -1,8 +1,6 @@
 // frontend/src/pages/HeroesListPage.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { api } from '../services/api.js';
 
 const HeroesListPage = () => {
     const [heroes, setHeroes] = useState([]);
@@ -13,14 +11,14 @@ const HeroesListPage = () => {
     const [selectedHero, setSelectedHero] = useState(null);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/heroes`, { withCredentials: true })
-            .then(response => {
-                setHeroes(response.data);
+        api.getHeroes()
+            .then(heroes => {
+                setHeroes(heroes);
                 setError(null);
             })
             .catch(err => {
                 console.error("Failed to fetch heroes", err);
-                setError(err.response?.data?.message || 'Failed to load hero data.');
+                setError(err.message || 'Failed to load hero data.');
             })
             .finally(() => setLoading(false));
     }, []);
