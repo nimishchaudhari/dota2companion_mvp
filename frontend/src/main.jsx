@@ -32,7 +32,7 @@ const initializeApp = async () => {
 initializeApp().then(() => {
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <ChakraProvider value={system}>
+      <ChakraProvider theme={system}>
         <AuthProvider> {/* Wrap App with AuthProvider */}
           <App />
         </AuthProvider>
@@ -44,7 +44,7 @@ initializeApp().then(() => {
   // Still render the app but without backend services
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <ChakraProvider value={system}>
+      <ChakraProvider theme={system}>
         <AuthProvider> {/* Wrap App with AuthProvider */}
           <App />
         </AuthProvider>
