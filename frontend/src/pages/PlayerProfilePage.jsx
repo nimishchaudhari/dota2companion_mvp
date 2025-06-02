@@ -77,7 +77,7 @@ const PlayerProfilePage = () => {
                 </div>
             )}
 
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Recent Matches (Last 10)</h2>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Recent Matches (Last 5)</h2>
             {recentMatches && recentMatches.length > 0 ? (
                 <ul className="space-y-4">
                     {recentMatches.map(match => {
