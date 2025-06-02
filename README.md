@@ -1,87 +1,181 @@
 # Dota 2 Companion POC
 
-This project is a Proof of Concept for a Dota 2 Companion Web App. It aims to provide Dota 2 players with a platform to track their performance, learn about heroes and game mechanics, and analyze matches.
+This project is a Proof of Concept for a Dota 2 Companion Web App. It provides Dota 2 players with a platform to track their performance, learn about heroes and game mechanics, and analyze matches.
 
-The application is structured as a monorepo with two main components:
-*   `/backend`: A Node.js and Express.js application serving the API.
-*   `/frontend`: A React.js and Vite application for the user interface.
+## Current Deployment Status
+
+The application is **currently deployed as a frontend-only solution** that connects directly to the OpenDota API. This allows for immediate deployment to GitHub Pages or other static hosting services without requiring backend infrastructure.
+
+### Current Architecture
+- **Frontend:** React.js and Vite application deployed as a static site
+- **Data Source:** Direct integration with OpenDota API
+- **Hosting:** GitHub Pages (or any static site hosting)
+- **Backend:** Preserved in codebase for future feature expansion
 
 ## Project Structure
 
 ```
 /
-├── backend/              # Node.js/Express API
+├── backend/              # Node.js/Express API (preserved for future use)
 │   ├── server.js         # Main server file
 │   ├── package.json      # Backend dependencies and scripts
-│   └── nixpacks.toml     # Nixpacks configuration for Railway (backend service)
-├── frontend/             # React/Vite UI
+│   └── nixpacks.toml     # Railway configuration (for future deployment)
+├── frontend/             # React/Vite UI (currently deployed)
 │   ├── src/              # Frontend source code
 │   ├── package.json      # Frontend dependencies and scripts
 │   └── vite.config.js    # Vite configuration
-├── DEPLOY_ON_RAILWAY.md  # Guide for deploying to Railway.app
-├── nixpacks.toml         # Nixpacks configuration for Railway (root, if deploying as single service)
+├── DEPLOY_INSTRUCTIONS.md # Deployment guide (frontend-only + future backend)
+├── nixpacks.toml         # Nixpacks configuration (for future full-stack deployment)
 └── README.md             # This file
 ```
 
-## Local Development
+## Quick Start (Frontend-Only)
 
 ### Prerequisites
-*   Node.js (version 18.x recommended, as per `package.json` files)
-*   npm (comes with Node.js)
+- Node.js (version 18.x recommended)
+- npm (comes with Node.js)
 
-### Backend Setup
-1.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file in the `backend` directory by copying `.env.example` (if it exists) or by setting the required environment variables. Key variables include:
-    *   `PORT` (e.g., 3001)
-    *   `SESSION_SECRET`
-    *   `FRONTEND_URL_RAILWAY` (for local dev, can be `http://localhost:5173`)
-    *   `STEAM_API_KEY` (optional)
-    *   `OPENDOTA_API_KEY` (optional)
-4.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    Alternatively, for a production-like start (without nodemon):
-    ```bash
-    npm start
-    ```
-    The backend will typically run on `http://localhost:3001` (or the port specified in your `.env`).
+### Local Development
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nimishchaudhari/dota2companion_mvp.git
+   cd dota2companion_mvp
+   ```
 
-### Frontend Setup
-1.  Navigate to the frontend directory:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Create a `.env` file in the `frontend` directory (if needed by your setup, e.g., for `VITE_API_URL`). Set `VITE_API_URL` to your backend's address:
-    ```
-    VITE_API_URL=http://localhost:3001 
-    ```
-    (Adjust the port if your backend runs on a different one).
-4.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    The frontend will typically run on `http://localhost:5173`.
+2. **Navigate to frontend and install dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-## Deployment
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will run on `http://localhost:5173`
 
-Deployment instructions for Railway.app can be found in `DEPLOY_ON_RAILWAY.md`.
+### Production Deployment
+See `DEPLOY_INSTRUCTIONS.md` for detailed GitHub Pages deployment instructions.
 
-## Linting
-
-The frontend project is set up with ESLint. To run the linter:
+**Quick deployment:**
 ```bash
 cd frontend
-npm run lint
+npm install
+npm run build
+npx gh-pages -d dist  # Deploys to GitHub Pages
 ```
+
+## Features
+
+### Currently Available (Frontend-Only)
+- **Hero Browser:** Browse all Dota 2 heroes with detailed information
+- **Player Search:** Search players by Steam ID, Dota 2 ID, or persona name
+- **Player Profiles:** View detailed player statistics and performance metrics
+- **Match History:** Browse recent matches with comprehensive details
+- **Match Analysis:** Detailed match breakdowns including hero performance and statistics
+- **Responsive Design:** Works seamlessly on desktop and mobile devices
+
+### Planned Features (Requiring Backend)
+The backend is preserved in the codebase to support these future features:
+- **User Authentication:** Steam login and personalized user accounts
+- **Saved Data:** Personal dashboards and saved player/match preferences
+- **Advanced Analytics:** Custom match analysis and performance tracking
+- **Social Features:** Match sharing and community interactions
+- **API Optimization:** Rate limiting, caching, and enhanced data processing
+- **Real-time Updates:** Live match tracking and notifications
+
+## Backend (Future Use)
+
+The backend code is fully implemented and ready for deployment when advanced features are needed. It includes:
+
+### Backend Features (Ready for Deployment)
+- Express.js REST API with comprehensive endpoints
+- Steam authentication integration (passport-steam)
+- Session management and security middleware
+- OpenDota API integration with error handling
+- CORS configuration for production deployment
+- Environment-based configuration
+
+### Backend Setup (For Future Development)
+```bash
+cd backend
+npm install
+# Set up environment variables (see DEPLOY_INSTRUCTIONS.md)
+npm run dev  # Development server on http://localhost:3001
+```
+
+### Environment Configuration
+The backend requires these environment variables:
+- `SESSION_SECRET`: Session encryption key
+- `FRONTEND_URL_RAILWAY`: Frontend URL for CORS
+- `STEAM_API_KEY`: (Optional) Steam API access
+- `OPENDOTA_API_KEY`: (Optional) Enhanced OpenDota access
+- `NODE_ENV`: Environment setting
+
+## API Integration
+
+### Current (Direct OpenDota)
+The frontend makes direct calls to OpenDota's public API endpoints:
+- Player data: `https://api.opendota.com/api/players/{player_id}`
+- Match data: `https://api.opendota.com/api/matches/{match_id}`
+- Hero data: `https://api.opendota.com/api/heroes`
+- Search: `https://api.opendota.com/api/search`
+
+### Future (via Backend)
+When the backend is deployed, API calls will be routed through the backend for:
+- Enhanced error handling and retry logic
+- Rate limiting and request optimization
+- Authentication-gated features
+- Custom data aggregation and caching
+
+## Development
+
+### Frontend Development
+```bash
+cd frontend
+npm run dev      # Development server
+npm run build    # Production build
+npm run preview  # Preview production build
+npm run lint     # Run ESLint
+```
+
+### Backend Development (When Needed)
+```bash
+cd backend
+npm run dev      # Development server with nodemon
+npm start        # Production server
+```
+
+## Deployment Options
+
+### Current (Frontend-Only)
+- **GitHub Pages** (recommended for static hosting)
+- **Vercel** (excellent for React apps)
+- **Netlify** (great for static sites)
+- **Railway** (static site deployment)
+
+### Future (Full-Stack)
+- **Railway.app** (recommended for full-stack deployment)
+- **Vercel** (frontend) + **Railway** (backend)
+- **Netlify** (frontend) + **Heroku** (backend)
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Test thoroughly (frontend-only for now)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## License
+
+This project is a proof of concept and is available under the MIT License.
+
+## Acknowledgments
+
+- **OpenDota API** for providing comprehensive Dota 2 match and player data
+- **Valve Corporation** for Dota 2 and related game data
+- **React and Vite** for the excellent development experience
+- **Tailwind CSS** for rapid UI development
