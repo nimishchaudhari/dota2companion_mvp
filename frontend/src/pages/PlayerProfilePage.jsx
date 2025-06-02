@@ -1,9 +1,7 @@
 // frontend/src/pages/PlayerProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { api } from '../services/api.js';
 
 const PlayerProfilePage = () => {
     const { playerId } = useParams(); 
@@ -20,19 +18,19 @@ const PlayerProfilePage = () => {
             try {
                 // Fetch heroes data if not already available - simplified for POC
                 if (Object.keys(heroesData).length === 0) {
-                    const heroesRes = await axios.get(`${API_URL}/api/heroes`, { withCredentials: true });
-                    const heroesMap = heroesRes.data.reduce((map, hero) => {
+                    const heroes = await api.getHeroes();
+                    const heroesMap = heroes.reduce((map, hero) => {
                         map[hero.id] = hero;
                         return map;
                     }, {});
                     setHeroesData(heroesMap);
                 }
 
-                const response = await axios.get(`${API_URL}/api/player/${playerId}/summary`, { withCredentials: true });
-                setPlayerData(response.data);
+                const playerData = await api.getPlayerSummary(playerId);
+                setPlayerData(playerData);
             } catch (err) {
                 console.error("Failed to fetch player summary", err);
-                setError(err.response?.data?.message || 'Failed to load player data.');
+                setError(err.message || 'Failed to load player data.');
                 setPlayerData(null);
             } finally {
                 setLoading(false);
