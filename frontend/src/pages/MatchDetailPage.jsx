@@ -1,9 +1,7 @@
 // frontend/src/pages/MatchDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { api } from '../services/api.js';
 
 // Simple game mode mapping (can be expanded)
 const gameModeMap = {
@@ -24,18 +22,18 @@ const MatchDetailPage = () => {
             setError(null);
             try {
                 if (Object.keys(heroesData).length === 0) {
-                    const heroesRes = await axios.get(`${API_URL}/api/heroes`, { withCredentials: true });
-                    const heroesMap = heroesRes.data.reduce((map, hero) => {
+                    const heroes = await api.getHeroes();
+                    const heroesMap = heroes.reduce((map, hero) => {
                         map[hero.id] = hero;
                         return map;
                     }, {});
                     setHeroesData(heroesMap);
                 }
-                const matchRes = await axios.get(`${API_URL}/api/matches/${matchId}`, { withCredentials: true });
-                setMatchData(matchRes.data);
+                const matchData = await api.getMatchDetails(matchId);
+                setMatchData(matchData);
             } catch (err) {
                 console.error("Failed to fetch match or hero details", err);
-                setError(err.response?.data?.message || 'Failed to load data.');
+                setError(err.message || 'Failed to load data.');
             } finally {
                 setLoading(false);
             }
