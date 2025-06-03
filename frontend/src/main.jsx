@@ -1,6 +1,6 @@
 // frontend/src/main.jsx
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import App from './App.jsx';
 import './index.css'; // Assuming default styling
@@ -28,27 +28,26 @@ const initializeApp = async () => {
   }
 };
 
+// Get root element
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
+
+// App component wrapper with error boundary
+const AppWrapper = () => (
+  <React.StrictMode>
+    <ChakraProvider theme={system}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </ChakraProvider>
+  </React.StrictMode>
+);
+
 // Initialize backend before rendering the app
 initializeApp().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <ChakraProvider theme={system}>
-        <AuthProvider> {/* Wrap App with AuthProvider */}
-          <App />
-        </AuthProvider>
-      </ChakraProvider>
-    </React.StrictMode>,
-  );
+  root.render(<AppWrapper />);
 }).catch((error) => {
   console.error('Critical error during app initialization:', error);
   // Still render the app but without backend services
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <ChakraProvider theme={system}>
-        <AuthProvider> {/* Wrap App with AuthProvider */}
-          <App />
-        </AuthProvider>
-      </ChakraProvider>
-    </React.StrictMode>,
-  );
+  root.render(<AppWrapper />);
 });
