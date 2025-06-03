@@ -35,7 +35,7 @@ const root = createRoot(rootElement);
 // App component wrapper with error boundary
 const AppWrapper = () => (
   <React.StrictMode>
-    <ChakraProvider theme={system}>
+    <ChakraProvider value={system}>
       <AuthProvider>
         <App />
       </AuthProvider>
