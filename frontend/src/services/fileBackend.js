@@ -18,7 +18,7 @@ class FileBackendService {
     try {
       await dbService.initialize();
       this.initialized = true;
-      console.log('FileBackend service initialized');
+      // FileBackend service initialized
     } catch (error) {
       console.error('Failed to initialize FileBackend service:', error);
       throw error;
@@ -452,7 +452,7 @@ class FileBackendService {
         this.loadStaticData('users', 'schema.json')
       ]);
       
-      console.log('Data sync completed');
+      // Data sync completed
       return { success: true };
     } catch (error) {
       console.error('Data sync failed:', error);

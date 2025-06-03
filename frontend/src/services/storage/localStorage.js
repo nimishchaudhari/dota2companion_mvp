@@ -387,7 +387,7 @@ class LocalStorageService {
         this.saveSettings(settings);
       }
 
-      console.log('LocalStorage cleanup completed');
+      // LocalStorage cleanup completed
       return true;
     } catch (error) {
       console.error('LocalStorage cleanup failed:', error);

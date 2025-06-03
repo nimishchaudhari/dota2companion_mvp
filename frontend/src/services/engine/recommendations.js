@@ -467,7 +467,7 @@ class RecommendationEngine {
     try {
       // This would implement machine learning to adjust weights
       // based on user acceptance/rejection of recommendations
-      console.log('Updating recommendation weights with feedback:', feedback);
+      // Updating recommendation weights with feedback
     } catch (error) {
       console.error('Error updating weights:', error);
     }

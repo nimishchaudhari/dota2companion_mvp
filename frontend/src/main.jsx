@@ -1,5 +1,5 @@
 // frontend/src/main.jsx
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import App from './App.jsx';
@@ -11,13 +11,13 @@ import theme from './theme/index.js'; // Import custom Dota 2 theme
 // Initialize file backend service
 const initializeApp = async () => {
   try {
-    console.log('Initializing file backend service...');
+    // Initializing file backend service...
     await fileBackend.initialize();
-    console.log('File backend service initialized successfully');
+    // File backend service initialized successfully
     
     // Perform health check to ensure everything is working
     const health = await fileBackend.healthCheck();
-    console.log('File backend health check:', health);
+    // File backend health check
     
     if (health.status !== 'healthy') {
       console.warn('File backend health check failed, some features may not work properly');
@@ -34,13 +34,13 @@ const root = createRoot(rootElement);
 
 // App component wrapper with error boundary
 const AppWrapper = () => (
-  <React.StrictMode>
+  <StrictMode>
     <ChakraProvider theme={theme}>
       <AuthProvider>
         <App />
       </AuthProvider>
     </ChakraProvider>
-  </React.StrictMode>
+  </StrictMode>
 );
 
 // Initialize backend before rendering the app

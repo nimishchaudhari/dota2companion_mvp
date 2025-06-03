@@ -468,7 +468,7 @@ const PlayerProfilePage = () => {
                                                             type="hero"
                                                             data={cardData}
                                                             onClick={() => {
-                                                                console.log('Hero selected:', cardData);
+                                                                // Hero selected
                                                             }}
                                                         />
                                                     );

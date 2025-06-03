@@ -15,7 +15,7 @@ class EnhancedApiService {
     try {
       await fileBackend.initialize();
       this.initialized = true;
-      console.log('Enhanced API service initialized');
+      // Enhanced API service initialized
     } catch (error) {
       console.error('Failed to initialize Enhanced API service:', error);
       throw error;
@@ -410,7 +410,7 @@ class EnhancedApiService {
       await fileBackend.syncData();
       
       // Could also update cached API data here
-      console.log('All data synchronized successfully');
+      // All data synchronized successfully
       return { success: true };
     } catch (error) {
       console.error('Data sync failed:', error);

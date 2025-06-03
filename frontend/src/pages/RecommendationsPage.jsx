@@ -112,7 +112,7 @@ const RecommendationsPage = () => {
         data={cardData}
         onClick={() => {
           // Optional: Navigate to hero detail page
-          console.log('Hero selected:', cardData);
+          // Hero selected
         }}
       />
     );

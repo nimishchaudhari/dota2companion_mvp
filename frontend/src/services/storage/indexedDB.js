@@ -39,13 +39,13 @@ class IndexedDBService {
       request.onsuccess = (event) => {
         this.db = event.target.result;
         this.initialized = true;
-        console.log('IndexedDB initialized successfully');
+        // IndexedDB initialized successfully
         resolve(this.db);
       };
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        console.log('Upgrading IndexedDB schema');
+        // Upgrading IndexedDB schema
 
         // User Profiles store
         if (!db.objectStoreNames.contains(this.stores.USER_PROFILES)) {

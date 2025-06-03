@@ -128,7 +128,6 @@ const UserProfilePage = () => {
       URL.revokeObjectURL(url);
       
       // Toast temporarily disabled for Chakra UI v3 migration
-      console.log("Data exported successfully");
     } catch (err) {
       console.error('Error exporting data:', err);
       setError('Failed to export data');
@@ -148,7 +147,6 @@ const UserProfilePage = () => {
       await loadUserData(); // Reload data
       
       // Toast temporarily disabled for Chakra UI v3 migration
-      console.log("Data imported successfully");
     } catch (err) {
       console.error('Error importing data:', err);
       setError('Failed to import data');

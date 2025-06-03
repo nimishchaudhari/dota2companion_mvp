@@ -304,7 +304,7 @@ export const performanceMonitor = {
   recordImageLoad(url, loadTime) {
     this.metrics.imageLoads++;
     this.metrics.totalLoadTime += loadTime;
-    console.debug(`Image loaded: ${url} (${loadTime}ms)`);
+    // Image loaded
   },
 
   recordImageError(url, error) {
@@ -314,12 +314,12 @@ export const performanceMonitor = {
 
   recordCacheHit(url) {
     this.metrics.cacheHits++;
-    console.debug(`Cache hit: ${url}`);
+    // Cache hit
   },
 
   recordCacheMiss(url) {
     this.metrics.cacheMisses++;
-    console.debug(`Cache miss: ${url}`);
+    // Cache miss
   },
 
   getStats() {
@@ -365,20 +365,20 @@ export const assetPreloader = {
   ],
 
   async preloadCriticalAssets() {
-    console.log('Preloading critical assets...');
+    // Preloading critical assets...
     try {
       await preloadImages(this.critical, { priority: 'high', timeout: 5000 });
-      console.log('Critical assets preloaded');
+      // Critical assets preloaded
     } catch (error) {
       console.warn('Some critical assets failed to preload:', error);
     }
   },
 
   async preloadImportantAssets() {
-    console.log('Preloading important assets...');
+    // Preloading important assets...
     try {
       await preloadImages(this.important, { priority: 'low', timeout: 10000 });
-      console.log('Important assets preloaded');
+      // Important assets preloaded
     } catch (error) {
       console.warn('Some important assets failed to preload:', error);
     }
@@ -392,10 +392,10 @@ export const assetPreloader = {
       .map(hero => hero.icon || hero.img)
       .filter(Boolean);
 
-    console.log(`Preloading ${heroImages.length} hero images...`);
+    // Preloading hero images...
     try {
       await preloadImages(heroImages, { priority: 'low', timeout: 8000 });
-      console.log('Hero images preloaded');
+      // Hero images preloaded
     } catch (error) {
       console.warn('Some hero images failed to preload:', error);
     }
