@@ -1,25 +1,12 @@
 // frontend/src/components/layout/Header.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Flex,
-  Button,
-  Avatar,
-  Text,
-  Badge,
-  IconButton,
-  HStack,
-  VStack,
-  Icon,
-} from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import PlayerSearch from '../PlayerSearch';
 
-const MotionBox = motion(Box);
-const MotionFlex = motion(Flex);
+const MotionDiv = motion.div;
 
 const Header = () => {
     const { user, logout } = useAuth();
@@ -35,50 +22,35 @@ const Header = () => {
     const navItems = [
         { label: 'Home', path: '/' },
         { label: 'Heroes', path: '/heroes' },
+        { label: 'Draft', path: '/draft' },
         { label: 'Recommendations', path: '/recommendations' },
     ];
 
     return (
-        <MotionBox
-            as="header"
-            bg="dota.bg.primary"
-            borderBottom="1px solid"
-            borderColor="dota.bg.tertiary"
-            position="sticky"
-            top="0"
-            zIndex="sticky"
-            backdropFilter="blur(10px)"
+        <MotionDiv
+            className="bg-dota-bg-primary border-b border-dota-bg-tertiary sticky top-0 z-50 backdrop-blur-md"
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
         >
-            <Flex
-                maxW="7xl"
-                mx="auto"
-                px={{ base: 4, md: 6 }}
-                py={4}
-                align="center"
-                justify="space-between"
-            >
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                 {/* Logo/Brand */}
-                <MotionBox
+                <MotionDiv
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                 >
                     <Link to="/">
-                        <Text
-                            fontSize="xl"
-                            fontWeight="bold"
-                            color="dota.teal.400"
-                            textShadow="0 0 10px rgba(39, 174, 158, 0.5)"
+                        <span
+                            className="text-xl font-bold text-dota-teal-400"
+                            style={{ textShadow: "0 0 10px rgba(39, 174, 158, 0.5)" }}
                         >
                             Dota 2 Companion
-                        </Text>
+                        </span>
                     </Link>
-                </MotionBox>
+                </MotionDiv>
 
                 {/* Desktop Navigation */}
-                <HStack spacing={6} display={{ base: 'none', md: 'flex' }}>
+                <div className="hidden md:flex items-center space-x-6">
                     {navItems.map((item, index) => (
                         <motion.div
                             key={item.path}
@@ -86,200 +58,136 @@ const Header = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 + 0.3 }}
                         >
-                            <Button
-                                as={Link}
+                            <Link
                                 to={item.path}
-                                variant="ghost"
-                                color="dota.text.secondary"
-                                _hover={{
-                                    color: "dota.teal.400",
-                                    transform: "translateY(-2px)",
-                                    textShadow: "0 0 8px rgba(39, 174, 158, 0.6)",
+                                className="text-dota-text-secondary hover:text-dota-teal-400 hover:-translate-y-0.5 transition-all duration-200 ease-in-out"
+                                style={{ 
+                                    textShadow: "0 0 8px rgba(39, 174, 158, 0.6)"
                                 }}
-                                transition="all 0.2s ease"
                             >
                                 {item.label}
-                            </Button>
+                            </Link>
                         </motion.div>
                     ))}
-                </HStack>
+                </div>
 
                 {/* Right side - Search and User */}
-                <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
-                    <Box maxW="300px">
+                <div className="hidden md:flex items-center space-x-4">
+                    <div className="max-w-[300px]">
                         <PlayerSearch onResult={handlePlayerSearchResult} />
-                    </Box>
+                    </div>
                     
                     {user ? (
-                        <HStack spacing={3}>
+                        <div className="flex items-center space-x-3">
                             {user.avatarUrl && (
                                 <motion.div
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                 >
-                                    <Avatar
+                                    <img
                                         src={user.avatarUrl}
                                         alt={user.personaName}
-                                        size="sm"
-                                        border="2px"
-                                        borderColor="dota.teal.500"
-                                        boxShadow="0 0 10px rgba(39, 174, 158, 0.3)"
+                                        className="w-8 h-8 rounded-full border-2 border-dota-teal-500"
+                                        style={{ boxShadow: "0 0 10px rgba(39, 174, 158, 0.3)" }}
                                     />
                                 </motion.div>
                             )}
-                            <Text 
-                                color="dota.text.primary" 
-                                fontSize="sm" 
-                                fontWeight="medium"
-                                maxW="120px"
-                                isTruncated
+                            <span 
+                                className="text-dota-text-primary text-sm font-medium max-w-[120px] truncate"
                             >
                                 {user.personaName}
-                            </Text>
-                            <Button
-                                variant="ghost"
-                                size="sm"
+                            </span>
+                            <button
                                 onClick={logout}
-                                color="red.400"
-                                _hover={{
-                                    bg: "red.500",
-                                    color: "white",
-                                    transform: "translateY(-2px)",
-                                }}
-                                transition="all 0.2s ease"
+                                className="text-red-400 hover:bg-red-500 hover:text-white hover:-translate-y-0.5 transition-all duration-200 ease-in-out px-3 py-1.5 text-sm rounded-md"
                             >
                                 Logout
-                            </Button>
-                        </HStack>
+                            </button>
+                        </div>
                     ) : (
-                        <Button
-                            as={Link}
+                        <Link
                             to="/login"
-                            variant="solid"
-                            bg="dota.teal.500"
-                            color="white"
-                            _hover={{
-                                bg: "dota.teal.600",
-                                transform: "translateY(-2px)",
-                                boxShadow: "0 4px 12px rgba(39, 174, 158, 0.4)",
-                            }}
-                            transition="all 0.2s ease"
+                            className="bg-dota-teal-500 text-white hover:bg-dota-teal-600 hover:-translate-y-0.5 hover:shadow-dota-glow transition-all duration-200 ease-in-out px-4 py-2 text-sm rounded-md font-medium"
                         >
                             Login
-                        </Button>
+                        </Link>
                     )}
-                </HStack>
+                </div>
 
                 {/* Mobile menu button */}
-                <IconButton
-                    display={{ base: 'flex', md: 'none' }}
-                    variant="ghost"
-                    color="dota.text.primary"
-                    _hover={{
-                        bg: "dota.bg.hover",
-                        color: "dota.teal.400",
-                    }}
+                <button
+                    className="flex md:hidden text-dota-text-primary hover:bg-dota-bg-hover hover:text-dota-teal-400 p-2 rounded-md transition-colors"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    icon={<Icon as={isMenuOpen ? FaTimes : FaBars} boxSize={4} />}
                     aria-label="Toggle navigation menu"
-                />
-            </Flex>
+                >
+                    {isMenuOpen ? <FaTimes size={16} /> : <FaBars size={16} />}
+                </button>
+            </div>
 
             {/* Mobile Navigation */}
             {isMenuOpen && (
-                <MotionBox
-                    bg="dota.bg.secondary"
-                    px={4}
-                    py={4}
-                    borderTop="1px solid"
-                    borderColor="dota.bg.tertiary"
+                <MotionDiv
+                    className="bg-dota-bg-secondary px-4 py-4 border-t border-dota-bg-tertiary"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                 >
-                    <VStack spacing={4} align="stretch">
+                    <div className="flex flex-col space-y-4">
                         {/* Mobile Search */}
-                        <Box>
+                        <div>
                             <PlayerSearch onResult={handlePlayerSearchResult} />
-                        </Box>
+                        </div>
 
                         {/* Mobile Nav Items */}
                         {navItems.map((item) => (
-                            <Button
+                            <Link
                                 key={item.path}
-                                as={Link}
                                 to={item.path}
-                                variant="ghost"
-                                justifyContent="flex-start"
-                                color="dota.text.secondary"
-                                _hover={{
-                                    color: "dota.teal.400",
-                                    bg: "dota.bg.hover",
-                                }}
+                                className="text-dota-text-secondary hover:text-dota-teal-400 hover:bg-dota-bg-hover py-2 px-2 rounded-md transition-colors text-left"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 {item.label}
-                            </Button>
+                            </Link>
                         ))}
 
                         {/* Mobile User Section */}
                         {user ? (
-                            <VStack spacing={3} pt={4} borderTop="1px solid" borderColor="dota.bg.tertiary">
-                                <HStack spacing={3}>
+                            <div className="flex flex-col space-y-3 pt-4 border-t border-dota-bg-tertiary">
+                                <div className="flex items-center space-x-3">
                                     {user.avatarUrl && (
-                                        <Avatar
+                                        <img
                                             src={user.avatarUrl}
                                             alt={user.personaName}
-                                            size="sm"
-                                            border="2px"
-                                            borderColor="dota.teal.500"
+                                            className="w-8 h-8 rounded-full border-2 border-dota-teal-500"
                                         />
                                     )}
-                                    <Text 
-                                        color="dota.text.primary" 
-                                        fontSize="sm" 
-                                        fontWeight="medium"
-                                    >
+                                    <span className="text-dota-text-primary text-sm font-medium">
                                         {user.personaName}
-                                    </Text>
-                                </HStack>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
+                                    </span>
+                                </div>
+                                <button
                                     onClick={() => {
                                         logout();
                                         setIsMenuOpen(false);
                                     }}
-                                    color="red.400"
-                                    _hover={{
-                                        bg: "red.500",
-                                        color: "white",
-                                    }}
-                                    w="full"
+                                    className="text-red-400 hover:bg-red-500 hover:text-white py-2 px-2 rounded-md transition-colors text-left w-full"
                                 >
                                     Logout
-                                </Button>
-                            </VStack>
+                                </button>
+                            </div>
                         ) : (
-                            <Button
-                                as={Link}
+                            <Link
                                 to="/login"
-                                variant="solid"
-                                bg="dota.teal.500"
-                                color="white"
-                                _hover={{
-                                    bg: "dota.teal.600",
-                                }}
+                                className="bg-dota-teal-500 text-white hover:bg-dota-teal-600 py-2 px-4 rounded-md transition-colors text-center font-medium"
                                 onClick={() => setIsMenuOpen(false)}
-                                w="full"
                             >
                                 Login
-                            </Button>
+                            </Link>
                         )}
-                    </VStack>
-                </MotionBox>
+                    </div>
+                </MotionDiv>
             )}
-        </MotionBox>
+        </MotionDiv>
     );
 };
 

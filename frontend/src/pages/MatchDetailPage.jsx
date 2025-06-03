@@ -24,7 +24,7 @@ import {
   Spinner
 } from '@chakra-ui/react';
 import { FaTrophy, FaClock, FaGamepad } from 'react-icons/fa';
-import { api } from '../services/api.js';
+import { enhancedApi } from '../services/enhancedApiWithSync.js';
 
 // Simple game mode mapping (can be expanded)
 const gameModeMap = {
@@ -45,14 +45,14 @@ const MatchDetailPage = () => {
             setError(null);
             try {
                 if (Object.keys(heroesData).length === 0) {
-                    const heroes = await api.getHeroes();
+                    const heroes = await enhancedApi.getHeroes();
                     const heroesMap = heroes.reduce((map, hero) => {
                         map[hero.id] = hero;
                         return map;
                     }, {});
                     setHeroesData(heroesMap);
                 }
-                const matchData = await api.getMatchDetails(matchId);
+                const matchData = await enhancedApi.getMatchDetails(matchId);
                 setMatchData(matchData);
             } catch (err) {
                 console.error("Failed to fetch match or hero details", err);

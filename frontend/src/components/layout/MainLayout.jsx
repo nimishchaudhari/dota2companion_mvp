@@ -1,32 +1,24 @@
 // frontend/src/components/layout/MainLayout.jsx
-import React from 'react';
+import { memo } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Box, Flex } from '@chakra-ui/react';
 import Header from './Header';
 import Footer from './Footer';
+import OfflineNotice from '../OfflineNotice';
+import UpdateNotification from '../UpdateNotification';
 
-const MainLayout = () => {
+const MainLayout = memo(() => {
     return (
-        <Flex
-            direction="column"
-            minH="100vh"
-            bg="dota.bg.primary"
-            color="dota.text.primary"
-        >
+        <div className="flex flex-col min-h-screen bg-slate-900 text-white">
+            <UpdateNotification />
             <Header />
-            <Box
-                as="main"
-                flex="1"
-                maxW="7xl"
-                mx="auto"
-                px={{ base: 4, sm: 6, lg: 8 }}
-                py={{ base: 4, sm: 6, lg: 8 }}
-                w="full"
-            >
+            <OfflineNotice />
+            <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
                 <Outlet /> {/* Child routes will render here */}
-            </Box>
+            </main>
             <Footer />
-        </Flex>
+        </div>
     );
-};
+});
+
+MainLayout.displayName = 'MainLayout';
 export default MainLayout;

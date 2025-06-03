@@ -1,32 +1,9 @@
 // frontend/src/pages/HeroesListPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Grid,
-  GridItem,
-  Card,
-  Badge,
-  Button,
-  Input,
-  Select,
-  Checkbox,
-  Flex,
-  Image,
-  Icon,
-  Spinner,
-  Alert,
-  Tooltip,
-  Stack
-} from '@chakra-ui/react';
 import { FaList, FaFilter, FaStar } from 'react-icons/fa';
 import { FaGripVertical as FaGrid3X3 } from 'react-icons/fa';
-import { api } from '../services/api.js';
+import { enhancedApi } from '../services/enhancedApiWithSync.js';
 import { fileBackend } from '../services/fileBackend.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import FavoritesButton from '../components/FavoritesButton.jsx';
@@ -55,8 +32,8 @@ const HeroesListPage = () => {
             setLoading(true);
             setError(null);
 
-            // Load heroes from API
-            const heroesData = await api.getHeroes();
+            // Load heroes from API (with offline support)
+            const heroesData = await enhancedApi.getHeroes();
             setHeroes(heroesData);
 
             // Load user favorites if logged in
@@ -99,103 +76,73 @@ const HeroesListPage = () => {
 
     if (loading) {
         return (
-            <Container maxW="7xl" py={8} centerContent>
-                <VStack spacing={4}>
-                    <Spinner size="xl" color="dota.teal.500" thickness="4px" />
-                    <Text color="dota.text.secondary">Loading heroes...</Text>
-                </VStack>
-            </Container>
+            <div className="max-w-7xl mx-auto py-8 flex flex-col items-center">
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-teal-500 border-t-transparent"></div>
+                    <div className="text-slate-400">Loading heroes...</div>
+                </div>
+            </div>
         );
     }
     
     if (error) {
         return (
-            <Container maxW="7xl" py={8}>
-                <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
-                    <Flex align="center">
-                        <Icon as={FaStar} color="dota.status.error" mr={3} />
-                        <Text color="dota.text.primary">Error: {error}</Text>
-                    </Flex>
-                </Box>
-            </Container>
+            <div className="max-w-7xl mx-auto py-8">
+                <div className="bg-slate-800 border border-red-500 rounded-md p-4">
+                    <div className="flex items-center">
+                        <FaStar className="text-red-500 mr-3" />
+                        <div className="text-white">Error: {error}</div>
+                    </div>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Container maxW="7xl" py={6}>
-            <VStack spacing={8} align="stretch">
+        <div className="max-w-7xl mx-auto py-6">
+            <div className="flex flex-col space-y-8">
                 {/* Header Section */}
-                <Box>
-                    <VStack spacing={4} align="start">
-                        <Heading 
-                            as="h1" 
-                            size="xl" 
-                            color="dota.text.primary"
-                            textShadow="0 0 10px rgba(39, 174, 158, 0.3)"
-                        >
+                <div>
+                    <div className="flex flex-col space-y-4 items-start">
+                        <h1 className="text-4xl font-bold text-white" style={{textShadow: '0 0 10px rgba(39, 174, 158, 0.3)'}}>
                             Dota 2 Heroes
-                        </Heading>
+                        </h1>
                         {user && (
-                            <HStack spacing={6} wrap="wrap">
-                                <HStack spacing={2}>
-                                    <Icon as={FaStar} color="dota.teal.500" />
-                                    <Text color="dota.text.secondary" fontSize="sm">
+                            <div className="flex flex-wrap items-center space-x-6">
+                                <div className="flex items-center space-x-2">
+                                    <FaStar className="text-teal-500" />
+                                    <span className="text-slate-400 text-sm">
                                         Favorites: {favoriteHeroes.length}
-                                    </Text>
-                                </HStack>
-                                <Button
-                                    as={Link}
+                                    </span>
+                                </div>
+                                <Link
                                     to="/recommendations"
-                                    variant="ghost"
-                                    size="sm"
-                                    color="dota.teal.500"
-                                    _hover={{ color: "dota.teal.400" }}
+                                    className="text-teal-500 hover:text-teal-400 text-sm transition-colors"
                                 >
                                     Get Personalized Recommendations →
-                                </Button>
-                            </HStack>
+                                </Link>
+                            </div>
                         )}
-                    </VStack>
-                </Box>
+                    </div>
+                </div>
 
                 {/* Recommendations Section */}
                 {user && recommendations.length > 0 && (
-                    <Card
-                        bg="dota.bg.card"
-                        borderWidth={1}
-                        borderColor="dota.teal.500"
-                        p={6}
-                        position="relative"
-                        overflow="hidden"
-                        _before={{
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: '3px',
-                            bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
-                        }}
-                    >
-                        <VStack spacing={6} align="stretch">
-                            <Flex justify="space-between" align="center">
-                                <Heading size="md" color="dota.text.primary">
+                    <div className="bg-slate-800 border border-teal-500 rounded-lg p-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-purple-500"></div>
+                        <div className="flex flex-col space-y-6">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-semibold text-white">
                                     Recommended for You
-                                </Heading>
-                                <Button
-                                    as={Link}
+                                </h2>
+                                <Link
                                     to="/recommendations"
-                                    variant="outline"
-                                    size="sm"
-                                    colorScheme="teal"
+                                    className="border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white px-3 py-1 rounded text-sm transition-colors"
                                 >
                                     View All
-                                </Button>
-                            </Flex>
-                            <Grid 
-                                templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} 
-                                gap={4}
-                            >
+                                </Link>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {recommendations.map(hero => (
                                     <RecommendationCard
                                         key={hero.id || hero.hero_id}
@@ -205,151 +152,101 @@ const HeroesListPage = () => {
                                         onClick={() => setSelectedHero(hero)}
                                     />
                                 ))}
-                            </Grid>
-                        </VStack>
-                    </Card>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* Filter and Controls */}
-                <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6}>
-                    <VStack spacing={6} align="stretch">
-                        <Flex 
-                            direction={{ base: "column", lg: "row" }} 
-                            gap={4} 
-                            align={{ base: "stretch", lg: "center" }} 
-                            justify="space-between"
-                        >
-                            <Stack 
-                                direction={{ base: "column", sm: "row" }} 
-                                spacing={4} 
-                                flex={1}
-                            >
-                                <Input 
+                <div className="bg-slate-800 border border-slate-600 rounded-lg p-6">
+                    <div className="flex flex-col space-y-6">
+                        <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+                            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 flex-1">
+                                <input 
                                     placeholder="Filter by name..." 
                                     value={filterName} 
                                     onChange={e => setFilterName(e.target.value)}
-                                    bg="dota.bg.secondary"
-                                    borderColor="dota.bg.tertiary"
-                                    color="dota.text.primary"
-                                    _placeholder={{ color: "dota.text.muted" }}
-                                    _focus={{
-                                        borderColor: "dota.teal.500",
-                                        boxShadow: "0 0 0 1px var(--chakra-colors-dota-teal-500)"
-                                    }}
-                                    size="md"
+                                    className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400 px-3 py-2 rounded focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
                                 />
-                                <Select 
+                                <select 
                                     value={filterAttr} 
                                     onChange={e => setFilterAttr(e.target.value)}
-                                    bg="dota.bg.secondary"
-                                    borderColor="dota.bg.tertiary"
-                                    color="dota.text.primary"
-                                    _focus={{
-                                        borderColor: "dota.teal.500",
-                                        boxShadow: "0 0 0 1px var(--chakra-colors-dota-teal-500)"
-                                    }}
-                                    size="md"
-                                    minW="180px"
+                                    className="bg-slate-700 border border-slate-600 text-white px-3 py-2 rounded focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-w-[180px]"
                                 >
                                     <option value="">All Attributes</option>
                                     <option value="str">Strength</option>
                                     <option value="agi">Agility</option>
                                     <option value="int">Intelligence</option>
                                     <option value="all">Universal</option>
-                                </Select>
-                                <Select 
+                                </select>
+                                <select 
                                     value={filterRole} 
                                     onChange={e => setFilterRole(e.target.value)}
-                                    bg="dota.bg.secondary"
-                                    borderColor="dota.bg.tertiary"
-                                    color="dota.text.primary"
-                                    _focus={{
-                                        borderColor: "dota.teal.500",
-                                        boxShadow: "0 0 0 1px var(--chakra-colors-dota-teal-500)"
-                                    }}
-                                    size="md"
-                                    minW="140px"
+                                    className="bg-slate-700 border border-slate-600 text-white px-3 py-2 rounded focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-w-[140px]"
                                 >
                                     <option value="">All Roles</option>
                                     {uniqueRoles.map(role => (
                                         <option key={role} value={role}>{role}</option>
                                     ))}
-                                </Select>
-                            </Stack>
+                                </select>
+                            </div>
                             
-                            <HStack spacing={4} justify={{ base: "space-between", lg: "flex-end" }}>
+                            <div className="flex justify-between lg:justify-end items-center space-x-4">
                                 {user && (
-                                    <Checkbox
-                                        isChecked={showFavoritesOnly}
-                                        onChange={(e) => setShowFavoritesOnly(e.target.checked)}
-                                        colorScheme="teal"
-                                        size="sm"
-                                        color="dota.text.secondary"
-                                    >
-                                        Favorites only
-                                    </Checkbox>
+                                    <label className="flex items-center space-x-2 text-slate-400 text-sm">
+                                        <input
+                                            type="checkbox"
+                                            checked={showFavoritesOnly}
+                                            onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+                                            className="rounded border-slate-600 text-teal-500 focus:ring-teal-500"
+                                        />
+                                        <span>Favorites only</span>
+                                    </label>
                                 )}
                                 
-                                <HStack spacing={0} borderWidth={1} borderColor="dota.bg.tertiary" borderRadius="md">
-                                    <Tooltip label="Grid view">
-                                        <Button
-                                            onClick={() => setViewMode('grid')}
-                                            variant={viewMode === 'grid' ? 'solid' : 'ghost'}
-                                            size="sm"
-                                            borderRadius="none"
-                                            borderLeftRadius="md"
-                                            colorScheme={viewMode === 'grid' ? 'teal' : 'gray'}
-                                        >
-                                            <Icon as={FaGrid3X3} />
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip label="List view">
-                                        <Button
-                                            onClick={() => setViewMode('list')}
-                                            variant={viewMode === 'list' ? 'solid' : 'ghost'}
-                                            size="sm"
-                                            borderRadius="none"
-                                            borderRightRadius="md"
-                                            colorScheme={viewMode === 'list' ? 'teal' : 'gray'}
-                                        >
-                                            <Icon as={FaList} />
-                                        </Button>
-                                    </Tooltip>
-                                </HStack>
-                            </HStack>
-                        </Flex>
+                                <div className="flex border border-slate-600 rounded-md">
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`px-3 py-2 text-sm rounded-l-md transition-colors ${
+                                            viewMode === 'grid' 
+                                                ? 'bg-teal-500 text-white' 
+                                                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                        }`}
+                                        title="Grid view"
+                                    >
+                                        <FaGrid3X3 />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`px-3 py-2 text-sm rounded-r-md transition-colors ${
+                                            viewMode === 'list' 
+                                                ? 'bg-teal-500 text-white' 
+                                                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                        }`}
+                                        title="List view"
+                                    >
+                                        <FaList />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <Text fontSize="sm" color="dota.text.muted">
+                        <div className="text-sm text-slate-500">
                             Showing {filteredHeroes.length} of {heroes.length} heroes
-                        </Text>
-                    </VStack>
-                </Card>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Hero Detail Card (replaces modal) */}
                 {selectedHero && (
-                    <Card 
-                        bg="dota.bg.card" 
-                        borderWidth={1} 
-                        borderColor="dota.bg.tertiary" 
-                        p={6}
-                        position="relative"
-                        overflow="hidden"
-                        _before={{
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: '4px',
-                            bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
-                        }}
-                    >
-                        <VStack spacing={6}>
-                            <Flex justify="space-between" align="center" w="full">
-                                <Heading size="lg" color="dota.text.primary">
+                    <div className="bg-slate-800 border border-slate-600 rounded-lg p-6 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-purple-500"></div>
+                        <div className="flex flex-col space-y-6">
+                            <div className="flex justify-between items-center w-full">
+                                <h2 className="text-2xl font-bold text-white">
                                     {selectedHero.localized_name}
-                                </Heading>
-                                <HStack spacing={2}>
+                                </h2>
+                                <div className="flex items-center space-x-2">
                                     {user && (
                                         <FavoritesButton
                                             type="hero"
@@ -358,283 +255,207 @@ const HeroesListPage = () => {
                                             role={selectedHero.roles?.[0]}
                                         />
                                     )}
-                                    <Button
+                                    <button
                                         onClick={() => setSelectedHero(null)}
-                                        variant="ghost"
-                                        size="sm"
+                                        className="text-slate-400 hover:text-white px-2 py-1 text-sm transition-colors"
                                     >
                                         ✕
-                                    </Button>
-                                </HStack>
-                            </Flex>
+                                    </button>
+                                </div>
+                            </div>
                             
-                            <Grid templateColumns={{ base: "1fr", md: "auto 1fr" }} gap={6} w="full">
-                                <Box>
-                                    <Image 
+                            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 w-full">
+                                <div>
+                                    <img 
                                         src={selectedHero.img} 
                                         alt={selectedHero.localized_name} 
-                                        w="full" 
-                                        maxW="200px" 
-                                        borderRadius="lg"
-                                        boxShadow="lg"
+                                        className="w-full max-w-[200px] rounded-lg shadow-lg"
                                     />
-                                </Box>
+                                </div>
                                 
-                                <VStack spacing={3} align="stretch">
-                                    <HStack>
-                                        <Text fontWeight="semibold" color="dota.text.secondary">Attribute:</Text>
-                                        <Badge 
-                                            colorScheme={
-                                                selectedHero.primary_attr === 'str' ? 'red' :
-                                                selectedHero.primary_attr === 'agi' ? 'green' :
-                                                selectedHero.primary_attr === 'int' ? 'blue' : 'purple'
-                                            }
-                                            variant="solid"
-                                        >
+                                <div className="flex flex-col space-y-3">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="font-semibold text-slate-400">Attribute:</span>
+                                        <span className={`px-2 py-1 text-xs font-medium rounded ${
+                                            selectedHero.primary_attr === 'str' ? 'bg-red-600 text-white' :
+                                            selectedHero.primary_attr === 'agi' ? 'bg-green-600 text-white' :
+                                            selectedHero.primary_attr === 'int' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
+                                        }`}>
                                             {selectedHero.primary_attr?.toUpperCase()}
-                                        </Badge>
-                                    </HStack>
+                                        </span>
+                                    </div>
                                     
-                                    <HStack>
-                                        <Text fontWeight="semibold" color="dota.text.secondary">Attack Type:</Text>
-                                        <Text color="dota.text.primary">{selectedHero.attack_type}</Text>
-                                    </HStack>
+                                    <div className="flex items-center space-x-2">
+                                        <span className="font-semibold text-slate-400">Attack Type:</span>
+                                        <span className="text-white">{selectedHero.attack_type}</span>
+                                    </div>
                                     
-                                    <VStack align="start" spacing={2}>
-                                        <Text fontWeight="semibold" color="dota.text.secondary">Roles:</Text>
-                                        <HStack wrap="wrap">
+                                    <div className="flex flex-col space-y-2">
+                                        <span className="font-semibold text-slate-400">Roles:</span>
+                                        <div className="flex flex-wrap gap-2">
                                             {selectedHero.roles?.map(role => (
-                                                <Badge key={role} variant="outline" colorScheme="teal">
+                                                <span key={role} className="border border-teal-500 text-teal-500 px-2 py-1 text-xs rounded">
                                                     {role}
-                                                </Badge>
+                                                </span>
                                             ))}
-                                        </HStack>
-                                    </VStack>
+                                        </div>
+                                    </div>
                                     
                                     {selectedHero.reason && (
-                                        <Box 
-                                            p={3} 
-                                            bg="dota.bg.secondary" 
-                                            borderRadius="md" 
-                                            borderLeftWidth={3} 
-                                            borderColor="dota.teal.500"
-                                        >
-                                            <Text fontSize="sm" color="dota.text.secondary" fontStyle="italic">
+                                        <div className="p-3 bg-slate-700 rounded-md border-l-4 border-teal-500">
+                                            <div className="text-sm text-slate-400 italic">
                                                 {selectedHero.reason}
-                                            </Text>
-                                        </Box>
+                                            </div>
+                                        </div>
                                     )}
                                     
-                                    <HStack spacing={3} pt={4}>
-                                        <Button 
-                                            variant="ghost" 
+                                    <div className="flex space-x-3 pt-4">
+                                        <button 
                                             onClick={() => setSelectedHero(null)}
-                                            flex={1}
+                                            className="flex-1 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors"
                                         >
                                             Close
-                                        </Button>
-                                        <Button
-                                            as={Link}
+                                        </button>
+                                        <Link
                                             to={`/recommendations?hero=${selectedHero.id}`}
-                                            variant="primary"
                                             onClick={() => setSelectedHero(null)}
-                                            flex={1}
+                                            className="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded text-center transition-colors"
                                         >
                                             View Counters
-                                        </Button>
-                                    </HStack>
-                                </VStack>
-                            </Grid>
-                        </VStack>
-                    </Card>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             
                 {/* Heroes Grid/List */}
-                <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6}>
+                <div className="bg-slate-800 border border-slate-600 rounded-lg p-6">
                     {viewMode === 'grid' ? (
-                        <Grid 
-                            templateColumns={{
-                                base: "repeat(2, 1fr)",
-                                sm: "repeat(3, 1fr)",
-                                md: "repeat(4, 1fr)",
-                                lg: "repeat(5, 1fr)",
-                                xl: "repeat(6, 1fr)"
-                            }} 
-                            gap={4}
-                        >
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                             {filteredHeroes.map(hero => (
-                                    <GridItem key={hero.id}>
-                                        <Card
-                                            position="relative"
-                                            bg="dota.bg.secondary"
-                                            borderWidth={1}
-                                            borderColor="dota.bg.tertiary"
-                                            p={3}
-                                            textAlign="center"
-                                            cursor="pointer"
-                                            transition="all 0.2s ease"
-                                            _hover={{
-                                                transform: "translateY(-4px) scale(1.02)",
-                                                boxShadow: "card-hover",
-                                                borderColor: "dota.teal.500"
-                                            }}
-                                            onClick={() => setSelectedHero(hero)}
-                                        >
-                                            {user && (
-                                                <Box 
-                                                    position="absolute" 
-                                                    top={1} 
-                                                    right={1} 
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    zIndex={2}
-                                                >
-                                                    <FavoritesButton
-                                                        type="hero"
-                                                        id={hero.id}
-                                                        name={hero.localized_name}
-                                                        role={hero.roles?.[0]}
-                                                        className="!p-1"
-                                                    />
-                                                </Box>
-                                            )}
-                                            
-                                            <VStack spacing={2}>
-                                                <Box position="relative">
-                                                    <Image 
-                                                        src={hero.icon} 
-                                                        alt={hero.localized_name} 
-                                                        w="full" 
-                                                        maxW="80px" 
-                                                        mx="auto"
-                                                        borderRadius="md"
-                                                        border="2px solid"
-                                                        borderColor="dota.bg.tertiary"
-                                                    />
-                                                </Box>
-                                                
-                                                <Text 
-                                                    fontSize="xs" 
-                                                    fontWeight="medium" 
-                                                    color="dota.text.primary"
-                                                    lineHeight="1.2"
-                                                    noOfLines={2}
-                                                >
-                                                    {hero.localized_name}
-                                                </Text>
-                                                
-                                                {hero.primary_attr && (
-                                                    <Badge
-                                                        size="sm"
-                                                        variant="solid"
-                                                        colorScheme={
-                                                            hero.primary_attr === 'str' ? 'red' :
-                                                            hero.primary_attr === 'agi' ? 'green' :
-                                                            hero.primary_attr === 'int' ? 'blue' : 'purple'
-                                                        }
-                                                        fontSize="xs"
-                                                    >
-                                                        {hero.primary_attr === 'str' ? 'STR' :
-                                                         hero.primary_attr === 'agi' ? 'AGI' :
-                                                         hero.primary_attr === 'int' ? 'INT' : 'UNI'}
-                                                    </Badge>
-                                                )}
-                                            </VStack>
-                                        </Card>
-                                    </GridItem>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <VStack spacing={3} align="stretch">
-                            {filteredHeroes.map(hero => (
-                                    <Card
-                                        key={hero.id}
-                                        bg="dota.bg.secondary"
-                                        borderWidth={1}
-                                        borderColor="dota.bg.tertiary"
-                                        p={4}
-                                        cursor="pointer"
-                                        transition="all 0.2s ease"
-                                        _hover={{
-                                            boxShadow: "md",
-                                            borderColor: "dota.teal.500",
-                                            transform: "translateY(-1px)"
-                                        }}
+                                <div key={hero.id}>
+                                    <div
+                                        className="relative bg-slate-700 border border-slate-600 p-3 text-center cursor-pointer transition-all duration-200 ease-in-out rounded-lg hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:border-teal-500"
                                         onClick={() => setSelectedHero(hero)}
                                     >
-                                        <Flex justify="space-between" align="center">
-                                            <HStack spacing={4} flex={1}>
-                                                <Image 
+                                        {user && (
+                                            <div 
+                                                className="absolute top-1 right-1 z-10"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <FavoritesButton
+                                                    type="hero"
+                                                    id={hero.id}
+                                                    name={hero.localized_name}
+                                                    role={hero.roles?.[0]}
+                                                    className="!p-1"
+                                                />
+                                            </div>
+                                        )}
+                                        
+                                        <div className="flex flex-col space-y-2">
+                                            <div className="relative">
+                                                <img 
                                                     src={hero.icon} 
                                                     alt={hero.localized_name} 
-                                                    w={12} 
-                                                    h={12} 
-                                                    borderRadius="md"
-                                                    border="2px solid"
-                                                    borderColor="dota.bg.tertiary"
+                                                    className="w-full max-w-[80px] mx-auto rounded-md border-2 border-slate-600"
                                                 />
-                                                
-                                                <VStack align="start" spacing={1}>
-                                                    <Heading size="sm" color="dota.text.primary">
-                                                        {hero.localized_name}
-                                                    </Heading>
-                                                    <HStack spacing={4}>
-                                                        <Badge
-                                                            variant="solid"
-                                                            colorScheme={
-                                                                hero.primary_attr === 'str' ? 'red' :
-                                                                hero.primary_attr === 'agi' ? 'green' :
-                                                                hero.primary_attr === 'int' ? 'blue' : 'purple'
-                                                            }
-                                                            fontSize="xs"
-                                                        >
-                                                            {hero.primary_attr?.toUpperCase() || 'UNI'}
-                                                        </Badge>
-                                                        <Text fontSize="sm" color="dota.text.secondary">
-                                                            {hero.roles?.slice(0, 2).join(', ')}
-                                                        </Text>
-                                                    </HStack>
-                                                </VStack>
-                                            </HStack>
+                                            </div>
                                             
-                                            {user && (
-                                                <Box onClick={(e) => e.stopPropagation()}>
-                                                    <FavoritesButton
-                                                        type="hero"
-                                                        id={hero.id}
-                                                        name={hero.localized_name}
-                                                        role={hero.roles?.[0]}
-                                                    />
-                                                </Box>
+                                            <div className="text-xs font-medium text-white leading-tight line-clamp-2">
+                                                {hero.localized_name}
+                                            </div>
+                                            
+                                            {hero.primary_attr && (
+                                                <span className={`inline-block px-1 py-0.5 text-xs font-medium rounded ${
+                                                    hero.primary_attr === 'str' ? 'bg-red-600 text-white' :
+                                                    hero.primary_attr === 'agi' ? 'bg-green-600 text-white' :
+                                                    hero.primary_attr === 'int' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
+                                                }`}>
+                                                    {hero.primary_attr === 'str' ? 'STR' :
+                                                     hero.primary_attr === 'agi' ? 'AGI' :
+                                                     hero.primary_attr === 'int' ? 'INT' : 'UNI'}
+                                                </span>
                                             )}
-                                        </Flex>
-                                    </Card>
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
-                        </VStack>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col space-y-3">
+                            {filteredHeroes.map(hero => (
+                                <div
+                                    key={hero.id}
+                                    className="bg-slate-700 border border-slate-600 p-4 cursor-pointer transition-all duration-200 ease-in-out rounded-lg hover:shadow-md hover:border-teal-500 hover:-translate-y-0.5"
+                                    onClick={() => setSelectedHero(hero)}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center space-x-4 flex-1">
+                                            <img 
+                                                src={hero.icon} 
+                                                alt={hero.localized_name} 
+                                                className="w-12 h-12 rounded-md border-2 border-slate-600"
+                                            />
+                                            
+                                            <div className="flex flex-col space-y-1">
+                                                <h3 className="text-sm font-semibold text-white">
+                                                    {hero.localized_name}
+                                                </h3>
+                                                <div className="flex items-center space-x-4">
+                                                    <span className={`px-2 py-1 text-xs font-medium rounded ${
+                                                        hero.primary_attr === 'str' ? 'bg-red-600 text-white' :
+                                                        hero.primary_attr === 'agi' ? 'bg-green-600 text-white' :
+                                                        hero.primary_attr === 'int' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
+                                                    }`}>
+                                                        {hero.primary_attr?.toUpperCase() || 'UNI'}
+                                                    </span>
+                                                    <span className="text-sm text-slate-400">
+                                                        {hero.roles?.slice(0, 2).join(', ')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {user && (
+                                            <div onClick={(e) => e.stopPropagation()}>
+                                                <FavoritesButton
+                                                    type="hero"
+                                                    id={hero.id}
+                                                    name={hero.localized_name}
+                                                    role={hero.roles?.[0]}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     )}
                     
                     {filteredHeroes.length === 0 && !loading && (
-                        <VStack spacing={4} py={12} textAlign="center">
-                            <Text color="dota.text.secondary" fontSize="lg">
+                        <div className="flex flex-col items-center space-y-4 py-12 text-center">
+                            <div className="text-slate-400 text-lg">
                                 {showFavoritesOnly 
                                     ? 'No favorite heroes match your filters.' 
                                     : 'No heroes match your filters.'
                                 }
-                            </Text>
+                            </div>
                             {showFavoritesOnly && (
-                                <Button
+                                <button
                                     onClick={() => setShowFavoritesOnly(false)}
-                                    variant="outline"
-                                    colorScheme="teal"
-                                    size="sm"
+                                    className="border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white px-3 py-1 rounded text-sm transition-colors"
                                 >
                                     Show all heroes
-                                </Button>
+                                </button>
                             )}
-                        </VStack>
+                        </div>
                     )}
-                </Card>
-            </VStack>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 

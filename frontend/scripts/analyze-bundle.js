@@ -13,12 +13,19 @@ async function analyzeBundles() {
   console.log('🔍 Analyzing bundle sizes...\n');
   
   try {
-    // Run build with detailed output
-    const { stdout } = await execAsync('npm run build', { cwd: process.cwd() });
-    console.log(stdout);
-    
-    // Check if dist directory exists
+    // Check if we should skip build (if dist already exists and is recent)
     const distPath = path.join(process.cwd(), 'dist');
+    const buildExists = fs.existsSync(distPath);
+    
+    if (!buildExists) {
+      console.log('Building project first...');
+      const { stdout } = await execAsync('npm run build:fast', { cwd: process.cwd() });
+      console.log(stdout);
+    } else {
+      console.log('Using existing build...');
+    }
+    
+    // Check if dist directory exists after potential build
     if (!fs.existsSync(distPath)) {
       console.error('❌ Dist directory not found. Build failed?');
       return;

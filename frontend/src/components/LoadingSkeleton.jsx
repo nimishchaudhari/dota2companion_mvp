@@ -1,5 +1,4 @@
 // frontend/src/components/LoadingSkeleton.jsx
-import React from 'react';
 import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 
 // Base skeleton component with shimmer effect
@@ -292,14 +291,19 @@ export const ButtonSkeleton = ({ size = 'medium' }) => {
   );
 };
 
-export default {
-  CardSkeleton,
-  CardListSkeleton,
-  PlayerProfileSkeleton,
-  SearchResultsSkeleton,
-  HeroGridSkeleton,
-  MatchDetailSkeleton,
-  TableSkeleton,
-  TextSkeleton,
-  ButtonSkeleton
-};
+// Default loading skeleton for pages
+const LoadingSkeleton = () => (
+  <motion.div 
+    className="min-h-screen flex items-center justify-center"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
+  >
+    <div className="space-y-8 w-full max-w-4xl p-8">
+      <SkeletonBase className="h-12 w-1/3 mx-auto rounded-lg" />
+      <CardListSkeleton count={3} />
+    </div>
+  </motion.div>
+);
+
+export default LoadingSkeleton;

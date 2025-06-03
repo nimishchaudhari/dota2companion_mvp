@@ -1,6 +1,6 @@
 // Service Worker for Dota 2 Companion PWA
-const CACHE_NAME = 'dota2-companion-v1.0.0';
-const STATIC_CACHE = 'dota2-static-v1';
+const CACHE_NAME = 'dota2-companion-v1.0.2';
+const STATIC_CACHE = 'dota2-static-v1.2';
 const DATA_CACHE = 'dota2-data-v1';
 
 // Assets to cache immediately
@@ -9,6 +9,14 @@ const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
+  '/icon-48.png',
+  '/icon-72.png',
+  '/icon-96.png',
+  '/icon-144.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable-192.png',
+  '/icon-maskable-512.png',
   '/icon-192.svg',
   '/icon-512.svg',
   '/placeholder-hero.svg',

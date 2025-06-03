@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Heading, Text, Button, VStack, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { FiRefreshCw, FiAlertTriangle } from 'react-icons/fi';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,119 +13,100 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error caught by boundary:', error, errorInfo);
-    }
+    // Log the error
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
     
-    // Update state with error details
     this.setState({
-      error,
-      errorInfo
+      error: error,
+      errorInfo: errorInfo
     });
-    
-    // In production, you would send this to an error reporting service
-    // Example: Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
+
+    // You can also log the error to an error reporting service here
+    if (window.gtag) {
+      window.gtag('event', 'exception', {
+        description: error.toString(),
+        fatal: false
+      });
+    }
   }
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+  handleReload = () => {
+    window.location.reload();
+  };
+
+  handleGoHome = () => {
+    window.location.href = '/';
   };
 
   render() {
     if (this.state.hasError) {
       return (
-        <Box p={8} maxW="container.md" mx="auto">
-          <Alert
-            status="error"
-            variant="subtle"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            height="400px"
-            borderRadius="lg"
-            boxShadow="lg"
-          >
-            <AlertIcon boxSize="40px" mr={0} />
-            <AlertTitle mt={4} mb={1} fontSize="lg">
-              Oops! Something went wrong
-            </AlertTitle>
-            <AlertDescription maxWidth="sm" mb={4}>
-              We encountered an unexpected error. Don't worry, your data is safe.
-            </AlertDescription>
+        <div className="max-w-2xl mx-auto py-16 px-4">
+          <div className="flex flex-col items-center space-y-8 text-center">
+            <FiAlertTriangle className="w-16 h-16 text-red-400" />
             
-            <VStack spacing={4}>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <Box
-                  p={4}
-                  bg="red.50"
-                  borderRadius="md"
-                  border="1px solid"
-                  borderColor="red.200"
-                  maxW="100%"
-                  overflow="auto"
-                >
-                  <Text fontSize="sm" fontFamily="mono" color="red.800">
-                    {this.state.error.toString()}
-                  </Text>
-                  {this.state.errorInfo && (
-                    <Text fontSize="xs" fontFamily="mono" color="red.600" mt={2}>
-                      {this.state.errorInfo.componentStack}
-                    </Text>
-                  )}
-                </Box>
-              )}
+            <div className="space-y-4">
+              <h1 className="text-3xl font-bold text-red-400">
+                Oops! Something went wrong
+              </h1>
               
-              <Button
-                colorScheme="teal"
-                onClick={() => {
-                  this.handleReset();
-                  window.location.href = '/';
-                }}
+              <p className="text-lg text-slate-400 max-w-md">
+                We encountered an unexpected error. Don't worry, your data is safe.
+              </p>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded-md p-4 max-w-lg w-full">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <FiAlertTriangle className="w-5 h-5 text-red-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    Error Details:
+                  </h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    {this.state.error && this.state.error.toString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <button
+                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={this.handleReload}
+              >
+                <FiRefreshCw className="w-4 h-4 mr-2" />
+                Reload Page
+              </button>
+              
+              <button
+                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50 transition-colors"
+                onClick={this.handleGoHome}
               >
                 Go to Home
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={this.handleReset}
-              >
-                Try Again
-              </Button>
-            </VStack>
-          </Alert>
-        </Box>
+              </button>
+            </div>
+
+            {/* Error details for development */}
+            {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
+              <details className="bg-slate-100 p-4 rounded-md w-full text-sm">
+                <summary className="font-bold cursor-pointer mb-2">
+                  Error Details (Development Only)
+                </summary>
+                <pre className="text-left whitespace-pre-wrap text-xs">
+                  {this.state.error && this.state.error.stack}
+                  {this.state.errorInfo.componentStack}
+                </pre>
+              </details>
+            )}
+          </div>
+        </div>
       );
     }
 
     return this.props.children;
   }
-}
-
-// Hook to use with functional components
-export function useErrorHandler() {
-  const [error, setError] = React.useState(null);
-  
-  React.useEffect(() => {
-    if (error) {
-      throw error;
-    }
-  }, [error]);
-  
-  return setError;
-}
-
-// HOC to wrap components with error boundary
-export function withErrorBoundary(Component, fallback) {
-  return function WrappedComponent(props) {
-    return (
-      <ErrorBoundary fallback={fallback}>
-        <Component {...props} />
-      </ErrorBoundary>
-    );
-  };
 }
 
 export default ErrorBoundary;

@@ -1,25 +1,8 @@
 // frontend/src/pages/PlayerProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Grid,
-  GridItem,
-  Card,
-  Badge,
-  Button,
-  Avatar,
-  Flex,
-  Image,
-  Spinner
-} from '@chakra-ui/react';
 import { FaUser, FaTrophy, FaGamepad, FaStar } from 'react-icons/fa';
-import { api } from '../services/api.js';
+import { enhancedApi } from '../services/enhancedApiWithSync.js';
 import { fileBackend } from '../services/fileBackend.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import FavoritesButton from '../components/FavoritesButton.jsx';
@@ -44,7 +27,7 @@ const PlayerProfilePage = () => {
             try {
                 // Fetch heroes data if not already available - simplified for POC
                 if (Object.keys(heroesData).length === 0) {
-                    const heroes = await api.getHeroes();
+                    const heroes = await enhancedApi.getHeroes();
                     const heroesMap = heroes.reduce((map, hero) => {
                         map[hero.id] = hero;
                         return map;
@@ -52,7 +35,7 @@ const PlayerProfilePage = () => {
                     setHeroesData(heroesMap);
                 }
 
-                const playerData = await api.getPlayerSummary(playerId);
+                const playerData = await enhancedApi.getPlayerSummary(playerId);
                 setPlayerData(playerData);
 
                 // Load user profile and recommendations if logged in
@@ -114,347 +97,271 @@ const PlayerProfilePage = () => {
 
     if (loading && !playerData) {
         return (
-            <Container maxW="7xl" py={8} centerContent>
-                <VStack spacing={4}>
-                    <Spinner size="xl" color="dota.teal.500" thickness="4px" />
-                    <Text color="dota.text.secondary">Loading player profile...</Text>
-                </VStack>
-            </Container>
+            <div className="max-w-7xl mx-auto py-8 flex flex-col items-center">
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-slate-400">Loading player profile...</p>
+                </div>
+            </div>
         );
     }
     
     if (error) {
         return (
-            <Container maxW="7xl" py={8}>
-                <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
-                    <Text color="dota.text.primary">Error: {error}</Text>
-                </Box>
-            </Container>
+            <div className="max-w-7xl mx-auto py-8">
+                <div className="bg-slate-800 border border-red-500 rounded-md p-4">
+                    <p className="text-white">Error: {error}</p>
+                </div>
+            </div>
         );
     }
     
     if (!playerData && !loading) {
         return (
-            <Container maxW="7xl" py={8}>
-                <Box bg="dota.bg.card" borderColor="dota.status.warning" borderWidth={1} borderRadius="md" p={4}>
-                    <Text color="dota.text.primary">
+            <div className="max-w-7xl mx-auto py-8">
+                <div className="bg-slate-800 border border-yellow-500 rounded-md p-4">
+                    <p className="text-white">
                         No player data found for Account ID: {playerId}. It might be a private profile or an invalid ID.
-                    </Text>
-                </Box>
-            </Container>
+                    </p>
+                </div>
+            </div>
         );
     }
 
     const { profile, mmr_estimate, winLoss, recentMatches } = playerData || {}; // Destructure safely
 
     return (
-        <Container maxW="6xl" py={6}>
-            <VStack spacing={8} align="stretch">
+        <div className="max-w-6xl mx-auto py-6">
+            <div className="flex flex-col space-y-8">
                 {/* Profile Header */}
-                <Card
-                    bg="dota.bg.card"
-                    borderWidth={1}
-                    borderColor="dota.bg.tertiary"
-                    p={{ base: 4, sm: 6 }}
-                    position="relative"
-                    overflow="hidden"
-                    _before={{
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '4px',
-                        bgGradient: 'linear(to-r, dota.teal.500, dota.purple.500)'
-                    }}
-                >
+                <div className="bg-slate-800 border border-slate-700 p-4 sm:p-6 relative overflow-hidden rounded-lg">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-purple-500"></div>
                     {profile ? (
-                        <VStack spacing={6}>
-                            <Flex 
-                                direction={{ base: "column", sm: "row" }} 
-                                align="center" 
-                                w="full"
-                                gap={6}
-                            >
-                                <Avatar
+                        <div className="space-y-6">
+                            <div className="flex flex-col sm:flex-row items-center w-full gap-6">
+                                <img
                                     src={profile.avatarfull}
-                                    name={profile.personaname}
-                                    size={{ base: "xl", sm: "2xl" }}
-                                    border="4px solid"
-                                    borderColor="dota.teal.500"
-                                    boxShadow="dota-glow"
+                                    alt={profile.personaname}
+                                    className="w-20 h-20 sm:w-32 sm:h-32 rounded-full border-4 border-teal-500 shadow-lg"
                                 />
                                 
-                                <VStack 
-                                    align={{ base: "center", sm: "start" }} 
-                                    flex={1} 
-                                    spacing={3}
-                                >
-                                    <VStack align={{ base: "center", sm: "start" }} spacing={2}>
-                                        <Heading 
-                                            size={{ base: "lg", sm: "xl" }} 
-                                            color="dota.text.primary"
-                                            textAlign={{ base: "center", sm: "left" }}
-                                        >
+                                <div className="flex-1 flex flex-col items-center sm:items-start space-y-3">
+                                    <div className="flex flex-col items-center sm:items-start space-y-2">
+                                        <h1 className="text-xl sm:text-3xl font-bold text-white text-center sm:text-left">
                                             {profile.personaname}
-                                        </Heading>
-                                        <VStack align={{ base: "center", sm: "start" }} spacing={1}>
-                                            <Text color="dota.text.secondary" fontSize="sm">
+                                        </h1>
+                                        <div className="flex flex-col items-center sm:items-start space-y-1">
+                                            <p className="text-slate-400 text-sm">
                                                 Account ID: {profile.account_id}
-                                            </Text>
+                                            </p>
                                             {profile.steamid && (
-                                                <Text color="dota.text.muted" fontSize="xs">
+                                                <p className="text-slate-500 text-xs">
                                                     Steam ID: {profile.steamid}
-                                                </Text>
+                                                </p>
                                             )}
-                                        </VStack>
-                                    </VStack>
+                                        </div>
+                                    </div>
                                     
                                     {mmr_estimate?.estimate && (
-                                        <Badge 
-                                            variant="solid" 
-                                            colorScheme="teal" 
-                                            fontSize="md" 
-                                            px={3} 
-                                            py={1}
-                                            borderRadius="full"
-                                        >
+                                        <span className="bg-teal-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                                             MMR: {mmr_estimate.estimate}
-                                        </Badge>
+                                        </span>
                                     )}
-                                </VStack>
+                                </div>
                                 
                                 {user && (
-                                    <VStack spacing={2}>
-                                        <Button
-                                            as={Link}
+                                    <div className="flex flex-col space-y-2">
+                                        <Link
                                             to="/profile"
-                                            variant="primary"
-                                            size="sm"
-                                            leftIcon={<FaUser />}
+                                            className="flex items-center justify-center px-3 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors text-sm"
                                         >
+                                            <FaUser className="w-4 h-4 mr-2" />
                                             My Profile
-                                        </Button>
-                                        <Button
-                                            as={Link}
+                                        </Link>
+                                        <Link
                                             to="/recommendations"
-                                            variant="secondary"
-                                            size="sm"
-                                            leftIcon={<FaStar />}
+                                            className="flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-sm"
                                         >
+                                            <FaStar className="w-4 h-4 mr-2" />
                                             Get Recommendations
-                                        </Button>
-                                    </VStack>
+                                        </Link>
+                                    </div>
                                 )}
-                            </Flex>
-                        </VStack>
+                            </div>
+                        </div>
                     ) : (
-                        <Text color="dota.text.muted" textAlign="center">
+                        <p className="text-slate-500 text-center">
                             Core profile data not available.
-                        </Text>
+                        </p>
                     )}
                     
                     {/* Win/Loss Statistics */}
                     {winLoss && (
-                        <Grid templateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }} gap={6}>
-                            <GridItem textAlign={{ base: "center", sm: "left" }}>
-                                <VStack spacing={1}>
-                                    <Text color="dota.text.secondary" fontSize="sm">Wins</Text>
-                                    <Text color="dota.status.success" fontSize="2xl" fontWeight="bold">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+                            <div className="text-center sm:text-left">
+                                <div className="space-y-1">
+                                    <p className="text-slate-400 text-sm">Wins</p>
+                                    <p className="text-green-400 text-2xl font-bold">
                                         {winLoss.win}
-                                    </Text>
-                                </VStack>
-                            </GridItem>
+                                    </p>
+                                </div>
+                            </div>
                             
-                            <GridItem textAlign={{ base: "center", sm: "left" }}>
-                                <VStack spacing={1}>
-                                    <Text color="dota.text.secondary" fontSize="sm">Losses</Text>
-                                    <Text color="dota.status.error" fontSize="2xl" fontWeight="bold">
+                            <div className="text-center sm:text-left">
+                                <div className="space-y-1">
+                                    <p className="text-slate-400 text-sm">Losses</p>
+                                    <p className="text-red-400 text-2xl font-bold">
                                         {winLoss.lose}
-                                    </Text>
-                                </VStack>
-                            </GridItem>
+                                    </p>
+                                </div>
+                            </div>
                             
-                            <GridItem textAlign={{ base: "center", sm: "left" }}>
-                                <VStack spacing={1}>
-                                    <Text color="dota.text.secondary" fontSize="sm">Win Rate</Text>
-                                    <Text 
-                                        color={winLoss.win / (winLoss.win + winLoss.lose) >= 0.5 ? 'dota.status.success' : 'dota.status.error'}
-                                        fontSize="2xl"
-                                        fontWeight="bold"
-                                    >
+                            <div className="text-center sm:text-left">
+                                <div className="space-y-1">
+                                    <p className="text-slate-400 text-sm">Win Rate</p>
+                                    <p className={`text-2xl font-bold ${
+                                        winLoss.win / (winLoss.win + winLoss.lose) >= 0.5 ? 'text-green-400' : 'text-red-400'
+                                    }`}>
                                         {((winLoss.win / (winLoss.win + winLoss.lose)) * 100).toFixed(1)}%
-                                    </Text>
-                                </VStack>
-                            </GridItem>
-                        </Grid>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     )}
-                </Card>
+                </div>
 
                 {/* Tab Content */}
-                <Box>
-                    <Box bg="dota.bg.card" borderColor="dota.bg.tertiary" borderWidth={1} borderRadius="md" p={2}>
-                        <HStack spacing={1}>
-                            <Button 
+                <div>
+                    <div className="bg-slate-800 border border-slate-700 rounded-md p-2">
+                        <div className="flex space-x-1">
+                            <button 
                                 onClick={() => setShowAnalysisTab(false)}
-                                variant={!showAnalysisTab ? "solid" : "ghost"}
-                                size="sm"
-                                colorScheme={!showAnalysisTab ? "teal" : "gray"}
-                                borderRadius="md"
+                                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                                    !showAnalysisTab 
+                                        ? 'bg-teal-600 text-white' 
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                }`}
                             >
-                                <HStack spacing={2}>
-                                    <FaGamepad />
-                                    <Text>Recent Matches</Text>
-                                </HStack>
-                            </Button>
+                                <FaGamepad />
+                                <span>Recent Matches</span>
+                            </button>
                             {user && heroRecommendations.length > 0 && (
-                                <Button 
+                                <button 
                                     onClick={() => setShowAnalysisTab(true)}
-                                    variant={showAnalysisTab ? "solid" : "ghost"}
-                                    size="sm"
-                                    colorScheme={showAnalysisTab ? "teal" : "gray"}
-                                    borderRadius="md"
+                                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                                        showAnalysisTab 
+                                            ? 'bg-teal-600 text-white' 
+                                            : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                    }`}
                                 >
-                                    <HStack spacing={2}>
-                                        <FaStar />
-                                        <Text>Recommendations ({heroRecommendations.length})</Text>
-                                    </HStack>
-                                </Button>
+                                    <FaStar />
+                                    <span>Recommendations ({heroRecommendations.length})</span>
+                                </button>
                             )}
-                        </HStack>
-                    </Box>
+                        </div>
+                    </div>
                     
                     {!showAnalysisTab && (
-
-                            <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
-                                <VStack spacing={6} align="stretch">
-                                    <Heading size="md" color="dota.text.primary">
-                                        Recent Matches (Last 5)
-                                    </Heading>
+                        <div className="bg-slate-800 border border-slate-700 p-6 mt-6 rounded-lg">
+                            <div className="flex flex-col space-y-6">
+                                <h2 className="text-lg font-semibold text-white">
+                                    Recent Matches (Last 5)
+                                </h2>
                                     
-                                    {recentMatches && recentMatches.length > 0 ? (
-                                        <VStack spacing={4} align="stretch">
-                                            {recentMatches.map(match => {
-                                                const heroInfo = getHeroInfo(match.hero_id);
-                                                const playerWon = (match.radiant_win && match.player_slot < 128) || (!match.radiant_win && match.player_slot >= 128);
-                                                return (
-                                                    <Card
-                                                        key={match.match_id}
-                                                        bg={playerWon ? 'green.50' : 'red.50'}
-                                                        borderWidth={2}
-                                                        borderColor={playerWon ? 'dota.status.success' : 'dota.status.error'}
-                                                        p={4}
-                                                        transition="all 0.2s ease"
-                                                        _hover={{
-                                                            transform: "translateY(-2px)",
-                                                            boxShadow: "md"
-                                                        }}
-                                                    >
-                                                        <Flex 
-                                                            direction={{ base: "column", sm: "row" }} 
-                                                            justify="space-between" 
-                                                            align={{ base: "start", sm: "center" }}
-                                                            gap={4}
-                                                        >
-                                                            <HStack spacing={4} flex={1}>
-                                                                {heroInfo.icon && (
-                                                                    <Image 
-                                                                        src={heroInfo.icon} 
-                                                                        alt={heroInfo.localized_name} 
-                                                                        w={10} 
-                                                                        h={6} 
-                                                                        borderRadius="sm"
-                                                                    />
-                                                                )}
+                                {recentMatches && recentMatches.length > 0 ? (
+                                    <div className="flex flex-col space-y-4">
+                                        {recentMatches.map(match => {
+                                            const heroInfo = getHeroInfo(match.hero_id);
+                                            const playerWon = (match.radiant_win && match.player_slot < 128) || (!match.radiant_win && match.player_slot >= 128);
+                                            return (
+                                                <div
+                                                    key={match.match_id}
+                                                    className={`p-4 border-2 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                                                        playerWon 
+                                                            ? 'bg-green-50 border-green-400' 
+                                                            : 'bg-red-50 border-red-400'
+                                                    }`}
+                                                >
+                                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                        <div className="flex items-center space-x-4 flex-1">
+                                                            {heroInfo.icon && (
+                                                                <img 
+                                                                    src={heroInfo.icon} 
+                                                                    alt={heroInfo.localized_name} 
+                                                                    className="w-10 h-6 rounded-sm"
+                                                                />
+                                                            )}
                                                                 
-                                                                <VStack align="start" spacing={1} flex={1}>
-                                                                    <Button
-                                                                        as={Link}
-                                                                        to={`/matches/${match.match_id}`}
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        color="dota.teal.500"
-                                                                        fontWeight="semibold"
-                                                                        p={0}
-                                                                        h="auto"
-                                                                        _hover={{ textDecoration: "underline" }}
-                                                                    >
-                                                                        Match ID: {match.match_id}
-                                                                    </Button>
+                                                            <div className="flex flex-col items-start space-y-1 flex-1">
+                                                                <Link
+                                                                    to={`/matches/${match.match_id}`}
+                                                                    className="text-teal-500 font-semibold text-sm hover:underline"
+                                                                >
+                                                                    Match ID: {match.match_id}
+                                                                </Link>
                                                                     
-                                                                    <HStack spacing={2}>
-                                                                        <Badge
-                                                                            variant="solid"
-                                                                            colorScheme={playerWon ? 'green' : 'red'}
-                                                                            fontSize="xs"
-                                                                        >
-                                                                            {playerWon ? 'WIN' : 'LOSS'}
-                                                                        </Badge>
-                                                                        <Text 
-                                                                            fontSize="sm" 
-                                                                            color="dota.text.primary"
-                                                                            fontWeight="medium"
-                                                                        >
-                                                                            {heroInfo.localized_name}
-                                                                        </Text>
-                                                                    </HStack>
-                                                                </VStack>
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                                        playerWon ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+                                                                    }`}>
+                                                                        {playerWon ? 'WIN' : 'LOSS'}
+                                                                    </span>
+                                                                    <span className="text-sm text-slate-900 font-medium">
+                                                                        {heroInfo.localized_name}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                                 
-                                                                {user && (
-                                                                    <FavoritesButton
-                                                                        type="hero"
-                                                                        id={match.hero_id}
-                                                                        name={heroInfo.localized_name}
-                                                                        role={heroInfo.roles?.[0]}
-                                                                    />
-                                                                )}
-                                                            </HStack>
+                                                            {user && (
+                                                                <FavoritesButton
+                                                                    type="hero"
+                                                                    id={match.hero_id}
+                                                                    name={heroInfo.localized_name}
+                                                                    role={heroInfo.roles?.[0]}
+                                                                />
+                                                            )}
+                                                        </div>
                                                             
-                                                            <VStack 
-                                                                align={{ base: "start", sm: "end" }} 
-                                                                spacing={1}
-                                                                fontSize="sm"
-                                                                color="dota.text.secondary"
-                                                            >
-                                                                <Text fontWeight="medium">
-                                                                    KDA: {match.kills}/{match.deaths}/{match.assists}
-                                                                </Text>
-                                                                <Text>
-                                                                    Duration: {Math.floor(match.duration / 60)}m {match.duration % 60}s
-                                                                </Text>
-                                                                <Text fontSize="xs">
-                                                                    {new Date(match.start_time * 1000).toLocaleDateString()}
-                                                                </Text>
-                                                            </VStack>
-                                                        </Flex>
-                                                    </Card>
+                                                        <div className="flex flex-col items-start sm:items-end space-y-1 text-sm text-slate-600">
+                                                            <p className="font-medium">
+                                                                KDA: {match.kills}/{match.deaths}/{match.assists}
+                                                            </p>
+                                                            <p>
+                                                                Duration: {Math.floor(match.duration / 60)}m {match.duration % 60}s
+                                                            </p>
+                                                            <p className="text-xs">
+                                                                {new Date(match.start_time * 1000).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 );
                                             })}
-                                        </VStack>
-                                    ) : (
-                                        <Text color="dota.text.secondary" textAlign="center" py={8}>
-                                            No recent matches found or data is not public.
-                                        </Text>
-                                    )}
-                                </VStack>
-                            </Card>
+                                    </div>
+                                ) : (
+                                    <p className="text-slate-400 text-center py-8">
+                                        No recent matches found or data is not public.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
                     )}
                         
                     {showAnalysisTab && (
-                            <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
-                                <VStack spacing={6} align="stretch">
-                                    <VStack spacing={3} align="start">
-                                        <Heading size="md" color="dota.text.primary">
-                                            Recommended Heroes for You
-                                        </Heading>
-                                        <Text color="dota.text.secondary" fontSize="sm">
-                                            Based on your profile preferences and excluding recently played heroes.
-                                        </Text>
-                                    </VStack>
+                        <div className="bg-slate-800 border border-slate-700 p-6 mt-6 rounded-lg">
+                            <div className="flex flex-col space-y-6">
+                                <div className="flex flex-col space-y-3 items-start">
+                                    <h2 className="text-lg font-semibold text-white">
+                                        Recommended Heroes for You
+                                    </h2>
+                                    <p className="text-slate-400 text-sm">
+                                        Based on your profile preferences and excluding recently played heroes.
+                                    </p>
+                                </div>
                                     
-                                    {heroRecommendations.length > 0 ? (
-                                        <VStack spacing={6}>
-                                            <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }} gap={4} w="full">
+                                {heroRecommendations.length > 0 ? (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
                                                 {heroRecommendations.map(hero => {
                                                     const heroInfo = getHeroInfo(hero.id || hero.hero_id);
                                                     const cardData = {
@@ -473,39 +380,36 @@ const PlayerProfilePage = () => {
                                                         />
                                                     );
                                                 })}
-                                            </Grid>
-                                            
-                                            <Box textAlign="center">
-                                                <Button
-                                                    as={Link}
-                                                    to="/recommendations"
-                                                    variant="primary"
-                                                    size="lg"
-                                                >
-                                                    View All Recommendations
-                                                </Button>
-                                            </Box>
-                                        </VStack>
-                                    ) : (
-                                        <VStack spacing={4} py={8} textAlign="center">
-                                            <Text color="dota.text.secondary">
-                                                No recommendations available.
-                                            </Text>
-                                            <Button
-                                                as={Link}
-                                                to="/profile"
-                                                variant="primary"
+                                        </div>
+                                        
+                                        <div className="text-center">
+                                            <Link
+                                                to="/recommendations"
+                                                className="inline-flex items-center px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors font-medium"
                                             >
-                                                Set Up Your Profile
-                                            </Button>
-                                        </VStack>
-                                    )}
-                                </VStack>
-                            </Card>
+                                                View All Recommendations
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center space-y-4 py-8 text-center">
+                                        <p className="text-slate-400">
+                                            No recommendations available.
+                                        </p>
+                                        <Link
+                                            to="/profile"
+                                            className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
+                                        >
+                                            Set Up Your Profile
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     )}
-                </Box>
-            </VStack>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 

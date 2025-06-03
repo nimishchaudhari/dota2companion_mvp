@@ -1,5 +1,5 @@
 // frontend/src/contexts/AuthContext.jsx
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { mockAuth } from '../services/api.js';
 
 const AuthContext = createContext(null);

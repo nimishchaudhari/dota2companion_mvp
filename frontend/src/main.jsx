@@ -1,12 +1,10 @@
 // frontend/src/main.jsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChakraProvider } from '@chakra-ui/react';
 import App from './App.jsx';
-import './index.css'; // Assuming default styling
+import './index.css'; // Tailwind CSS and custom styles
 import { AuthProvider } from './contexts/AuthContext.jsx'; // Import AuthProvider
 import { fileBackend } from './services/fileBackend.js'; // Import file backend service
-import theme from './theme/index.js'; // Import custom Dota 2 theme
 
 // Initialize file backend service
 const initializeApp = async () => {
@@ -35,11 +33,9 @@ const root = createRoot(rootElement);
 // App component wrapper with error boundary
 const AppWrapper = () => (
   <StrictMode>
-    <ChakraProvider theme={theme}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ChakraProvider>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>
 );
 

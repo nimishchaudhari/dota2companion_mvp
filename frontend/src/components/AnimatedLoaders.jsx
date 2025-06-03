@@ -1,10 +1,9 @@
 // frontend/src/components/AnimatedLoaders.jsx
 import React from 'react';
-import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
-import { Box, HStack, VStack, Text, Flex } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 
 // Spinning loader with Dota-inspired styling
-export const DotaSpinner = ({ size = 'md', color = 'dota.teal.500' }) => {
+export const DotaSpinner = ({ size = 'md', color = '#14b8a6' }) => {
   const sizes = {
     sm: '24px',
     md: '32px',
@@ -33,7 +32,7 @@ export const DotaSpinner = ({ size = 'md', color = 'dota.teal.500' }) => {
 };
 
 // Pulsing dots loader
-export const PulsingDots = ({ count = 3, color = 'dota.teal.500', size = 'sm' }) => {
+export const PulsingDots = ({ count = 3, color = '#14b8a6', size = 'sm' }) => {
   const dotSizes = {
     sm: '8px',
     md: '12px',
@@ -41,7 +40,7 @@ export const PulsingDots = ({ count = 3, color = 'dota.teal.500', size = 'sm' })
   };
 
   return (
-    <HStack spacing={2}>
+    <div className="flex items-center space-x-2">
       {Array.from({ length: count }, (_, index) => (
         <motion.div
           key={index}
@@ -63,12 +62,12 @@ export const PulsingDots = ({ count = 3, color = 'dota.teal.500', size = 'sm' })
           }}
         />
       ))}
-    </HStack>
+    </div>
   );
 };
 
 // Ripple loading effect
-export const RippleLoader = ({ size = 'md', color = 'dota.teal.500' }) => {
+export const RippleLoader = ({ size = 'md', color = '#14b8a6' }) => {
   const sizes = {
     sm: '32px',
     md: '48px',
@@ -76,7 +75,7 @@ export const RippleLoader = ({ size = 'md', color = 'dota.teal.500' }) => {
   };
 
   return (
-    <Box position="relative" width={sizes[size]} height={sizes[size]}>
+    <div className="relative" style={{ width: sizes[size], height: sizes[size] }}>
       {[0, 1, 2].map((index) => (
         <motion.div
           key={index}
@@ -102,13 +101,13 @@ export const RippleLoader = ({ size = 'md', color = 'dota.teal.500' }) => {
           }}
         />
       ))}
-    </Box>
+    </div>
   );
 };
 
 // Hero portrait loading with shimmer effect
 export const HeroPortraitLoader = ({ count = 1 }) => (
-  <HStack spacing={3}>
+  <div className="flex items-center space-x-3">
     {Array.from({ length: count }, (_, index) => (
       <motion.div
         key={index}
@@ -116,14 +115,7 @@ export const HeroPortraitLoader = ({ count = 1 }) => (
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: index * 0.1 }}
       >
-        <Box
-          width="64px"
-          height="64px"
-          borderRadius="md"
-          bg="dota.bg.tertiary"
-          position="relative"
-          overflow="hidden"
-        >
+        <div className="w-16 h-16 rounded-md bg-slate-700 relative overflow-hidden">
           <motion.div
             style={{
               position: 'absolute',
@@ -142,16 +134,16 @@ export const HeroPortraitLoader = ({ count = 1 }) => (
               ease: "easeInOut"
             }}
           />
-        </Box>
+        </div>
       </motion.div>
     ))}
-  </HStack>
+  </div>
 );
 
 // Bouncing loader with game-like feel
-export const BouncingLoader = ({ text = "Loading...", color = 'dota.teal.500' }) => (
-  <VStack spacing={4}>
-    <HStack spacing={1}>
+export const BouncingLoader = ({ text = "Loading...", color = '#14b8a6' }) => (
+  <div className="flex flex-col items-center space-y-4">
+    <div className="flex items-center space-x-1">
       {[0, 1, 2].map((index) => (
         <motion.div
           key={index}
@@ -172,29 +164,29 @@ export const BouncingLoader = ({ text = "Loading...", color = 'dota.teal.500' })
           }}
         />
       ))}
-    </HStack>
+    </div>
     {text && (
-      <Text color="dota.text.secondary" fontSize="sm">
+      <div className="text-slate-300 text-sm">
         {text}
-      </Text>
+      </div>
     )}
-  </VStack>
+  </div>
 );
 
 // Progress bar loader with glow effect
 export const GlowProgressLoader = ({ 
   progress = 0, 
-  color = 'dota.teal.500',
+  color = '#14b8a6',
   showText = true,
   text = "Loading..."
 }) => (
-  <VStack spacing={3} width="full">
+  <div className="flex flex-col items-center space-y-3 w-full">
     {showText && (
-      <Text color="dota.text.primary" fontSize="sm" fontWeight="medium">
+      <div className="text-white text-sm font-medium">
         {text}
-      </Text>
+      </div>
     )}
-    <Box width="full" height="4px" bg="dota.bg.tertiary" borderRadius="full" overflow="hidden">
+    <div className="w-full h-1 bg-slate-700 rounded-full overflow-hidden">
       <motion.div
         style={{
           height: '100%',
@@ -207,20 +199,20 @@ export const GlowProgressLoader = ({
         animate={{ width: `${progress}%` }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       />
-    </Box>
+    </div>
     {showText && (
-      <Text color="dota.text.muted" fontSize="xs">
+      <div className="text-slate-400 text-xs">
         {progress}%
-      </Text>
+      </div>
     )}
-  </VStack>
+  </div>
 );
 
 // Circular progress with animated stroke
 export const CircularProgress = ({ 
   progress = 0, 
   size = 'md',
-  color = 'dota.teal.500',
+  color = '#14b8a6',
   strokeWidth = 3
 }) => {
   const sizes = {
@@ -236,7 +228,7 @@ export const CircularProgress = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <Box position="relative" width={`${sizes[size]}px`} height={`${sizes[size]}px`}>
+    <div className="relative" style={{ width: `${sizes[size]}px`, height: `${sizes[size]}px` }}>
       <motion.svg
         width={sizes[size]}
         height={sizes[size]}
@@ -269,27 +261,20 @@ export const CircularProgress = ({
           }}
         />
       </motion.svg>
-      <Box
-        position="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -50%)"
-      >
-        <Text
-          fontSize={size === 'sm' ? 'xs' : size === 'lg' ? 'md' : 'sm'}
-          fontWeight="bold"
-          color="dota.text.primary"
-        >
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className={`font-bold text-white ${
+          size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-base' : 'text-sm'
+        }`}>
           {Math.round(progress)}%
-        </Text>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 
 // Floating particles loader
-export const ParticleLoader = ({ particleCount = 8, color = 'dota.teal.500' }) => (
-  <Box position="relative" width="80px" height="80px">
+export const ParticleLoader = ({ particleCount = 8, color = '#14b8a6' }) => (
+  <div className="relative w-20 h-20">
     {Array.from({ length: particleCount }, (_, index) => {
       const angle = (index / particleCount) * Math.PI * 2;
       const radius = 30;
@@ -323,14 +308,14 @@ export const ParticleLoader = ({ particleCount = 8, color = 'dota.teal.500' }) =
         />
       );
     })}
-  </Box>
+  </div>
 );
 
 // Text typing animation
 export const TypingLoader = ({ 
   texts = ["Loading...", "Fetching data...", "Almost ready..."],
   speed = 100,
-  color = 'dota.text.primary'
+  color = '#ffffff'
 }) => {
   const [currentTextIndex, setCurrentTextIndex] = React.useState(0);
   const [displayText, setDisplayText] = React.useState('');
@@ -365,8 +350,8 @@ export const TypingLoader = ({
   }, [displayText, isTyping, currentTextIndex, texts, speed]);
 
   return (
-    <Flex align="center" minHeight="24px">
-      <Text color={color} fontSize="sm" fontFamily="monospace">
+    <div className="flex items-center min-h-6">
+      <div className="text-sm font-mono" style={{ color }}>
         {displayText}
         <motion.span
           animate={{ opacity: [1, 0] }}
@@ -375,8 +360,8 @@ export const TypingLoader = ({
         >
           |
         </motion.span>
-      </Text>
-    </Flex>
+      </div>
+    </div>
   );
 };
 
@@ -405,36 +390,28 @@ export const GameLoadingScreen = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      className="fixed inset-0 flex items-center justify-center z-[9999]"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999
+        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)'
       }}
     >
-      <VStack spacing={8} maxWidth="500px" width="90%" textAlign="center">
+      <div className="flex flex-col items-center space-y-8 max-w-md w-[90%] text-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Text fontSize="2xl" fontWeight="bold" color="dota.text.primary" mb={2}>
+          <div className="text-2xl font-bold text-white mb-2">
             {title}
-          </Text>
-          <Text fontSize="md" color="dota.text.secondary">
+          </div>
+          <div className="text-base text-slate-300">
             {subtitle}
-          </Text>
+          </div>
         </motion.div>
 
-        <Box width="full">
+        <div className="w-full">
           <CircularProgress progress={progress} size="xl" />
-        </Box>
+        </div>
 
         <motion.div
           key={currentTip}
@@ -443,23 +420,13 @@ export const GameLoadingScreen = ({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
         >
-          <Text
-            fontSize="sm"
-            color="dota.teal.300"
-            fontStyle="italic"
-            px={4}
-            py={2}
-            bg="rgba(39, 174, 158, 0.1)"
-            borderRadius="lg"
-            border="1px solid"
-            borderColor="dota.teal.500"
-          >
+          <div className="text-sm text-teal-300 italic px-4 py-2 bg-teal-500/10 rounded-lg border border-teal-500">
             {tips[currentTip]}
-          </Text>
+          </div>
         </motion.div>
 
         <ParticleLoader />
-      </VStack>
+      </div>
     </motion.div>
   );
 };

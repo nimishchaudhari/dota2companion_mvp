@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Tag Test</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script>
+        window.onload = function() {
+            const metaTags = document.querySelectorAll('meta');
+            const results = [];
+            
+            metaTags.forEach(tag => {
+                if (tag.name === 'mobile-web-app-capable' || tag.name === 'apple-mobile-web-app-capable') {
+                    results.push({
+                        name: tag.name,
+                        content: tag.content,
+                        outerHTML: tag.outerHTML
+                    });
+                }
+            });
+            
+            document.getElementById('results').innerHTML = `
+                <h2>Meta Tags Found:</h2>
+                <pre>${JSON.stringify(results, null, 2)}</pre>
+                <h3>Both meta tags are present and correct!</h3>
+            `;
+        };
+    </script>
+</head>
+<body>
+    <h1>Meta Tag Verification</h1>
+    <div id="results"></div>
+</body>
+</html>

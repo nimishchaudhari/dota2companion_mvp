@@ -1,95 +1,43 @@
 // frontend/src/components/layout/Footer.jsx
-import React from 'react';
-import { Box, Text, Flex, HStack } from '@chakra-ui/react';
-
 const Footer = () => {
     return (
-        <Box
-            as="footer"
-            bg="dota.bg.secondary"
-            borderTop="1px"
-            borderColor="dota.bg.tertiary"
-            mt="auto"
-            py={6}
-            px={4}
-        >
-            <Box maxW="7xl" mx="auto">
-                <Flex
-                    direction={{ base: "column", md: "row" }}
-                    justify="space-between"
-                    align="center"
-                    gap={4}
-                >
+        <footer className="bg-slate-800 border-t border-slate-700 mt-auto py-6 px-4">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     {/* Copyright */}
-                    <Text
-                        color="dota.text.secondary"
-                        fontSize="sm"
-                        textAlign="center"
-                    >
+                    <p className="text-slate-400 text-sm text-center">
                         &copy; {new Date().getFullYear()} Dota 2 Companion
-                    </Text>
+                    </p>
 
                     {/* Dota 2 Branding */}
-                    <HStack spacing={2}>
-                        <Text
-                            color="dota.text.muted"
-                            fontSize="xs"
-                            textAlign="center"
-                        >
+                    <div className="flex items-center space-x-2">
+                        <span className="text-slate-500 text-xs text-center">
                             Powered by
-                        </Text>
-                        <Text
-                            color="dota.teal.400"
-                            fontSize="xs"
-                            fontWeight="semibold"
-                            textShadow="0 0 8px rgba(39, 174, 158, 0.3)"
-                        >
+                        </span>
+                        <span className="text-teal-400 text-xs font-semibold" style={{textShadow: "0 0 8px rgba(39, 174, 158, 0.3)"}}>
                             OpenDota API
-                        </Text>
-                        <Text
-                            color="dota.text.muted"
-                            fontSize="xs"
-                        >
+                        </span>
+                        <span className="text-slate-500 text-xs">
                             •
-                        </Text>
-                        <Text
-                            color="dota.purple.400"
-                            fontSize="xs"
-                            fontWeight="semibold"
-                            textShadow="0 0 8px rgba(72, 48, 140, 0.3)"
-                        >
+                        </span>
+                        <span className="text-purple-400 text-xs font-semibold" style={{textShadow: "0 0 8px rgba(72, 48, 140, 0.3)"}}>
                             Steam API
-                        </Text>
-                    </HStack>
+                        </span>
+                    </div>
 
                     {/* Additional Info */}
-                    <Text
-                        color="dota.text.muted"
-                        fontSize="xs"
-                        textAlign="center"
-                    >
+                    <p className="text-slate-500 text-xs text-center">
                         Not affiliated with Valve Corporation
-                    </Text>
-                </Flex>
+                    </p>
+                </div>
 
-                <Box
-                    mt={4}
-                    height="1px"
-                    bg="dota.bg.tertiary"
-                    opacity={0.6}
-                />
+                <div className="mt-4 h-px bg-slate-700 opacity-60" />
 
-                <Text
-                    color="dota.text.muted"
-                    fontSize="xs"
-                    textAlign="center"
-                    mt={3}
-                    fontStyle="italic"
-                >
+                <p className="text-slate-500 text-xs text-center mt-3 italic">
                     "The battle begins..."
-                </Text>
-            </Box>
-        </Box>
+                </p>
+            </div>
+        </footer>
     );
 };
 export default Footer;

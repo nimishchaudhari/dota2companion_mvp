@@ -106,7 +106,21 @@
       "name": "Search Players",
       "short_name": "Search",
       "description": "Search and analyze Dota 2 players",
-      "url": "/search",
+      "url": "/",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Heroes List",
+      "short_name": "Heroes",
+      "description": "Browse all Dota 2 heroes",
+      "url": "/heroes",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Offline Mode",
+      "short_name": "Offline",
+      "description": "View cached data when offline",
+      "url": "/offline",
       "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
     }
   ],
