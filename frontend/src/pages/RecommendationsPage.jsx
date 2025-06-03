@@ -16,9 +16,7 @@ import {
   Select,
   Checkbox,
   Flex,
-  Tabs,
   Spinner,
-  Alert,
   Icon
 } from '@chakra-ui/react';
 import { FaUser, FaStar, FaTrophy, FaUsers, FaFilter } from 'react-icons/fa';
@@ -35,6 +33,7 @@ const RecommendationsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRole, setSelectedRole] = useState('Carry');
+  const [activeTab, setActiveTab] = useState('role_based');
   const [filters, setFilters] = useState({
     skill_level: '',
     complexity: '',
@@ -144,21 +143,14 @@ const RecommendationsPage = () => {
       <Container maxW="md" py={20}>
         <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={8} textAlign="center">
           <VStack spacing={6}>
-            <Alert.Root status="error" bg="dota.bg.secondary" borderColor="dota.status.error">
-              <Alert.Indicator />
-              <Alert.Content>
-                <VStack align="start" spacing={2}>
-                  <Alert.Title>
-                    <Heading size="md" color="dota.text.primary">
-                      Error Loading Recommendations
-                    </Heading>
-                  </Alert.Title>
-                  <Alert.Description>
-                    <Text color="dota.text.secondary">{error}</Text>
-                  </Alert.Description>
-                </VStack>
-              </Alert.Content>
-            </Alert.Root>
+            <Box bg="dota.bg.secondary" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+              <VStack align="start" spacing={2}>
+                <Heading size="md" color="dota.text.primary">
+                  Error Loading Recommendations
+                </Heading>
+                <Text color="dota.text.secondary">{error}</Text>
+              </VStack>
+            </Box>
             <Button
               onClick={loadRecommendations}
               variant="primary"
@@ -310,49 +302,81 @@ const RecommendationsPage = () => {
         </Card>
 
         {/* Category Tabs */}
-        <Tabs variant="enclosed" colorScheme="teal" defaultValue="role_based">
-          <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary" flexWrap="wrap">
-            <Tabs.Trigger value="role_based" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-              <HStack spacing={2}>
-                <Icon as={FaShield} />
-                <Text>By Role ({availableRoles.length})</Text>
-              </HStack>
-            </Tabs.Trigger>
-            {recommendations.beginner_friendly && (
-              <Tabs.Trigger value="beginner_friendly" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-                <HStack spacing={2}>
-                  <Icon as={FaStar} />
-                  <Text>Beginner Friendly ({recommendations.beginner_friendly.length})</Text>
-                </HStack>
-              </Tabs.Trigger>
-            )}
-            {recommendations.meta_picks && (
-              <Tabs.Trigger value="meta_picks" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-                <HStack spacing={2}>
-                  <Icon as={FaTrophy} />
-                  <Text>Meta Picks ({recommendations.meta_picks.length})</Text>
-                </HStack>
-              </Tabs.Trigger>
-            )}
-            {recommendations.counter_picks && (
-              <Tabs.Trigger value="counter_picks" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
+        <Box>
+          <Box bg="dota.bg.card" borderColor="dota.bg.tertiary" borderWidth={1} borderRadius="md" p={2}>
+            <HStack spacing={1} wrap="wrap">
+              <Button 
+                onClick={() => setActiveTab('role_based')}
+                variant={activeTab === 'role_based' ? "solid" : "ghost"}
+                size="sm"
+                colorScheme={activeTab === 'role_based' ? "teal" : "gray"}
+                borderRadius="md"
+              >
                 <HStack spacing={2}>
                   <Icon as={FaShield} />
-                  <Text>Counters</Text>
+                  <Text>By Role ({availableRoles.length})</Text>
                 </HStack>
-              </Tabs.Trigger>
-            )}
-            {recommendations.synergies?.strong_combos && (
-              <Tabs.Trigger value="synergies" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-                <HStack spacing={2}>
-                  <Icon as={FaUsers} />
-                  <Text>Synergies ({recommendations.synergies.strong_combos.length})</Text>
-                </HStack>
-              </Tabs.Trigger>
-            )}
-          </Tabs.List>
+              </Button>
+              {recommendations.beginner_friendly && (
+                <Button 
+                  onClick={() => setActiveTab('beginner_friendly')}
+                  variant={activeTab === 'beginner_friendly' ? "solid" : "ghost"}
+                  size="sm"
+                  colorScheme={activeTab === 'beginner_friendly' ? "teal" : "gray"}
+                  borderRadius="md"
+                >
+                  <HStack spacing={2}>
+                    <Icon as={FaStar} />
+                    <Text>Beginner Friendly ({recommendations.beginner_friendly.length})</Text>
+                  </HStack>
+                </Button>
+              )}
+              {recommendations.meta_picks && (
+                <Button 
+                  onClick={() => setActiveTab('meta_picks')}
+                  variant={activeTab === 'meta_picks' ? "solid" : "ghost"}
+                  size="sm"
+                  colorScheme={activeTab === 'meta_picks' ? "teal" : "gray"}
+                  borderRadius="md"
+                >
+                  <HStack spacing={2}>
+                    <Icon as={FaTrophy} />
+                    <Text>Meta Picks ({recommendations.meta_picks.length})</Text>
+                  </HStack>
+                </Button>
+              )}
+              {recommendations.counter_picks && (
+                <Button 
+                  onClick={() => setActiveTab('counter_picks')}
+                  variant={activeTab === 'counter_picks' ? "solid" : "ghost"}
+                  size="sm"
+                  colorScheme={activeTab === 'counter_picks' ? "teal" : "gray"}
+                  borderRadius="md"
+                >
+                  <HStack spacing={2}>
+                    <Icon as={FaShield} />
+                    <Text>Counters</Text>
+                  </HStack>
+                </Button>
+              )}
+              {recommendations.synergies?.strong_combos && (
+                <Button 
+                  onClick={() => setActiveTab('synergies')}
+                  variant={activeTab === 'synergies' ? "solid" : "ghost"}
+                  size="sm"
+                  colorScheme={activeTab === 'synergies' ? "teal" : "gray"}
+                  borderRadius="md"
+                >
+                  <HStack spacing={2}>
+                    <Icon as={FaUsers} />
+                    <Text>Synergies ({recommendations.synergies.strong_combos.length})</Text>
+                  </HStack>
+                </Button>
+              )}
+            </HStack>
+          </Box>
           
-            <Tabs.Content value="role_based" p={0}>
+          {activeTab === 'role_based' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <HStack wrap="wrap" spacing={2}>
@@ -384,9 +408,9 @@ const RecommendationsPage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="beginner_friendly" p={0}>
+          {activeTab === 'beginner_friendly' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <VStack spacing={3} align="start">
@@ -407,9 +431,9 @@ const RecommendationsPage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="meta_picks" p={0}>
+          {activeTab === 'meta_picks' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <VStack spacing={3} align="start">
@@ -430,9 +454,9 @@ const RecommendationsPage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="counter_picks" p={0}>
+          {activeTab === 'counter_picks' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <VStack spacing={3} align="start">
@@ -471,9 +495,9 @@ const RecommendationsPage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="synergies" p={0}>
+          {activeTab === 'synergies' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <VStack spacing={3} align="start">
@@ -494,8 +518,8 @@ const RecommendationsPage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
-        </Tabs>
+          )}
+        </Box>
 
         {/* No Profile Prompt */}
         {!userProfile && (

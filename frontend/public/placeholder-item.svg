@@ -1,0 +1,36 @@
+<svg width="88" height="64" viewBox="0 0 88 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dota 2 themed item placeholder -->
+  <defs>
+    <linearGradient id="itemPlaceholderBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A2E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213E;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="itemPlaceholderIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A5B68;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#2D3748;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="88" height="64" fill="url(#itemPlaceholderBg)" rx="4"/>
+  
+  <!-- Border -->
+  <rect x="1" y="1" width="86" height="62" fill="none" stroke="#4A5B68" stroke-width="1" rx="3" opacity="0.5"/>
+  
+  <!-- Central icon -->
+  <g transform="translate(44, 32)">
+    <!-- Item box shape -->
+    <rect x="-16" y="-12" width="32" height="24" fill="url(#itemPlaceholderIcon)" rx="2"/>
+    <rect x="-14" y="-10" width="28" height="20" fill="none" stroke="#4A5B68" stroke-width="1" rx="1"/>
+    
+    <!-- Generic item symbol -->
+    <circle cx="0" cy="0" r="6" fill="#6B7280" opacity="0.6"/>
+    <circle cx="0" cy="0" r="3" fill="#4A5B68"/>
+  </g>
+  
+  <!-- Corner dots -->
+  <circle cx="8" cy="8" r="1" fill="#4A5B68" opacity="0.4"/>
+  <circle cx="80" cy="8" r="1" fill="#4A5B68" opacity="0.4"/>
+  <circle cx="8" cy="56" r="1" fill="#4A5B68" opacity="0.4"/>
+  <circle cx="80" cy="56" r="1" fill="#4A5B68" opacity="0.4"/>
+</svg>

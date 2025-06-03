@@ -18,8 +18,8 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
 import PlayerSearch from '../PlayerSearch';
 
-const MotionBox = motion.create(Box);
-const MotionFlex = motion.create(Flex);
+const MotionBox = motion(Box);
+const MotionFlex = motion(Flex);
 
 const Header = () => {
     const { user, logout } = useAuth();

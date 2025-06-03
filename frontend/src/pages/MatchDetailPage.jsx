@@ -16,8 +16,12 @@ import {
   Flex,
   Image,
   Table,
-  Spinner,
-  Alert
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Spinner
 } from '@chakra-ui/react';
 import { FaTrophy, FaClock, FaGamepad } from 'react-icons/fa';
 import { api } from '../services/api.js';
@@ -78,14 +82,9 @@ const MatchDetailPage = () => {
     if (error) {
         return (
             <Container maxW="7xl" py={8}>
-                <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
-                    <Alert.Indicator />
-                    <Alert.Content>
-                        <Alert.Description>
-                            <Text color="dota.text.primary">Error: {error}</Text>
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+                <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+                    <Text color="dota.text.primary">Error: {error}</Text>
+                </Box>
             </Container>
         );
     }
@@ -93,16 +92,11 @@ const MatchDetailPage = () => {
     if (!matchData) {
         return (
             <Container maxW="7xl" py={8}>
-                <Alert.Root status="warning" bg="dota.bg.card" borderColor="dota.status.warning">
-                    <Alert.Indicator />
-                    <Alert.Content>
-                        <Alert.Description>
-                            <Text color="dota.text.primary">
-                                No match data found for Match ID: {matchId}.
-                            </Text>
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+                <Box bg="dota.bg.card" borderColor="dota.status.warning" borderWidth={1} borderRadius="md" p={4}>
+                    <Text color="dota.text.primary">
+                        No match data found for Match ID: {matchId}.
+                    </Text>
+                </Box>
             </Container>
         );
     }
@@ -115,8 +109,8 @@ const MatchDetailPage = () => {
     const renderPlayerRow = (player, teamColor) => {
         const heroInfo = getHeroInfo(player.hero_id);
         return (
-            <Table.Row key={player.player_slot} _hover={{ bg: "dota.bg.hover" }}>
-                <Table.Cell py={3} px={4} color="dota.text.primary">
+            <Tr key={player.player_slot} _hover={{ bg: "dota.bg.hover" }}>
+                <Td py={3} px={4} color="dota.text.primary">
                     {player.account_id && player.account_id !== 0 ? (
                         <Button
                             as={Link}
@@ -136,8 +130,8 @@ const MatchDetailPage = () => {
                             {player.personaname || `Anonymous`}
                         </Text>
                     )}
-                </Table.Cell>
-                <Table.Cell py={3} px={4}>
+                </Td>
+                <Td py={3} px={4}>
                     <HStack spacing={2}>
                         {heroInfo.icon && (
                             <Image 
@@ -152,8 +146,8 @@ const MatchDetailPage = () => {
                             {heroInfo.localized_name}
                         </Text>
                     </HStack>
-                </Table.Cell>
-                <Table.Cell py={3} px={4} textAlign="center">
+                </Td>
+                <Td py={3} px={4} textAlign="center">
                     <Text 
                         fontWeight="medium" 
                         color={teamColor === 'green' ? 'dota.status.success' : 'dota.status.error'}
@@ -161,8 +155,8 @@ const MatchDetailPage = () => {
                     >
                         {player.kills}/{player.deaths}/{player.assists}
                     </Text>
-                </Table.Cell>
-            </Table.Row>
+                </Td>
+            </Tr>
         );
     };
 
@@ -291,24 +285,24 @@ const MatchDetailPage = () => {
                                 </HStack>
                             </Box>
                             
-                            <Table.Root variant="simple" size="sm">
-                                <Table.Header bg="green.50">
-                                    <Table.Row>
-                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase">
+                            <Table variant="simple" size="sm">
+                                <Thead bg="green.50">
+                                    <Tr>
+                                        <Th color="green.700" fontSize="xs" textTransform="uppercase">
                                             Player
-                                        </Table.ColumnHeader>
-                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase">
+                                        </Th>
+                                        <Th color="green.700" fontSize="xs" textTransform="uppercase">
                                             Hero
-                                        </Table.ColumnHeader>
-                                        <Table.ColumnHeader color="green.700" fontSize="xs" textTransform="uppercase" textAlign="center">
+                                        </Th>
+                                        <Th color="green.700" fontSize="xs" textTransform="uppercase" textAlign="center">
                                             K/D/A
-                                        </Table.ColumnHeader>
-                                    </Table.Row>
-                                </Table.Header>
-                                <Table.Body bg="dota.bg.card">
+                                        </Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody bg="dota.bg.card">
                                     {radiantPlayers.map(p => renderPlayerRow(p, 'green'))}
-                                </Table.Body>
-                            </Table.Root>
+                                </Tbody>
+                            </Table>
                         </Card>
                     </GridItem>
 
@@ -324,24 +318,24 @@ const MatchDetailPage = () => {
                                 </HStack>
                             </Box>
                             
-                            <Table.Root variant="simple" size="sm">
-                                <Table.Header bg="red.50">
-                                    <Table.Row>
-                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase">
+                            <Table variant="simple" size="sm">
+                                <Thead bg="red.50">
+                                    <Tr>
+                                        <Th color="red.700" fontSize="xs" textTransform="uppercase">
                                             Player
-                                        </Table.ColumnHeader>
-                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase">
+                                        </Th>
+                                        <Th color="red.700" fontSize="xs" textTransform="uppercase">
                                             Hero
-                                        </Table.ColumnHeader>
-                                        <Table.ColumnHeader color="red.700" fontSize="xs" textTransform="uppercase" textAlign="center">
+                                        </Th>
+                                        <Th color="red.700" fontSize="xs" textTransform="uppercase" textAlign="center">
                                             K/D/A
-                                        </Table.ColumnHeader>
-                                    </Table.Row>
-                                </Table.Header>
-                                <Table.Body bg="dota.bg.card">
+                                        </Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody bg="dota.bg.card">
                                     {direPlayers.map(p => renderPlayerRow(p, 'red'))}
-                                </Table.Body>
-                            </Table.Root>
+                                </Tbody>
+                            </Table>
                         </Card>
                     </GridItem>
                 </Grid>

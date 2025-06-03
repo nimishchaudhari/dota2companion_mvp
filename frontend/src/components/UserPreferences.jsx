@@ -3,30 +3,25 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
-  CardHeader,
-  CardBody,
   Heading,
   VStack,
   HStack,
-  Field,
   Select,
   Checkbox,
   Button,
   Text,
-  Alert,
   Spinner,
   Grid,
   GridItem,
   Switch,
   Badge,
-  Separator,
   useToken,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { fileBackend } from '../services/fileBackend.js';
 
-const MotionCard = motion.create(Card);
-const MotionBox = motion.create(Box);
+const MotionCard = motion(Card);
+const MotionBox = motion(Box);
 
 const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
   const [preferences, setPreferences] = useState({
@@ -153,7 +148,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
       backdropFilter="blur(10px)"
     >
       {showTitle && (
-        <CardHeader pb={0}>
+        <Box pb={0} p={6}>
           <Heading 
             size="xl" 
             color="dota.text.primary"
@@ -164,27 +159,22 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
           >
             User Preferences
           </Heading>
-        </CardHeader>
+        </Box>
       )}
 
-      <CardBody p={6}>
+      <Box p={6}>
         {error && (
-          <Alert.Root 
-            status="error" 
+          <Box 
             borderRadius="lg" 
             mb={6}
             bg="dota.status.error"
             color="white"
             border="1px solid"
             borderColor="red.400"
+            p={4}
           >
-            <Alert.Indicator color="white" />
-            <Alert.Content>
-              <Alert.Description>
-                {error}
-              </Alert.Description>
-            </Alert.Content>
-          </Alert.Root>
+            <Text>{error}</Text>
+          </Box>
         )}
 
         <VStack spacing={8} align="stretch">
@@ -405,7 +395,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
                   />
                 </HStack>
 
-                <Separator borderColor="dota.bg.tertiary" />
+                <Box height="1px" bg="dota.bg.tertiary" />
 
                 <HStack justify="space-between" align="center">
                   <VStack align="flex-start" spacing={1}>
@@ -420,7 +410,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
                   />
                 </HStack>
 
-                <Separator borderColor="dota.bg.tertiary" />
+                <Box height="1px" bg="dota.bg.tertiary" />
 
                 <HStack justify="space-between" align="center">
                   <VStack align="flex-start" spacing={1}>
@@ -435,7 +425,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
                   />
                 </HStack>
 
-                <Separator borderColor="dota.bg.tertiary" />
+                <Box height="1px" bg="dota.bg.tertiary" />
 
                 <HStack justify="space-between" align="center">
                   <VStack align="flex-start" spacing={1}>
@@ -474,7 +464,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
                   />
                 </HStack>
 
-                <Separator borderColor="dota.bg.tertiary" />
+                <Box height="1px" bg="dota.bg.tertiary" />
 
                 <HStack justify="space-between" align="center">
                   <Text color="dota.text.primary" fontWeight="medium">Meta changes</Text>
@@ -486,7 +476,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
                   />
                 </HStack>
 
-                <Separator borderColor="dota.bg.tertiary" />
+                <Box height="1px" bg="dota.bg.tertiary" />
 
                 <HStack justify="space-between" align="center">
                   <Text color="dota.text.primary" fontWeight="medium">Favorite hero updates</Text>
@@ -552,7 +542,7 @@ const UserPreferences = ({ onSave, onCancel, showTitle = true }) => {
             </Button>
           </HStack>
         </MotionBox>
-      </CardBody>
+      </Box>
     </MotionCard>
   );
 };

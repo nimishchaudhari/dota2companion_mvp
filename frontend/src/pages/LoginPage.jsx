@@ -17,8 +17,8 @@ import { motion } from 'framer-motion';
 import { FaGamepad, FaUser } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 
-const MotionCard = motion.create(Card);
-const MotionBox = motion.create(Box);
+const MotionCard = motion(Card);
+const MotionBox = motion(Box);
 
 const LoginPage = () => {
     const [username, setUsername] = useState('testuser');
@@ -151,7 +151,7 @@ const LoginPage = () => {
                     </MotionCard>
 
                     {/* Demo Info */}
-                    <Alert.Root
+                    <Box
                         bg="rgba(39, 174, 158, 0.1)"
                         color="dota.text.secondary"
                         borderColor="dota.teal.500"
@@ -159,20 +159,18 @@ const LoginPage = () => {
                         borderRadius="md"
                         p={4}
                     >
-                        <Alert.Indicator as={FaUser} color="dota.teal.500" mr={3} />
-                        <Alert.Content>
-                            <Alert.Description>
-                                <Box>
-                                    <Text fontSize="sm" fontWeight="medium" color="dota.text.primary">
-                                        Demo Mode Active
-                                    </Text>
-                                    <Text fontSize="xs" color="dota.text.secondary">
-                                        This is a demonstration version. Use "testuser" or any username to login.
-                                    </Text>
-                                </Box>
-                            </Alert.Description>
-                        </Alert.Content>
-                    </Alert.Root>
+                        <Flex align="center">
+                            <Icon as={FaUser} color="dota.teal.500" mr={3} />
+                            <Box>
+                                <Text fontSize="sm" fontWeight="medium" color="dota.text.primary">
+                                    Demo Mode Active
+                                </Text>
+                                <Text fontSize="xs" color="dota.text.secondary">
+                                    This is a demonstration version. Use "testuser" or any username to login.
+                                </Text>
+                            </Box>
+                        </Flex>
+                    </Box>
                 </VStack>
             </MotionBox>
         </Container>

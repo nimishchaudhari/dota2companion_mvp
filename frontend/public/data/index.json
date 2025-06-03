@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-01T00:00:00Z",
+    "description": "Data index for efficient asset loading and caching"
+  },
+  "data_sources": {
+    "heroes": {
+      "file": "/data/heroes/recommendations.json",
+      "size": "medium",
+      "cache_duration": 300,
+      "preload": true,
+      "description": "Hero recommendations and data"
+    },
+    "items": {
+      "file": "/data/items/builds.json", 
+      "size": "large",
+      "cache_duration": 600,
+      "preload": false,
+      "description": "Item builds and recommendations"
+    },
+    "meta": {
+      "file": "/data/meta/analysis.json",
+      "size": "medium", 
+      "cache_duration": 900,
+      "preload": true,
+      "description": "Meta analysis and trends"
+    },
+    "users": {
+      "file": "/data/users/schema.json",
+      "size": "small",
+      "cache_duration": 3600,
+      "preload": true,
+      "description": "User data schema"
+    }
+  },
+  "assets": {
+    "placeholders": {
+      "hero": "/placeholder-hero.svg",
+      "item": "/placeholder-item.svg"
+    },
+    "icons": {
+      "favicon": "/favicon.svg",
+      "app_icons": [
+        "/icon-192.svg",
+        "/icon-512.svg"
+      ]
+    },
+    "pwa": {
+      "manifest": "/manifest.json"
+    }
+  },
+  "cache_strategy": {
+    "default_ttl": 300,
+    "max_cache_size": "10MB",
+    "cleanup_threshold": 0.8,
+    "preload_on_startup": [
+      "heroes",
+      "meta",
+      "users"
+    ]
+  },
+  "performance": {
+    "lazy_load_items": true,
+    "image_optimization": true,
+    "compression": "gzip",
+    "cdn_fallbacks": [
+      "https://cdn.opendota.com",
+      "https://cdn.cloudflare.steamstatic.com"
+    ]
+  }
+}

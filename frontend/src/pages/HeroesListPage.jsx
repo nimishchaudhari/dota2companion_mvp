@@ -111,14 +111,12 @@ const HeroesListPage = () => {
     if (error) {
         return (
             <Container maxW="7xl" py={8}>
-                <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
-                    <Alert.Indicator as={FaStar} color="dota.status.error" />
-                    <Alert.Content>
-                        <Alert.Description>
-                            <Text color="dota.text.primary">Error: {error}</Text>
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+                <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+                    <Flex align="center">
+                        <Icon as={FaStar} color="dota.status.error" mr={3} />
+                        <Text color="dota.text.primary">Error: {error}</Text>
+                    </Flex>
+                </Box>
             </Container>
         );
     }

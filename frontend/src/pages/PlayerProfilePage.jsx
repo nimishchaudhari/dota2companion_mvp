@@ -16,9 +16,7 @@ import {
   Avatar,
   Flex,
   Image,
-  Tabs,
-  Spinner,
-  Alert
+  Spinner
 } from '@chakra-ui/react';
 import { FaUser, FaTrophy, FaGamepad, FaStar } from 'react-icons/fa';
 import { api } from '../services/api.js';
@@ -128,14 +126,9 @@ const PlayerProfilePage = () => {
     if (error) {
         return (
             <Container maxW="7xl" py={8}>
-                <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
-                    <Alert.Indicator />
-                    <Alert.Content>
-                        <Alert.Description>
-                            <Text color="dota.text.primary">Error: {error}</Text>
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+                <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+                    <Text color="dota.text.primary">Error: {error}</Text>
+                </Box>
             </Container>
         );
     }
@@ -143,16 +136,11 @@ const PlayerProfilePage = () => {
     if (!playerData && !loading) {
         return (
             <Container maxW="7xl" py={8}>
-                <Alert.Root status="warning" bg="dota.bg.card" borderColor="dota.status.warning">
-                    <Alert.Indicator />
-                    <Alert.Content>
-                        <Alert.Description>
-                            <Text color="dota.text.primary">
-                                No player data found for Account ID: {playerId}. It might be a private profile or an invalid ID.
-                            </Text>
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+                <Box bg="dota.bg.card" borderColor="dota.status.warning" borderWidth={1} borderRadius="md" p={4}>
+                    <Text color="dota.text.primary">
+                        No player data found for Account ID: {playerId}. It might be a private profile or an invalid ID.
+                    </Text>
+                </Box>
             </Container>
         );
     }
@@ -304,38 +292,39 @@ const PlayerProfilePage = () => {
                 </Card>
 
                 {/* Tab Content */}
-                <Tabs.Root 
-                    defaultValue={showAnalysisTab ? "recommendations" : "matches"}
-                    variant="enclosed"
-                    colorScheme="teal"
-                    onValueChange={(value) => setShowAnalysisTab(value === "recommendations")}
-                >
-                    <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary">
-                        <Tabs.Trigger 
-                            value="matches"
-                            color="dota.text.secondary" 
-                            _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}
-                        >
-                            <HStack spacing={2}>
-                                <FaGamepad />
-                                <Text>Recent Matches</Text>
-                            </HStack>
-                        </Tabs.Trigger>
-                        {user && heroRecommendations.length > 0 && (
-                            <Tabs.Trigger 
-                                value="recommendations"
-                                color="dota.text.secondary" 
-                                _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}
+                <Box>
+                    <Box bg="dota.bg.card" borderColor="dota.bg.tertiary" borderWidth={1} borderRadius="md" p={2}>
+                        <HStack spacing={1}>
+                            <Button 
+                                onClick={() => setShowAnalysisTab(false)}
+                                variant={!showAnalysisTab ? "solid" : "ghost"}
+                                size="sm"
+                                colorScheme={!showAnalysisTab ? "teal" : "gray"}
+                                borderRadius="md"
                             >
                                 <HStack spacing={2}>
-                                    <FaStar />
-                                    <Text>Recommendations ({heroRecommendations.length})</Text>
+                                    <FaGamepad />
+                                    <Text>Recent Matches</Text>
                                 </HStack>
-                            </Tabs.Trigger>
-                        )}
-                    </Tabs.List>
+                            </Button>
+                            {user && heroRecommendations.length > 0 && (
+                                <Button 
+                                    onClick={() => setShowAnalysisTab(true)}
+                                    variant={showAnalysisTab ? "solid" : "ghost"}
+                                    size="sm"
+                                    colorScheme={showAnalysisTab ? "teal" : "gray"}
+                                    borderRadius="md"
+                                >
+                                    <HStack spacing={2}>
+                                        <FaStar />
+                                        <Text>Recommendations ({heroRecommendations.length})</Text>
+                                    </HStack>
+                                </Button>
+                            )}
+                        </HStack>
+                    </Box>
                     
-                    <Tabs.Content value="matches" p={0}>
+                    {!showAnalysisTab && (
 
                             <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                                 <VStack spacing={6} align="stretch">
@@ -449,9 +438,9 @@ const PlayerProfilePage = () => {
                                     )}
                                 </VStack>
                             </Card>
-                    </Tabs.Content>
+                    )}
                         
-                    <Tabs.Content value="recommendations" p={0}>
+                    {showAnalysisTab && (
                             <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                                 <VStack spacing={6} align="stretch">
                                     <VStack spacing={3} align="start">
@@ -513,8 +502,8 @@ const PlayerProfilePage = () => {
                                     )}
                                 </VStack>
                             </Card>
-                    </Tabs.Content>
-                </Tabs.Root>
+                    )}
+                </Box>
             </VStack>
         </Container>
     );

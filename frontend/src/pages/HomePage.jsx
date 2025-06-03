@@ -24,10 +24,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { listAnimations, getReducedMotionVariant } from '../utils/animations-lite';
 
 // Create motion components
-const MotionBox = motion.create(Box);
-const MotionCard = motion.create(Card);
-const MotionVStack = motion.create(VStack);
-const MotionGridItem = motion.create(GridItem);
+const MotionBox = motion(Box);
+const MotionCard = motion(Card);
+const MotionVStack = motion(VStack);
+const MotionGridItem = motion(GridItem);
 
 const HomePage = () => {
     const navigate = useNavigate();

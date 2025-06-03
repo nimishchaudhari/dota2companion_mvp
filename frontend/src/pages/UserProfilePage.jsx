@@ -15,9 +15,7 @@ import {
   Button,
   Avatar,
   Flex,
-  Tabs,
   Spinner,
-  Alert,
   Icon
 } from '@chakra-ui/react';
 import { FaUser, FaStar, FaHammer, FaGamepad, FaDownload, FaUpload, FaCog } from 'react-icons/fa';
@@ -215,14 +213,9 @@ const UserProfilePage = () => {
             </VStack>
             
             {error && (
-              <Alert.Root status="error" bg="dota.bg.secondary" borderColor="dota.status.error">
-                <Alert.Indicator />
-                <Alert.Content>
-                  <Alert.Description>
-                    <Text color="dota.text.primary">{error}</Text>
-                  </Alert.Description>
-                </Alert.Content>
-              </Alert.Root>
+              <Box bg="dota.bg.secondary" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+                <Text color="dota.text.primary">{error}</Text>
+              </Box>
             )}
             
             <Button
@@ -252,22 +245,19 @@ const UserProfilePage = () => {
     <Container maxW="6xl" py={6}>
       <VStack spacing={8} align="stretch">
         {error && (
-          <Alert.Root status="error" bg="dota.bg.card" borderColor="dota.status.error">
-            <Alert.Indicator />
-            <Alert.Content>
-              <Alert.Description>
-                <Text color="dota.text.primary" flex={1}>{error}</Text>
-              </Alert.Description>
-            </Alert.Content>
-            <Button
-              onClick={() => setError(null)}
-              variant="ghost"
-              size="sm"
-              color="dota.status.error"
-            >
-              ×
-            </Button>
-          </Alert.Root>
+          <Box bg="dota.bg.card" borderColor="dota.status.error" borderWidth={1} borderRadius="md" p={4}>
+            <Flex justify="space-between" align="center">
+              <Text color="dota.text.primary" flex={1}>{error}</Text>
+              <Button
+                onClick={() => setError(null)}
+                variant="ghost"
+                size="sm"
+                color="dota.status.error"
+              >
+                ×
+              </Button>
+            </Flex>
+          </Box>
         )}
 
         {/* Profile Header */}
@@ -359,40 +349,61 @@ const UserProfilePage = () => {
         </Card>
 
         {/* Tab Content */}
-        <Tabs 
-          value={activeTab}
-          onValueChange={setActiveTab}
-          variant="enclosed"
-          colorScheme="teal"
-        >
-          <Tabs.List bg="dota.bg.card" borderColor="dota.bg.tertiary">
-            <Tabs.Trigger value="profile" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-              <HStack spacing={2}>
-                <Icon as={FaUser} />
-                <Text>Profile Overview</Text>
-              </HStack>
-            </Tabs.Trigger>
-            <Tabs.Trigger value="favorites" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-              <HStack spacing={2}>
-                <Icon as={FaStar} />
-                <Text>Favorites ({favoriteHeroes.length + favoriteItems.length})</Text>
-              </HStack>
-            </Tabs.Trigger>
-            <Tabs.Trigger value="builds" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-              <HStack spacing={2}>
-                <Icon as={FaHammer} />
-                <Text>Custom Builds ({customBuilds.length})</Text>
-              </HStack>
-            </Tabs.Trigger>
-            <Tabs.Trigger value="matches" color="dota.text.secondary" _selected={{ color: "dota.text.primary", bg: "dota.bg.tertiary" }}>
-              <HStack spacing={2}>
-                <Icon as={FaGamepad} />
-                <Text>Recent Matches</Text>
-              </HStack>
-            </Tabs.Trigger>
-          </Tabs.List>
+        <Box>
+          <Box bg="dota.bg.card" borderColor="dota.bg.tertiary" borderWidth={1} borderRadius="md" p={2}>
+            <HStack spacing={1} wrap="wrap">
+              <Button 
+                onClick={() => setActiveTab('profile')}
+                variant={activeTab === 'profile' ? "solid" : "ghost"}
+                size="sm"
+                colorScheme={activeTab === 'profile' ? "teal" : "gray"}
+                borderRadius="md"
+              >
+                <HStack spacing={2}>
+                  <Icon as={FaUser} />
+                  <Text>Profile Overview</Text>
+                </HStack>
+              </Button>
+              <Button 
+                onClick={() => setActiveTab('favorites')}
+                variant={activeTab === 'favorites' ? "solid" : "ghost"}
+                size="sm"
+                colorScheme={activeTab === 'favorites' ? "teal" : "gray"}
+                borderRadius="md"
+              >
+                <HStack spacing={2}>
+                  <Icon as={FaStar} />
+                  <Text>Favorites ({favoriteHeroes.length + favoriteItems.length})</Text>
+                </HStack>
+              </Button>
+              <Button 
+                onClick={() => setActiveTab('builds')}
+                variant={activeTab === 'builds' ? "solid" : "ghost"}
+                size="sm"
+                colorScheme={activeTab === 'builds' ? "teal" : "gray"}
+                borderRadius="md"
+              >
+                <HStack spacing={2}>
+                  <Icon as={FaHammer} />
+                  <Text>Custom Builds ({customBuilds.length})</Text>
+                </HStack>
+              </Button>
+              <Button 
+                onClick={() => setActiveTab('matches')}
+                variant={activeTab === 'matches' ? "solid" : "ghost"}
+                size="sm"
+                colorScheme={activeTab === 'matches' ? "teal" : "gray"}
+                borderRadius="md"
+              >
+                <HStack spacing={2}>
+                  <Icon as={FaGamepad} />
+                  <Text>Recent Matches</Text>
+                </HStack>
+              </Button>
+            </HStack>
+          </Box>
           
-          <Tabs.Content value="profile" p={0}>
+          {activeTab === 'profile' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <Heading size="md" color="dota.text.primary">
@@ -503,9 +514,9 @@ const UserProfilePage = () => {
                   </VStack>
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="favorites" p={0}>
+          {activeTab === 'favorites' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <Heading size="md" color="dota.text.primary">
@@ -636,9 +647,9 @@ const UserProfilePage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="builds" p={0}>
+          {activeTab === 'builds' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <Heading size="md" color="dota.text.primary">
@@ -671,9 +682,9 @@ const UserProfilePage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
+          )}
 
-            <Tabs.Content value="matches" p={0}>
+          {activeTab === 'matches' && (
               <Card bg="dota.bg.card" borderWidth={1} borderColor="dota.bg.tertiary" p={6} mt={6}>
                 <VStack spacing={6} align="stretch">
                   <Heading size="md" color="dota.text.primary">
@@ -727,8 +738,8 @@ const UserProfilePage = () => {
                   )}
                 </VStack>
               </Card>
-            </Tabs.Content>
-        </Tabs>
+          )}
+        </Box>
       </VStack>
     </Container>
   );

@@ -21,8 +21,8 @@ import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { api } from '../services/api.js';
 
-const MotionBox = motion.create(Box);
-const MotionCard = motion.create(Card);
+const MotionBox = motion(Box);
+const MotionCard = motion(Card);
 
 const PlayerSearch = ({ onResult }) => {
   const [query, setQuery] = useState('');

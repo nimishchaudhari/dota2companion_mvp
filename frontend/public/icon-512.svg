@@ -1,0 +1,99 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- High-resolution Dota 2 themed icon for PWA -->
+  <defs>
+    <linearGradient id="heroGradient512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#F7931E;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#FFD23F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFF59D;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="backgroundGradient512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F0F23;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1A1A2E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213E;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGlow512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD23F;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FF6B35;stop-opacity:0.4" />
+    </linearGradient>
+    <filter id="glow512" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="innerShadow512">
+      <feOffset dx="0" dy="4"/>
+      <feGaussianBlur stdDeviation="4" result="offset-blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.3"/>
+      <feComposite in2="offset-blur" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="256" cy="256" r="256" fill="url(#backgroundGradient512)"/>
+  <circle cx="256" cy="256" r="240" fill="none" stroke="url(#heroGradient512)" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Main emblem with glow effect -->
+  <g filter="url(#glow512)">
+    <!-- Outer hexagonal shape -->
+    <path d="M256 64L384 144V368L256 448L128 368V144L256 64Z" 
+          fill="url(#heroGradient512)" 
+          stroke="#FFD23F" 
+          stroke-width="4"
+          filter="url(#innerShadow512)"/>
+    
+    <!-- Inner geometric pattern -->
+    <g opacity="0.9">
+      <!-- Central core -->
+      <circle cx="256" cy="256" r="80" fill="url(#innerGlow512)"/>
+      <circle cx="256" cy="256" r="60" fill="#FFD23F" opacity="0.9"/>
+      <circle cx="256" cy="256" r="40" fill="#FF6B35"/>
+      <circle cx="256" cy="256" r="20" fill="#FFF59D" opacity="0.8"/>
+      
+      <!-- Radiating lines -->
+      <g stroke="#FFD23F" stroke-width="3" opacity="0.7">
+        <line x1="256" y1="176" x2="256" y2="140"/>
+        <line x1="256" y1="372" x2="256" y2="336"/>
+        <line x1="176" y1="256" x2="140" y2="256"/>
+        <line x1="372" y1="256" x2="336" y2="256"/>
+        <line x1="310.9" y1="201.1" x2="334.9" y2="177.1"/>
+        <line x1="177.1" y1="334.9" x2="201.1" y2="310.9"/>
+        <line x1="310.9" y1="310.9" x2="334.9" y2="334.9"/>
+        <line x1="177.1" y1="177.1" x2="201.1" y2="201.1"/>
+      </g>
+    </g>
+    
+    <!-- Corner accent gems -->
+    <g opacity="0.8">
+      <circle cx="320" cy="192" r="24" fill="#F7931E"/>
+      <circle cx="320" cy="192" r="16" fill="#FFD23F" opacity="0.7"/>
+      
+      <circle cx="192" cy="192" r="24" fill="#F7931E"/>
+      <circle cx="192" cy="192" r="16" fill="#FFD23F" opacity="0.7"/>
+      
+      <circle cx="192" cy="320" r="24" fill="#F7931E"/>
+      <circle cx="192" cy="320" r="16" fill="#FFD23F" opacity="0.7"/>
+      
+      <circle cx="320" cy="320" r="24" fill="#F7931E"/>
+      <circle cx="320" cy="320" r="16" fill="#FFD23F" opacity="0.7"/>
+    </g>
+    
+    <!-- Additional detail elements -->
+    <g opacity="0.6">
+      <!-- Small connector dots -->
+      <circle cx="256" cy="144" r="8" fill="#FFD23F"/>
+      <circle cx="256" cy="368" r="8" fill="#FFD23F"/>
+      <circle cx="144" cy="256" r="8" fill="#FFD23F"/>
+      <circle cx="368" cy="256" r="8" fill="#FFD23F"/>
+    </g>
+  </g>
+  
+  <!-- Outer ring decoration -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#heroGradient512)" stroke-width="2" opacity="0.4" stroke-dasharray="10,5"/>
+</svg>

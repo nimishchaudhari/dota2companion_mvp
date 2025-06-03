@@ -2,7 +2,30 @@
   "meta": {
     "version": "1.0.0",
     "lastUpdated": "2025-01-01T00:00:00Z",
-    "description": "Hero recommendations based on roles, synergies, and meta analysis"
+    "description": "Hero recommendations based on roles, synergies, and meta analysis",
+    "total_heroes": 123,
+    "data_sources": ["OpenDota API", "DotaBuff Statistics", "Meta Analysis"],
+    "update_frequency": "weekly"
+  },
+  "indexes": {
+    "by_role": {
+      "carry": [1, 8, 16],
+      "support": [23, 5, 31],
+      "mid": [74, 11, 43],
+      "offlaner": [38, 2, 15],
+      "jungle": [18, 32]
+    },
+    "by_difficulty": {
+      "easy": [23, 38],
+      "medium": [1, 8], 
+      "hard": [74]
+    },
+    "by_attribute": {
+      "str": [38, 2, 15],
+      "agi": [1, 8, 16],
+      "int": [23, 74, 11, 43],
+      "all": []
+    }
   },
   "recommendations": {
     "beginner_friendly": [

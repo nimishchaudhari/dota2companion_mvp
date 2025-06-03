@@ -263,8 +263,8 @@ export const getItemIcon = (item) => {
  */
 export const getPlaceholderImage = (type) => {
   const placeholders = {
-    hero: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjA1IiBoZWlnaHQ9IjExNSIgdmlld0JveD0iMCAwIDIwNSAxMTUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDUiIGhlaWdodD0iMTE1IiBmaWxsPSIjMUEyMDJDIi8+CjxwYXRoIGQ9Ik0xMDIuNSA0MEM5NC4yMTYgNDAgODcuNSA0Ni43MTYgODcuNSA1NUg5Mi41Qzk2LjA4OTkgNTUgOTkgNTcuOTEwMSA5OSA2MS41Vjc1SDE0MFY2MS41QzE0MCA1Ny45MTAxIDE0Mi45MSA1NSAxNDYuNSA1NUgxNTJDMTUyIDQ2LjcxNiAxNDUuMjg0IDQwIDEzNyA0MEgxMDIuNVoiIGZpbGw9IiM0QTVCNjgiLz4KPHN2Zz4K',
-    item: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMUEyMDJDIi8+CjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjE2IiBmaWxsPSIjNEE1QjY4Ii8+Cjwvc3ZnPgo=',
+    hero: '/placeholder-hero.svg',
+    item: '/placeholder-item.svg',
     attribute: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMUEyMDJDIi8+CjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjgiIGZpbGw9IiM0QTVCNjgiLz4KPC9zdmc+Cg=='
   };
 

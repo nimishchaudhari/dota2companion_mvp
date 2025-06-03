@@ -10,7 +10,7 @@ import {
 import { motion } from 'framer-motion';
 import { fileBackend } from '../services/fileBackend.js';
 
-const MotionIconButton = motion.create(IconButton);
+const MotionIconButton = motion(IconButton);
 
 // Heart icon component
 const HeartIcon = ({ filled = false, ...props }) => (

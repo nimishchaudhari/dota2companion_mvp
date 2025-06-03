@@ -20,8 +20,8 @@ import {
 import { motion } from 'framer-motion';
 import FavoritesButton from './FavoritesButton';
 
-const MotionCard = motion.create(Card);
-const MotionBox = motion.create(Box);
+const MotionCard = motion(Card);
+const MotionBox = motion(Box);
 
 const RecommendationCard = ({ 
   type, // 'hero', 'item', 'build', 'combo'

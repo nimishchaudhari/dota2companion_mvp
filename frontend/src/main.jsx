@@ -6,7 +6,7 @@ import App from './App.jsx';
 import './index.css'; // Assuming default styling
 import { AuthProvider } from './contexts/AuthContext.jsx'; // Import AuthProvider
 import { fileBackend } from './services/fileBackend.js'; // Import file backend service
-import system from './theme/index.js'; // Import custom Dota 2 theme system
+import theme from './theme/index.js'; // Import custom Dota 2 theme
 
 // Initialize file backend service
 const initializeApp = async () => {
@@ -35,7 +35,7 @@ const root = createRoot(rootElement);
 // App component wrapper with error boundary
 const AppWrapper = () => (
   <React.StrictMode>
-    <ChakraProvider value={system}>
+    <ChakraProvider theme={theme}>
       <AuthProvider>
         <App />
       </AuthProvider>
